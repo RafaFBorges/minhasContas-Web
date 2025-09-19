@@ -1,0 +1,55 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Next.js build output
+.next/
+out/
+
+# Next.js cache
+.next/cache/
+
+# Build output
+dist/
+build/
+
+# Vercel
+.vercel/
+
+# Local env files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Log files
+*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Optional: ignoring coverage reports (if using Jest or similar)
+coverage/
+
+# Optional: ignoring TypeScript build output
+*.tsbuildinfo
+
+# Optional: ignoring static exports (if exporting statically)
+export/
+
+# Optional: ignoring local docker files
+docker-compose.override.yml
+
+# Optional: ignore Mac system files
+.AppleDouble
+.LSOverride
