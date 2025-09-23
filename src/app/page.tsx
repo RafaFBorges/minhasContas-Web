@@ -1,5 +1,6 @@
 'use client'
 
+import { Expense } from '@/domain/Expense'
 import React, { useEffect, useState } from 'react'
 import { FaPlus } from "react-icons/fa"
 
@@ -41,7 +42,7 @@ export async function handleGET(endpoint: string) {
 
 export default function Home() {
   const [value, setValue] = useState<number>(0)
-  const [valueList, setValueList] = useState<number[]>([])
+  const [valueList, setValueList] = useState<Expense[]>([])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const parsed: number = parseFloat(e.target.value)
@@ -51,12 +52,28 @@ export default function Home() {
   }
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    setValueList([...valueList, value])
+    setValueList([...valueList, new Expense(0, value, [new Date()])])
+  }
+
+  async function SyncExpenses() {
+    try {
+      console.log("HOME.useEffect : [initial load] fetching expenses")
+
+      const serverExpensesList: Promise<any[]> = await handleGET(EXPENSES_ENDPOINT)
+
+      if (!(serverExpensesList != null) || !Array.isArray(serverExpensesList))
+        throw Error('Invalid Expense response')
+
+      const expensesList: Expense[] = []
+      serverExpensesList.forEach(expense => expensesList.push(new Expense(expense.id, expense.value, expense.dates)))
+      setValueList(expensesList)
+    } catch (err) {
+      console.error("HOME.useEffect : [Error] erro=", err)
+    }
   }
 
   useEffect(() => {
-    console.log("HOME.useEffect : [initial load] fetching expenses")
-    handleGET(EXPENSES_ENDPOINT)
+    SyncExpenses()
   }, [])
 
   return <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
@@ -82,11 +99,11 @@ export default function Home() {
       </button>
     </div>
 
-    {valueList != null && valueList.map((value, index) => {
+    {valueList != null && valueList.map((item, index) => {
       return <div style={styles.card} key={index}>
         <div style={styles.content}>
-          <h6 style={styles.title}>{value}</h6>
-          <p style={styles.description}>date</p>
+          <h6 style={styles.title}>{item.value}</h6>
+          <p style={styles.description}>{item.lastDate}</p>
         </div>
       </div>
     })}
