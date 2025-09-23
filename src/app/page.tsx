@@ -40,6 +40,40 @@ export async function handleGET(endpoint: string) {
   }
 }
 
+export async function handlePOST(endpoint: string, body: object) {
+  try {
+    console.log("handlePOST : [start] endpoint=" + SERVER_PATH + endpoint)
+
+    const response = await fetch(SERVER_PATH + endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body)
+    })
+
+    if (!response.ok)
+      throw new Error("Erro HTTP: " + response.status)
+
+    const data = await response.json()
+
+    let logMessage = "handlePOST : [request send]"
+    if (!data)
+      logMessage += 'empty data'
+    else if (Array.isArray(data))
+      logMessage += 'Count=' + data.length
+    else if (typeof data === "object")
+      logMessage += 'ObjectKeysCount=' + Object.keys(data).length
+    else
+      logMessage += 'Unexpected response type'
+    console.log(logMessage)
+
+    return data
+  } catch (err) {
+    return Response.json({ error: "Erro ao processar" }, { status: 400 });
+  }
+}
+
 export default function Home() {
   const [value, setValue] = useState<number>(0)
   const [valueList, setValueList] = useState<Expense[]>([])
@@ -51,8 +85,14 @@ export default function Home() {
       setValue(parsed)
   }
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    setValueList([...valueList, new Expense(0, value, [new Date()])])
+  const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    const response = await handlePOST(EXPENSES_ENDPOINT, {
+      "value": value,
+      "date": new Date()
+    })
+
+    if (response != null)
+      setValueList([...valueList, new Expense(response.id, response.value, response.dates)])
   }
 
   async function SyncExpenses() {
