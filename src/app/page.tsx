@@ -1,7 +1,43 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FaPlus } from "react-icons/fa"
+
+const SERVER_PATH = 'https://minhascontas-server.onrender.com/'
+const EXPENSES_ENDPOINT = 'expense'
+
+export async function handleGET(endpoint: string) {
+  try {
+    console.log("handleGET : [start] endpoint=" + SERVER_PATH + endpoint)
+
+    const response = await fetch(SERVER_PATH + endpoint, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    })
+
+    if (!response.ok)
+      throw new Error("Erro HTTP: " + response.status)
+
+    const data = await response.json()
+
+    let logMessage = "handleGET : [request send]"
+    if (!data)
+      logMessage += 'empty data'
+    else if (Array.isArray(data))
+      logMessage += 'Count=' + data.length
+    else if (typeof data === "object")
+      logMessage += 'ObjectKeysCount=' + Object.keys(data).length
+    else
+      logMessage += 'Unexpected response type'
+    console.log(logMessage)
+
+    return data
+  } catch (err) {
+    return Response.json({ error: "Falha ao buscar dados" }, { status: 500 })
+  }
+}
 
 export default function Home() {
   const [value, setValue] = useState<number>(0)
@@ -18,6 +54,11 @@ export default function Home() {
     setValueList([...valueList, value])
   }
 
+  useEffect(() => {
+    console.log("HOME.useEffect : [initial load] fetching expenses")
+    handleGET(EXPENSES_ENDPOINT)
+  }, [])
+
   return <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
     <h1>Minhas Contas</h1>
     <h3>Despesas</h3>
@@ -25,6 +66,7 @@ export default function Home() {
     <div style={styles.flexRow}>
       <input
         type="number"
+        name="expenseValue"
         step="any"
         value={value}
         onChange={handleChange}
