@@ -11,6 +11,10 @@ export class Expense {
     date.forEach(item => { this.__dates.push(new Date(item)) })
   }
 
+  get id(): number {
+    return this.__id
+  }
+
   get value(): number {
     return this.__value
   }
