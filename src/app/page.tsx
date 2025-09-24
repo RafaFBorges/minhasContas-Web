@@ -1,10 +1,11 @@
 'use client'
 
 import StyledButton from '@/components/button'
+import Card from '@/components/card'
 import { ExpenseResponse } from '@/comunication/expense'
 import { Expense } from '@/domain/Expense'
 import React, { useEffect, useState } from 'react'
-import { FaPlus as AddIcon, FaTrash as DeleteIcon } from "react-icons/fa"
+import { FaPlus as AddIcon } from 'react-icons/fa'
 
 
 const SERVER_PATH = 'https://minhascontas-server.onrender.com/'
@@ -170,19 +171,13 @@ export default function Home() {
     </div>
 
     {valueList != null && valueList.map(item => {
-      return <div style={styles.card} key={item.id}>
-        <div style={styles.content}>
-          <div style={styles.cardFlexRow}>
-            <h6 style={styles.title}>{item.value}</h6>
-            <StyledButton
-              clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => handleDeleteClick(item.id)}
-              Icon={DeleteIcon}
-              isClickableIcon
-            />
-          </div>
-          <p style={styles.description}>{item.lastDate}</p>
-        </div>
-      </div>
+      return <Card
+        key={item.id}
+        id={item.id}
+        title={item.value}
+        deleteClickHandle={handleDeleteClick}
+        date={item.lastDate}
+      />
     })}
   </main>
 }
@@ -209,39 +204,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: '4px',
     marginRight: '1rem',
     border: '1px solid #ccc',
-    boxSizing: 'border-box',
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: '8px',
-    boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
-    overflow: 'hidden',
-    maxWidth: '350px',
-    marginTop: '2rem',
-  },
-  image: {
-    width: '100%',
-    height: '150px',
-    objectFit: 'cover',
-  },
-  content: {
-    padding: '1rem',
-  },
-  title: {
-    fontSize: '1.25rem',
-  },
-  description: {
-    margin: '0 0 1rem 0',
-    fontSize: '1rem',
-    color: '#555',
-  },
-  cardFlexRow: {
-    display: 'flex',
-    margin: '0 0 0.5rem 0',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    maxWidth: '350px',
     boxSizing: 'border-box',
   },
 }
