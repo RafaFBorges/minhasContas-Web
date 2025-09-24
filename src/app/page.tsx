@@ -1,5 +1,6 @@
 'use client'
 
+import { ExpenseResponse } from '@/comunication/expense'
 import { Expense } from '@/domain/Expense'
 import React, { useEffect, useState } from 'react'
 import { FaPlus as AddIcon, FaTrash as DeleteIcon } from "react-icons/fa"
@@ -129,7 +130,7 @@ export default function Home() {
     try {
       console.log("HOME.useEffect : [initial load] fetching expenses")
 
-      const serverExpensesList: Promise<any[]> = await handleGET(EXPENSES_ENDPOINT)
+      const serverExpensesList: Promise<ExpenseResponse[]> = await handleGET(EXPENSES_ENDPOINT)
 
       if (!(serverExpensesList != null) || !Array.isArray(serverExpensesList))
         throw Error('Invalid Expense response')
