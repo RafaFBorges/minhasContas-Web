@@ -1,105 +1,14 @@
 'use client'
 
-import StyledButton from '@/components/button'
-import Card from '@/components/card'
-import StyledInput from '@/components/input'
+import { EXPENSES_ENDPOINT, handleDELETE, handleGET, handlePOST } from '@/comunication/ApiResthandler'
+import StyledButton from '../../components/button'
+import Card from '../../components/card'
+import StyledInput from '../../components/input'
 import { ExpenseResponse } from '@/comunication/expense'
 import { Expense } from '@/domain/Expense'
 import React, { useEffect, useState } from 'react'
 import { FaPlus as AddIcon } from 'react-icons/fa'
 
-
-const SERVER_PATH = 'https://minhascontas-server.onrender.com/'
-const EXPENSES_ENDPOINT = 'expense'
-
-export async function handleGET(endpoint: string) {
-  try {
-    console.log("handleGET : [start] endpoint=" + SERVER_PATH + endpoint)
-
-    const response = await fetch(SERVER_PATH + endpoint, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
-
-    if (!response.ok)
-      throw new Error("Erro HTTP: " + response.status)
-
-    const data = await response.json()
-
-    let logMessage = "handleGET : [request send]"
-    if (!data)
-      logMessage += 'empty data'
-    else if (Array.isArray(data))
-      logMessage += 'Count=' + data.length
-    else if (typeof data === "object")
-      logMessage += 'ObjectKeysCount=' + Object.keys(data).length
-    else
-      logMessage += 'Unexpected response type'
-    console.log(logMessage)
-
-    return data
-  } catch (err) {
-    return Response.json({ error: "Falha ao buscar dados" }, { status: 500 })
-  }
-}
-
-export async function handlePOST(endpoint: string, body: object) {
-  try {
-    console.log("handlePOST : [start] endpoint=" + SERVER_PATH + endpoint)
-
-    const response = await fetch(SERVER_PATH + endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body)
-    })
-
-    if (!response.ok)
-      throw new Error("Erro HTTP: " + response.status)
-
-    const data = await response.json()
-
-    let logMessage = "handlePOST : [request send]"
-    if (!data)
-      logMessage += 'empty data'
-    else if (Array.isArray(data))
-      logMessage += 'Count=' + data.length
-    else if (typeof data === "object")
-      logMessage += 'ObjectKeysCount=' + Object.keys(data).length
-    else
-      logMessage += 'Unexpected response type'
-    console.log(logMessage)
-
-    return data
-  } catch (err) {
-    return Response.json({ error: "Erro ao processar" }, { status: 400 });
-  }
-}
-
-export async function handleDELETE(endpoint: string) {
-  try {
-    console.log("handleDELETE : [start] endpoint=" + SERVER_PATH + endpoint)
-
-    const response = await fetch(SERVER_PATH + endpoint, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
-
-    console.log('handleDELETE : status=' + response.status)
-
-    if (!response.ok)
-      throw new Error("Erro HTTP: " + response.status)
-
-    return response.status == 204
-  } catch (err) {
-    return Response.json({ error: "Erro ao processar" }, { status: 400 });
-  }
-}
 
 export default function Home() {
   const [value, setValue] = useState<number>(0)
@@ -113,20 +22,16 @@ export default function Home() {
   }
 
   const handleAddNewClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    const response = await handlePOST(EXPENSES_ENDPOINT, {
-      "value": value,
-      "date": new Date()
-    })
+    const response = await handlePOST(EXPENSES_ENDPOINT, { "value": value, "date": new Date() })
 
     if (response != null)
       setValueList([...valueList, new Expense(response.id, response.value, response.dates)])
   }
 
   const handleDeleteClick = async (index: number) => {
-    if (await handleDELETE(EXPENSES_ENDPOINT + '/' + index))
-      setValueList(valueList.filter(expense => {
-        return expense.id !== index;
-      }))
+    const wasDeleted: boolean = await handleDELETE(EXPENSES_ENDPOINT + '/' + index)
+    if (wasDeleted)
+      setValueList(valueList.filter(expense => expense.id !== index))
   }
 
   async function SyncExpenses() {
