@@ -1,5 +1,6 @@
 'use client'
 
+import StyledButton from '@/components/button'
 import { ExpenseResponse } from '@/comunication/expense'
 import { Expense } from '@/domain/Expense'
 import React, { useEffect, useState } from 'react'
@@ -162,12 +163,10 @@ export default function Home() {
         style={styles.input}
       />
 
-      <button
-        onClick={handleAddNewClick}
-        style={styles.button}
-      >
-        <AddIcon />
-      </button>
+      <StyledButton
+        clickHandle={handleAddNewClick}
+        Icon={AddIcon}
+      />
     </div>
 
     {valueList != null && valueList.map(item => {
@@ -175,12 +174,11 @@ export default function Home() {
         <div style={styles.content}>
           <div style={styles.cardFlexRow}>
             <h6 style={styles.title}>{item.value}</h6>
-            <button
-              onClick={(e: React.MouseEvent<HTMLButtonElement>) => handleDeleteClick(item.id)}
-              style={styles.cardIcon}
-            >
-              <DeleteIcon />
-            </button>
+            <StyledButton
+              clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => handleDeleteClick(item.id)}
+              Icon={DeleteIcon}
+              isClickableIcon
+            />
           </div>
           <p style={styles.description}>{item.lastDate}</p>
         </div>
@@ -237,27 +235,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: '1rem',
     color: '#555',
   },
-  button: {
-    backgroundColor: '#0070f3',
-    color: '#fff',
-    border: 'none',
-    padding: '0.5rem 1rem',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '1rem',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  cardIcon: {
-    color: '#0070f3',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   cardFlexRow: {
     display: 'flex',
     margin: '0 0 0.5rem 0',
@@ -267,4 +244,4 @@ const styles: { [key: string]: React.CSSProperties } = {
     maxWidth: '350px',
     boxSizing: 'border-box',
   },
-};
+}
