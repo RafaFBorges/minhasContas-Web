@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { IconType } from 'react-icons';
+import { IconType } from 'react-icons'
 
 interface StyledButtonProps {
   children?: React.ReactNode;

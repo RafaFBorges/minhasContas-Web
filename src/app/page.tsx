@@ -1,6 +1,7 @@
 'use client'
 
 import StyledButton from '@/components/button'
+import StyledInput from '@/components/input'
 import { ExpenseResponse } from '@/comunication/expense'
 import { Expense } from '@/domain/Expense'
 import React, { useEffect, useState } from 'react'
@@ -153,14 +154,11 @@ export default function Home() {
     <h3>Despesas</h3>
 
     <div style={styles.flexRow}>
-      <input
-        type="number"
-        name="expenseValue"
-        step="any"
+      <StyledInput
+        type={'number'}
+        name={'expenseValue'}
         value={value}
-        onChange={handleChange}
-        placeholder="Ex: 3.14"
-        style={styles.input}
+        changeHandle={handleChange}
       />
 
       <StyledButton
@@ -200,15 +198,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: 'center',
     width: '100%',
     maxWidth: '350px',
-    boxSizing: 'border-box',
-  },
-  input: {
-    width: '100%',
-    padding: '0.5rem',
-    fontSize: '1rem',
-    borderRadius: '4px',
-    marginRight: '1rem',
-    border: '1px solid #ccc',
     boxSizing: 'border-box',
   },
   card: {
