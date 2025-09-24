@@ -170,13 +170,13 @@ export default function Home() {
       </button>
     </div>
 
-    {valueList != null && valueList.map((item, index) => {
-      return <div style={styles.card} key={index}>
+    {valueList != null && valueList.map(item => {
+      return <div style={styles.card} key={item.id}>
         <div style={styles.content}>
           <div style={styles.cardFlexRow}>
             <h6 style={styles.title}>{item.value}</h6>
             <button
-              onClick={(e: React.MouseEvent<HTMLButtonElement>) => handleDeleteClick(index)}
+              onClick={(e: React.MouseEvent<HTMLButtonElement>) => handleDeleteClick(item.id)}
               style={styles.cardIcon}
             >
               <DeleteIcon />
