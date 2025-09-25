@@ -1,13 +1,15 @@
 'use client'
 
+import React, { useEffect, useState } from 'react'
+
+import { FaPlus as AddIcon } from 'react-icons/fa'
+
 import { EXPENSES_ENDPOINT, handleDELETE, handleGET, handlePOST } from '@/comunication/ApiResthandler'
+import { ExpenseResponse } from '@/comunication/expense'
+import { Expense } from '@/domain/Expense'
 import StyledButton from '../../components/button'
 import Card from '../../components/card'
 import StyledInput from '../../components/input'
-import { ExpenseResponse } from '@/comunication/expense'
-import { Expense } from '@/domain/Expense'
-import React, { useEffect, useState } from 'react'
-import { FaPlus as AddIcon } from 'react-icons/fa'
 
 
 export default function Home() {
@@ -77,7 +79,7 @@ export default function Home() {
       return <Card
         key={item.id}
         id={item.id}
-        title={item.value}
+        title={item.asText}
         deleteClickHandle={handleDeleteClick}
         date={item.lastDate}
       />
