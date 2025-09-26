@@ -10,11 +10,13 @@ import { Expense } from '@/domain/Expense'
 import StyledButton from '../../components/button'
 import Card from '../../components/card'
 import StyledInput from '../../components/input'
+import Modal from '../../components/modal'
 
 
 export default function Home() {
   const [value, setValue] = useState<number>(0)
   const [valueList, setValueList] = useState<Expense[]>([])
+  const [isOpenModal, setOpenModal] = useState<boolean>(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const parsed: number = parseFloat(e.target.value)
@@ -35,6 +37,8 @@ export default function Home() {
     if (wasDeleted)
       setValueList(valueList.filter(expense => expense.id !== index))
   }
+
+  const handleEditClick = () => { setOpenModal(true) }
 
   async function SyncExpenses() {
     try {
@@ -57,34 +61,42 @@ export default function Home() {
     SyncExpenses()
   }, [])
 
-  return <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
-    <h1>Minhas Contas</h1>
-    <h3>Despesas</h3>
+  return <>
+    <Modal
+      isOpen={isOpenModal}
+      setIsOpen={setOpenModal}
+      title={'Edição dispesa'}
+    />
+    <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
+      <h1>Minhas Contas</h1>
+      <h3>Despesas</h3>
 
-    <div style={styles.flexRow}>
-      <StyledInput
-        type={'number'}
-        name={'expenseValue'}
-        value={value}
-        changeHandle={handleChange}
-      />
+      <div style={styles.flexRow}>
+        <StyledInput
+          type={'number'}
+          name={'expenseValue'}
+          value={value}
+          changeHandle={handleChange}
+        />
 
-      <StyledButton
-        clickHandle={handleAddNewClick}
-        Icon={AddIcon}
-      />
-    </div>
+        <StyledButton
+          clickHandle={handleAddNewClick}
+          Icon={AddIcon}
+        />
+      </div>
 
-    {valueList != null && valueList.map(item => {
-      return <Card
-        key={item.id}
-        id={item.id}
-        title={item.asText}
-        deleteClickHandle={handleDeleteClick}
-        date={item.lastDate}
-      />
-    })}
-  </main>
+      {valueList != null && valueList.map(item => {
+        return <Card
+          key={item.id}
+          id={item.id}
+          title={item.asText}
+          editClickHandle={handleEditClick}
+          deleteClickHandle={handleDeleteClick}
+          date={item.lastDate}
+        />
+      })}
+    </main>
+  </>
 }
 
 const styles: { [key: string]: React.CSSProperties } = {
