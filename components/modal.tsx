@@ -3,24 +3,21 @@ import React from "react"
 import { FaTimes as CloseIcon } from 'react-icons/fa'
 
 import StyledButton from "./button"
+import { useModal } from "../utils/hook/modalhook";
 
 interface CardProps {
   children?: React.ReactNode;
+  closeModal: () => void;
   title: string;
-  isOpen: boolean;
-  setIsOpen: (mewValue: boolean) => void;
 }
 
-export default function Modal({ children, isOpen, setIsOpen, title }: CardProps) {
-  if (!isOpen)
-    return null
-
+export default function Modal({ children, closeModal, title }: CardProps) {
   return <div style={styles.overlay}>
     <div style={styles.modal}>
       <div style={styles.titleRow}>
         <h6 style={styles.title}>{title}</h6>
         <StyledButton
-          clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => setIsOpen(false)}
+          clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => closeModal()}
           Icon={CloseIcon}
           isClickableIcon
         />
