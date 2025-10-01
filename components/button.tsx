@@ -6,20 +6,32 @@ import { IconType } from 'react-icons'
 interface StyledButtonProps {
   children?: React.ReactNode;
   clickHandle: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  Icon: IconType | null;
+  Icon?: IconType | null;
   isClickableIcon?: boolean;
+  width?: string;
+  enabled?: boolean;
 }
 
-export default function StyledButton({ children, clickHandle, Icon = null, isClickableIcon = false }: StyledButtonProps) {
-  return (
-    <button
-      onClick={clickHandle}
-      style={isClickableIcon ? styles.clickableIcon : styles.button}
-    >
-      {children}
-      {Icon != null && <Icon />}
-    </button>
-  )
+export default function StyledButton({ children, clickHandle, Icon = null, isClickableIcon = false, width = '', enabled = true }: StyledButtonProps) {
+  let style = isClickableIcon ? styles.clickableIcon : styles.button
+
+  if (width != '')
+    style = { ...style, width: width }
+
+  if (!enabled) {
+    if (isClickableIcon)
+      style = { ...style, color: '#696969ff' }
+    else
+      style = { ...style, backgroundColor: '#696969ff' }
+  }
+
+  return <button
+    onClick={enabled ? clickHandle : () => { }}
+    style={style}
+  >
+    {children}
+    {Icon != null && <Icon />}
+  </button>
 }
 
 

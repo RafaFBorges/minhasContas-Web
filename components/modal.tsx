@@ -2,19 +2,20 @@ import React from "react"
 
 import { FaTimes as CloseIcon } from 'react-icons/fa'
 
-import StyledButton from "./button"
-import { useModal } from "../utils/hook/modalhook";
+import StyledButton from './button'
+import { ModalFormProps } from '@/app/ModalPagePropsInterface'
 
-interface CardProps {
-  children?: React.ReactNode;
+interface ModalProps extends ModalFormProps {
+  children: React.ReactNode;
   closeModal: () => void;
   title: string;
+  data: object;
 }
 
-export default function Modal({ children, closeModal, title }: CardProps) {
+export default function Modal({ children, closeModal, title, enabledVerify = true, onAccept = null, data = {} }: ModalProps) {
   return <div style={styles.overlay}>
     <div style={styles.modal}>
-      <div style={styles.titleRow}>
+      <div style={{ ...styles.titleRow, margin: '0 0 0.5rem 0' }}>
         <h6 style={styles.title}>{title}</h6>
         <StyledButton
           clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => closeModal()}
@@ -22,7 +23,29 @@ export default function Modal({ children, closeModal, title }: CardProps) {
           isClickableIcon
         />
       </div>
-      {children}
+      <div style={styles.content}>
+        {children}
+      </div>
+      <div style={{ ...styles.titleRow, margin: '0.5rem 0 0 0' }}>
+        <StyledButton
+          clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => closeModal()}
+          width='40%'
+        >
+          Cancelar
+        </StyledButton>
+        <StyledButton
+          clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => {
+            if (onAccept != null)
+              onAccept(data)
+
+            closeModal()
+          }}
+          width='40%'
+          enabled={enabledVerify}
+        >
+          Salvar
+        </StyledButton>
+      </div>
     </div>
   </div>
 }
@@ -42,21 +65,22 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   modal: {
     position: 'absolute',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
     width: '300px',
-    height: '200px',
     padding: '0.4em',
     backgroundColor: '#fff',
     borderRadius: '8px',
     boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
     overflow: 'hidden',
-    marginTop: '2rem',
   },
   content: {
-    padding: '1rem',
+    flexGrow: '1',
+    width: '100%',
   },
   titleRow: {
     display: 'flex',
-    margin: '0 0 0.5rem 0',
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',

@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
-import { ModalProvider } from "../../utils/hook/modalhook"
+import { ModalProvider } from "../../utils/hook/modalHook"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

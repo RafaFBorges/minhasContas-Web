@@ -90,3 +90,37 @@ export async function handleDELETE(endpoint: string) {
     return false
   }
 }
+
+export async function handlePUT(endpoint: string, body: object) {
+  try {
+    console.log("handlePUT : [start] endpoint=" + SERVER_PATH + endpoint)
+
+    const response = await fetch(SERVER_PATH + endpoint, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body)
+    })
+
+    if (!response.ok)
+      throw new Error("Erro HTTP: " + response.status)
+
+    const data = await response.json()
+
+    let logMessage = "handlePUT : [request send]"
+    if (!data)
+      logMessage += 'empty data'
+    else if (Array.isArray(data))
+      logMessage += 'Count=' + data.length
+    else if (typeof data === "object")
+      logMessage += 'ObjectKeysCount=' + Object.keys(data).length
+    else
+      logMessage += 'Unexpected response type'
+    console.log(logMessage)
+
+    return data
+  } catch (err) {
+    return Response.json({ error: "Erro ao processar" }, { status: 400 });
+  }
+}

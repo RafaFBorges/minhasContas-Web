@@ -27,7 +27,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: '0.5rem',
     fontSize: '1rem',
     borderRadius: '4px',
-    marginRight: '1rem',
     border: '1px solid #ccc',
     boxSizing: 'border-box',
   },
