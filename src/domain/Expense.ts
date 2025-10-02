@@ -28,7 +28,11 @@ export class Expense {
   }
 
   set date(newDate: Date) {
-    this.__dates.push(newDate)
+    let newValue: string | Date = newDate
+    if (typeof newDate === 'string')
+      newValue = new Date(newValue)
+
+    this.__dates.push(newValue)
   }
 
   get lastDate(): string {

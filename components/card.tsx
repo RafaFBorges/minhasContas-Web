@@ -1,28 +1,38 @@
 import React from "react"
 
-import { FaTrash as DeleteIcon } from 'react-icons/fa'
+import { FaTrash as DeleteIcon, FaEdit as EditIcon } from 'react-icons/fa'
 
 import StyledButton from "./button"
 
 interface CardProps {
-  title: number | string;
+  title: string;
   date: string;
   id: number;
-  deleteClickHandle?: (index: number) => void;
+  editClickHandle?: null | ((index: number) => void);
+  deleteClickHandle?: null | ((index: number) => void);
 }
 
-export default function Card({ title, date, id = -1, deleteClickHandle = () => { } }: CardProps) {
+export default function Card({ title, date, id = -1, editClickHandle = null, deleteClickHandle = null }: CardProps) {
   return <div style={styles.card}>
     <div style={styles.content}>
       <div style={styles.flexRow}>
         <h6 style={styles.title}>{title}</h6>
-        {deleteClickHandle != null &&
-          <StyledButton
-            clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => deleteClickHandle(id)}
-            Icon={DeleteIcon}
-            isClickableIcon
-          />
-        }
+        <div style={styles.buttonsArea}>
+          {editClickHandle != null &&
+            <StyledButton
+              clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => editClickHandle(id)}
+              Icon={EditIcon}
+              isClickableIcon
+            />
+          }
+          {deleteClickHandle != null &&
+            <StyledButton
+              clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => deleteClickHandle(id)}
+              Icon={DeleteIcon}
+              isClickableIcon
+            />
+          }
+        </div>
       </div>
       <p style={styles.date}>{date}</p>
     </div>
@@ -52,6 +62,12 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   title: {
     fontSize: '1.25rem',
+  },
+  buttonsArea: {
+    display: 'flex',
+    gap: '0.4em',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   date: {
     margin: '0 0 1rem 0',
