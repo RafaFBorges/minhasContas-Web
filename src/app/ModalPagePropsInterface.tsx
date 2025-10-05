@@ -1,8 +1,8 @@
-export default interface ModalContentProps {
-  enabledVerify: (((item: any) => boolean) | null);
+export default interface ModalContentProps<T> {
+  enabledVerify: (((item: T) => boolean) | null);
 }
 
 export interface ModalFormProps {
-  onAccept: ((item: any) => void) | null;
+  onAccept: ((item: unknown) => void) | null;
   enabledVerify: boolean;
 }

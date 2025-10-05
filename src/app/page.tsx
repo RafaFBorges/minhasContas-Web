@@ -40,8 +40,8 @@ export default function Home() {
       setValueList(valueList.filter(expense => expense.id !== index))
   }
 
-  const handleEditExpense = async (item: any, expense: Expense) => {
-    if (item['value'] != null) {
+  const handleEditExpense = async (item: unknown, expense: Expense) => {
+    if (item != null && typeof item === 'object' && 'value' in item && item['value'] != null) {
       const response = await handlePUT(EXPENSES_ENDPOINT + '/' + expense.id, { "value": item['value'], "date": new Date() })
 
       if (response != null) {
@@ -60,7 +60,7 @@ export default function Home() {
   }
 
   const handleEditClick = (expense: Expense) => {
-    openModal('Editar despesa', () => expenseEditContent(expense), (item: any) => handleEditExpense(item, expense), true)
+    openModal('Editar despesa', () => expenseEditContent(expense), (item: unknown) => handleEditExpense(item, expense), true)
   }
 
   async function SyncExpenses() {

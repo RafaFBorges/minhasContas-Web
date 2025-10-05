@@ -6,7 +6,7 @@ import StyledInput from '../../components/input'
 import ModalContentProps from './ModalPagePropsInterface'
 import { useModal } from '../../utils/hook/modalHook'
 
-interface ExpenseConfigurationProps extends ModalContentProps {
+interface ExpenseConfigurationProps extends ModalContentProps<number> {
   oldValue: number;
 }
 
