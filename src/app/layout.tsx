@@ -1,7 +1,8 @@
-import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
-import "./globals.css"
-import { ModalProvider } from "../../utils/hook/modalHook"
+import type { Metadata } from 'next'
+import { Geist, Geist_Mono } from 'next/font/google'
+import './globals.css'
+import { ModalProvider } from '../../utils/hook/modalHook'
+import { ThemeProvider } from '../../utils/hook/themeHook'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,9 +27,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <ModalProvider>
-          {children}
-        </ModalProvider>
+        <ThemeProvider>
+          <ModalProvider>
+            {children}
+          </ModalProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

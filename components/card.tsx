@@ -1,8 +1,8 @@
-import React from "react"
+import React from 'react'
 
 import { FaTrash as DeleteIcon, FaEdit as EditIcon } from 'react-icons/fa'
 
-import StyledButton from "./button"
+import ThemeButton from './themeButton'
 
 interface CardProps {
   title: string;
@@ -19,14 +19,14 @@ export default function Card({ title, date, id = -1, editClickHandle = null, del
         <h6 style={styles.title}>{title}</h6>
         <div style={styles.buttonsArea}>
           {editClickHandle != null &&
-            <StyledButton
+            <ThemeButton
               clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => editClickHandle(id)}
               Icon={EditIcon}
               isClickableIcon
             />
           }
           {deleteClickHandle != null &&
-            <StyledButton
+            <ThemeButton
               clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => deleteClickHandle(id)}
               Icon={DeleteIcon}
               isClickableIcon

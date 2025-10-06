@@ -1,9 +1,9 @@
-import React from "react"
+import React from 'react'
 
 import { FaTimes as CloseIcon } from 'react-icons/fa'
 
-import StyledButton from './button'
 import { ModalFormProps } from '@/app/ModalPagePropsInterface'
+import ThemeButton from './themeButton'
 
 interface ModalProps extends ModalFormProps {
   children: React.ReactNode;
@@ -17,7 +17,7 @@ export default function Modal({ children, closeModal, title, enabledVerify = tru
     <div style={styles.modal}>
       <div style={{ ...styles.titleRow, margin: '0 0 0.5rem 0' }}>
         <h6 style={styles.title}>{title}</h6>
-        <StyledButton
+        <ThemeButton
           clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => closeModal()}
           Icon={CloseIcon}
           isClickableIcon
@@ -27,13 +27,13 @@ export default function Modal({ children, closeModal, title, enabledVerify = tru
         {children}
       </div>
       <div style={{ ...styles.titleRow, margin: '0.5rem 0 0 0' }}>
-        <StyledButton
+        <ThemeButton
           clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => closeModal()}
           width='40%'
         >
           Cancelar
-        </StyledButton>
-        <StyledButton
+        </ThemeButton>
+        <ThemeButton
           clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => {
             if (onAccept != null)
               onAccept(data)
@@ -44,7 +44,7 @@ export default function Modal({ children, closeModal, title, enabledVerify = tru
           enabled={enabledVerify}
         >
           Salvar
-        </StyledButton>
+        </ThemeButton>
       </div>
     </div>
   </div>

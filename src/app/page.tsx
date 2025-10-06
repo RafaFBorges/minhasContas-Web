@@ -7,11 +7,11 @@ import { FaPlus as AddIcon } from 'react-icons/fa'
 import { EXPENSES_ENDPOINT, handleDELETE, handleGET, handlePOST, handlePUT } from '@/comunication/ApiResthandler'
 import { ExpenseResponse } from '@/comunication/expense'
 import { Expense } from '@/domain/Expense'
-import StyledButton from '../../components/button'
 import Card from '../../components/card'
 import StyledInput from '../../components/input'
 import { useModal } from '../../utils/hook/modalHook'
 import ExpenseConfiguration from './ExpenseConfiguration'
+import ThemeButton from '../../components/themeButton'
 
 
 export default function Home() {
@@ -84,7 +84,7 @@ export default function Home() {
     SyncExpenses()
   }, [])
 
-  return <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
+  return <main style={styles.page}>
     <h1>Minhas Contas</h1>
     <h3>Despesas</h3>
 
@@ -96,7 +96,7 @@ export default function Home() {
         changeHandle={handleChange}
       />
 
-      <StyledButton
+      <ThemeButton
         clickHandle={handleAddNewClick}
         Icon={AddIcon}
       />
@@ -116,10 +116,8 @@ export default function Home() {
 
 const styles: { [key: string]: React.CSSProperties } = {
   page: {
-    padding: '2rem',
+    padding: '0em 2em 2em 2rem',
     fontFamily: 'sans-serif',
-    backgroundColor: '#f0f0f0',
-    minHeight: '100vh',
   },
   flexRow: {
     display: 'flex',
