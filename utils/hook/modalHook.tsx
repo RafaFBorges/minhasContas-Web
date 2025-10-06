@@ -5,19 +5,19 @@ import Modal from '../../components/modal'
 
 interface ModalContextType {
   isOpen: boolean;
-  openModal: (title: string, content?: (() => ReactNode) | null, onAccept?: (((item: any) => void) | null), hasEnabledVerify?: boolean) => void;
+  openModal: (title: string, content?: (() => ReactNode) | null, onAccept?: (((item: unknown) => void) | null), hasEnabledVerify?: boolean) => void;
   closeModal: () => void;
   setEnabledSave: (newState: boolean) => void;
 
   title: string;
   setTitle: (title: string) => void;
-  setData: (key: string, value: any) => void
+  setData: (key: string, value: unknown) => void
 }
 
 interface ModalStateType {
   content: (() => ReactNode) | null;
-  onAccept: (((item: any) => void) | null);
-  data: Record<string, any>;
+  onAccept: (((item: unknown) => void) | null);
+  data: Record<string, unknown>;
 }
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined)
@@ -40,12 +40,12 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     setIsOpen(false)
   }
 
-  function setData(key: string, value: any) {
+  function setData(key: string, value: unknown) {
     if (contentRef != null && contentRef.current != null && contentRef.current.data != null)
       contentRef.current.data[key] = value
   }
 
-  function openModal(title: string, content: ((() => ReactNode) | null) = null, onAccept: (((item: any) => void) | null) = null, hasEnabledVerify = false) {
+  function openModal(title: string, content: ((() => ReactNode) | null) = null, onAccept: (((item: unknown) => void) | null) = null, hasEnabledVerify = false) {
     setTitle(title)
     setIsOpen(true)
     contentRef.current = {
