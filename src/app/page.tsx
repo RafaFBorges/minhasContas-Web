@@ -1,18 +1,24 @@
 'use client'
 
-import { EXPENSES_ENDPOINT, handleDELETE, handleGET, handlePOST } from '@/comunication/ApiResthandler'
+import React, { useEffect, useState } from 'react'
+
+import { FaPlus as AddIcon } from 'react-icons/fa'
+
+import { EXPENSES_ENDPOINT, handleDELETE, handleGET, handlePOST, handlePUT } from '@/comunication/ApiResthandler'
+import { ExpenseResponse } from '@/comunication/expense'
+import { Expense } from '@/domain/Expense'
 import StyledButton from '../../components/button'
 import Card from '../../components/card'
 import StyledInput from '../../components/input'
-import { ExpenseResponse } from '@/comunication/expense'
-import { Expense } from '@/domain/Expense'
-import React, { useEffect, useState } from 'react'
-import { FaPlus as AddIcon } from 'react-icons/fa'
+import { useModal } from '../../utils/hook/modalHook'
+import ExpenseConfiguration from './ExpenseConfiguration'
 
 
 export default function Home() {
   const [value, setValue] = useState<number>(0)
   const [valueList, setValueList] = useState<Expense[]>([])
+
+  const { openModal } = useModal()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const parsed: number = parseFloat(e.target.value)
@@ -32,6 +38,29 @@ export default function Home() {
     const wasDeleted: boolean = await handleDELETE(EXPENSES_ENDPOINT + '/' + index)
     if (wasDeleted)
       setValueList(valueList.filter(expense => expense.id !== index))
+  }
+
+  const handleEditExpense = async (item: unknown, expense: Expense) => {
+    if (item != null && typeof item === 'object' && 'value' in item && item['value'] != null) {
+      const response = await handlePUT(EXPENSES_ENDPOINT + '/' + expense.id, { "value": item['value'], "date": new Date() })
+
+      if (response != null) {
+        expense.value = response.value
+        expense.date = response.lastDate
+        setValueList([...valueList])
+      }
+    }
+  }
+
+  const expenseEditContent = (expense: Expense) => {
+    return <ExpenseConfiguration
+      oldValue={expense.value}
+      enabledVerify={(item: number) => expense.value != item}
+    />
+  }
+
+  const handleEditClick = (expense: Expense) => {
+    openModal('Editar despesa', () => expenseEditContent(expense), (item: unknown) => handleEditExpense(item, expense), true)
   }
 
   async function SyncExpenses() {
@@ -59,7 +88,7 @@ export default function Home() {
     <h1>Minhas Contas</h1>
     <h3>Despesas</h3>
 
-    <div style={styles.flexRow}>
+    <div style={{ ...styles.flexRow, gap: '1rem' }}>
       <StyledInput
         type={'number'}
         name={'expenseValue'}
@@ -72,12 +101,12 @@ export default function Home() {
         Icon={AddIcon}
       />
     </div>
-
     {valueList != null && valueList.map(item => {
       return <Card
         key={item.id}
         id={item.id}
-        title={item.value}
+        title={item.asText}
+        editClickHandle={() => handleEditClick(item)}
         deleteClickHandle={handleDeleteClick}
         date={item.lastDate}
       />
