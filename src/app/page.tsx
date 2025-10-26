@@ -12,6 +12,7 @@ import StyledInput from '../../components/input'
 import { useModal } from '../../utils/hook/modalHook'
 import ExpenseConfiguration from './ExpenseConfiguration'
 import ThemeButton from '../../components/themeButton'
+import Text, { TextTag } from '../../components/text'
 
 
 export default function Home() {
@@ -85,8 +86,8 @@ export default function Home() {
   }, [])
 
   return <main style={styles.page}>
-    <h1>Minhas Contas</h1>
-    <h3>Despesas</h3>
+    <Text textTag={TextTag.H1}>Minhas Contas</Text>
+    <Text textTag={TextTag.H3}>Despesas</Text>
 
     <div style={{ ...styles.flexRow, gap: '1rem' }}>
       <StyledInput

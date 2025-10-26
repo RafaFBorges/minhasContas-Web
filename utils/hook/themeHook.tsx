@@ -1,9 +1,20 @@
 "use client"
 
 import { createContext, useContext, ReactNode, useState } from 'react'
-
+import { Geist, Geist_Mono } from 'next/font/google'
 import { FaPaintBrush } from 'react-icons/fa'
+
 import ThemeButton from '../../components/themeButton'
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+})
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+})
 
 interface ThemeContextType {
   setTheme: (newTheme: ThemeOptions) => void;
@@ -14,6 +25,7 @@ export interface ThemeStyleProps {
   color: string;
   backgroundColor: string;
   fontSize: string | number;
+  fontColor: string;
 }
 
 export enum ThemeOptions {
@@ -31,28 +43,30 @@ export function useTheme() {
   return context
 }
 
+const LIGHT_CONFIG = {
+  color: '#0070f3',
+  backgroundColor: '#fff',
+  fontSize: '16',
+  fontColor: '#121212ff',
+}
+
+const DARK_CONFIG = {
+  color: '#328f16ff',
+  backgroundColor: '#121212ff',
+  fontSize: '16',
+  fontColor: '#fff',
+}
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [settedTheme, setSettedTheme] = useState<ThemeOptions>(ThemeOptions.LIGHT)
-  const [config, setConfig] = useState<ThemeStyleProps>({
-    color: '#328f16ff',
-    backgroundColor: '#0070f3',
-    fontSize: '16',
-  })
+  const [config, setConfig] = useState<ThemeStyleProps>(LIGHT_CONFIG)
 
   function setLightTheme() {
-    setConfig({
-      color: '#0070f3',
-      backgroundColor: '#fff',
-      fontSize: '16',
-    })
+    setConfig(LIGHT_CONFIG)
   }
 
   function setDarkTheme() {
-    setConfig({
-      color: '#328f16ff',
-      backgroundColor: '#3a3a3aff',
-      fontSize: '16',
-    })
+    setConfig(DARK_CONFIG)
   }
 
   function setTheme(newTheme: ThemeOptions) {
@@ -72,21 +86,23 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       config,
     }}
   >
-    <div style={styles.row}>
-      <ThemeButton
-        isSecondary
-        borderRadius='8px'
-        iconSize='16'
-        clickHandle={() => {
-          if (settedTheme == ThemeOptions.LIGHT)
-            setTheme(ThemeOptions.DARK)
-          else
-            setTheme(ThemeOptions.LIGHT)
-        }}
-        Icon={FaPaintBrush}
-      />
-    </div>
-    {children}
+    <body className={`${geistSans.variable} ${geistMono.variable}`} style={{ backgroundColor: config.backgroundColor }}>
+      <div style={styles.row}>
+        <ThemeButton
+          isSecondary
+          borderRadius='8px'
+          iconSize='16'
+          clickHandle={() => {
+            if (settedTheme == ThemeOptions.LIGHT)
+              setTheme(ThemeOptions.DARK)
+            else
+              setTheme(ThemeOptions.LIGHT)
+          }}
+          Icon={FaPaintBrush}
+        />
+      </div>
+      {children}
+    </body>
   </ThemeContext.Provider>
 }
 
