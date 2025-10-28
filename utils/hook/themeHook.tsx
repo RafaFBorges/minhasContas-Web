@@ -26,6 +26,7 @@ export interface ThemeStyleProps {
   backgroundColor: string;
   fontSize: string | number;
   fontColor: string;
+  cardBackground: string;
 }
 
 export enum ThemeOptions {
@@ -48,6 +49,7 @@ const LIGHT_CONFIG = {
   backgroundColor: '#fff',
   fontSize: '16',
   fontColor: '#121212ff',
+  cardBackground: '#fff',
 }
 
 const DARK_CONFIG = {
@@ -55,6 +57,7 @@ const DARK_CONFIG = {
   backgroundColor: '#121212ff',
   fontSize: '16',
   fontColor: '#fff',
+  cardBackground: '#1d1d1d',
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {

@@ -7,7 +7,7 @@ import { FaPlus as AddIcon } from 'react-icons/fa'
 import { EXPENSES_ENDPOINT, handleDELETE, handleGET, handlePOST, handlePUT } from '@/comunication/ApiResthandler'
 import { ExpenseResponse } from '@/comunication/expense'
 import { Expense } from '@/domain/Expense'
-import Card from '../../components/card'
+import ThemeCard from '../../components/themeCard'
 import StyledInput from '../../components/input'
 import { useModal } from '../../utils/hook/modalHook'
 import ExpenseConfiguration from './ExpenseConfiguration'
@@ -103,7 +103,7 @@ export default function Home() {
       />
     </div>
     {valueList != null && valueList.map(item => {
-      return <Card
+      return <ThemeCard
         key={item.id}
         id={item.id}
         title={item.asText}

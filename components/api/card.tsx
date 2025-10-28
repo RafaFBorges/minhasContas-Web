@@ -2,21 +2,27 @@ import React from 'react'
 
 import { FaTrash as DeleteIcon, FaEdit as EditIcon } from 'react-icons/fa'
 
-import ThemeButton from './themeButton'
+import ThemeButton from '../themeButton'
+import Text, { TextTag } from '../text';
 
-interface CardProps {
+export interface CardProps {
   title: string;
   date: string;
   id: number;
   editClickHandle?: null | ((index: number) => void);
   deleteClickHandle?: null | ((index: number) => void);
+  backgroundColor?: string;
 }
 
-export default function Card({ title, date, id = -1, editClickHandle = null, deleteClickHandle = null }: CardProps) {
-  return <div style={styles.card}>
+export default function Card({ title, date, id = -1, editClickHandle = null, deleteClickHandle = null, backgroundColor = '' }: CardProps) {
+  let style = styles.card
+  if (backgroundColor != '')
+    style = { ...style, backgroundColor: backgroundColor }
+
+  return <div style={style}>
     <div style={styles.content}>
       <div style={styles.flexRow}>
-        <h6 style={styles.title}>{title}</h6>
+        <Text textTag={TextTag.H6} style={styles.title}>{title}</Text>
         <div style={styles.buttonsArea}>
           {editClickHandle != null &&
             <ThemeButton
@@ -41,7 +47,6 @@ export default function Card({ title, date, id = -1, editClickHandle = null, del
 
 const styles: { [key: string]: React.CSSProperties } = {
   card: {
-    backgroundColor: '#fff',
     borderRadius: '8px',
     boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
     overflow: 'hidden',

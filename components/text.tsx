@@ -15,10 +15,16 @@ export enum TextTag {
 interface TextProps {
   children: React.ReactNode;
   textTag?: TextTag;
+  style?: { [key: string]: React.CSSProperties } | null;
 }
 
-export default function Text({ children, textTag = TextTag.P }: TextProps) {
+export default function Text({ children, textTag = TextTag.P, style = null }: TextProps) {
   const { config } = useTheme()
 
-  return React.createElement(textTag, { style: { color: config.fontColor } }, children)
+  let textStyle = {}
+  if (style != null)
+    textStyle = style
+
+  textStyle = { ...textStyle, color: config.fontColor }
+  return React.createElement(textTag, { style: textStyle }, children)
 }
