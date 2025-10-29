@@ -40,7 +40,7 @@ export default function Card({ title, date, id = -1, editClickHandle = null, del
           }
         </div>
       </div>
-      <p style={styles.date}>{date}</p>
+      <Text textTag={TextTag.P} style={styles.date} disabled>{date}</Text>
     </div>
   </div>
 }
@@ -77,6 +77,5 @@ const styles: { [key: string]: React.CSSProperties } = {
   date: {
     margin: '0 0 1rem 0',
     fontSize: '1rem',
-    color: '#555',
   },
 }

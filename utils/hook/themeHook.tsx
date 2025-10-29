@@ -26,6 +26,7 @@ export interface ThemeStyleProps {
   backgroundColor: string;
   fontSize: string | number;
   fontColor: string;
+  disabledFontColor: string;
   cardBackground: string;
 }
 
@@ -49,6 +50,7 @@ const LIGHT_CONFIG = {
   backgroundColor: '#fff',
   fontSize: '16',
   fontColor: '#121212ff',
+  disabledFontColor: '#555',
   cardBackground: '#fff',
 }
 
@@ -57,6 +59,7 @@ const DARK_CONFIG = {
   backgroundColor: '#121212ff',
   fontSize: '16',
   fontColor: '#fff',
+  disabledFontColor: '#808080',
   cardBackground: '#1d1d1d',
 }
 
