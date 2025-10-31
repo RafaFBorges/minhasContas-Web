@@ -40,7 +40,7 @@ export default function StyledButton({
 
   if (!enabled) {
     if (isClickableIcon)
-      style = { ...style, color: '#696969ff' }
+      style = { ...style, color: '#696969ff' } 
     else
       style = { ...style, backgroundColor: '#696969ff' }
   }
