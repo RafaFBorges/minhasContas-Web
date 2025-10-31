@@ -2,9 +2,10 @@
 
 import { createContext, useContext, ReactNode, useState } from 'react'
 import { Geist, Geist_Mono } from 'next/font/google'
-import { FaPaintBrush } from 'react-icons/fa'
+import { FaPaintBrush as ThemeIcon, FaGlobe as LanguageIcon } from 'react-icons/fa'
 
 import ThemeButton from '../../components/themeButton'
+import { LanguageOption, useTranslate } from './translateHook'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -66,6 +67,7 @@ const DARK_CONFIG = {
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [settedTheme, setSettedTheme] = useState<ThemeOptions>(ThemeOptions.LIGHT)
   const [config, setConfig] = useState<ThemeStyleProps>(LIGHT_CONFIG)
+  const { language, setLang } = useTranslate()
 
   function setLightTheme() {
     setConfig(LIGHT_CONFIG)
@@ -99,12 +101,24 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
           borderRadius='8px'
           iconSize='16'
           clickHandle={() => {
+            if (language == LanguageOption.PT_BR)
+              setLang(LanguageOption.EN)
+            else
+              setLang(LanguageOption.PT_BR)
+          }}
+          Icon={LanguageIcon}
+        />
+        <ThemeButton
+          isSecondary
+          borderRadius='8px'
+          iconSize='16'
+          clickHandle={() => {
             if (settedTheme == ThemeOptions.LIGHT)
               setTheme(ThemeOptions.DARK)
             else
               setTheme(ThemeOptions.LIGHT)
           }}
-          Icon={FaPaintBrush}
+          Icon={ThemeIcon}
         />
       </div>
       {children}
@@ -116,6 +130,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   row: {
     width: '100%',
     display: 'flex',
+    gap: '0.5em',
     padding: '0.4em',
     alignItems: 'center',
     justifyContent: 'flex-end',
