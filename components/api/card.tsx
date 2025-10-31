@@ -3,7 +3,7 @@ import React from 'react'
 import { FaTrash as DeleteIcon, FaEdit as EditIcon } from 'react-icons/fa'
 
 import ThemeButton from '../themeButton'
-import Text, { TextTag } from '../text';
+import Text, { TextTag } from '../text'
 
 export interface CardProps {
   title: string;
@@ -22,7 +22,7 @@ export default function Card({ title, date, id = -1, editClickHandle = null, del
   return <div style={style}>
     <div style={styles.content}>
       <div style={styles.flexRow}>
-        <Text textTag={TextTag.H6} style={styles.title}>{title}</Text>
+        <Text textTag={TextTag.H6} style={styles.title} noWrap>{title}</Text>
         <div style={styles.buttonsArea}>
           {editClickHandle != null &&
             <ThemeButton
@@ -58,6 +58,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   flexRow: {
     display: 'flex',
+    gap: '0.5em',
     margin: '0 0 0.5rem 0',
     justifyContent: 'space-between',
     alignItems: 'center',
