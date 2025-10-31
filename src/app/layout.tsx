@@ -1,17 +1,7 @@
-import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
-import "./globals.css"
-import { ModalProvider } from "../../utils/hook/modalHook"
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-})
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-})
+import type { Metadata } from 'next'
+import './globals.css'
+import { ModalProvider } from '../../utils/hook/modalHook'
+import { ThemeProvider } from '../../utils/hook/themeHook'
 
 export const metadata: Metadata = {
   title: "Minhas Contas",
@@ -25,11 +15,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <ThemeProvider>
         <ModalProvider>
           {children}
         </ModalProvider>
-      </body>
+      </ThemeProvider>
     </html>
   )
 }

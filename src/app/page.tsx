@@ -7,11 +7,12 @@ import { FaPlus as AddIcon } from 'react-icons/fa'
 import { EXPENSES_ENDPOINT, handleDELETE, handleGET, handlePOST, handlePUT } from '@/comunication/ApiResthandler'
 import { ExpenseResponse } from '@/comunication/expense'
 import { Expense } from '@/domain/Expense'
-import StyledButton from '../../components/button'
-import Card from '../../components/card'
+import ThemeCard from '../../components/themeCard'
 import StyledInput from '../../components/input'
 import { useModal } from '../../utils/hook/modalHook'
 import ExpenseConfiguration from './ExpenseConfiguration'
+import ThemeButton from '../../components/themeButton'
+import Text, { TextTag } from '../../components/text'
 
 
 export default function Home() {
@@ -84,9 +85,9 @@ export default function Home() {
     SyncExpenses()
   }, [])
 
-  return <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
-    <h1>Minhas Contas</h1>
-    <h3>Despesas</h3>
+  return <main style={styles.page}>
+    <Text textTag={TextTag.H1}>Minhas Contas</Text>
+    <Text textTag={TextTag.H3}>Despesas</Text>
 
     <div style={{ ...styles.flexRow, gap: '1rem' }}>
       <StyledInput
@@ -96,13 +97,13 @@ export default function Home() {
         changeHandle={handleChange}
       />
 
-      <StyledButton
+      <ThemeButton
         clickHandle={handleAddNewClick}
         Icon={AddIcon}
       />
     </div>
     {valueList != null && valueList.map(item => {
-      return <Card
+      return <ThemeCard
         key={item.id}
         id={item.id}
         title={item.asText}
@@ -116,10 +117,8 @@ export default function Home() {
 
 const styles: { [key: string]: React.CSSProperties } = {
   page: {
-    padding: '2rem',
+    padding: '0em 2em 2em 2rem',
     fontFamily: 'sans-serif',
-    backgroundColor: '#f0f0f0',
-    minHeight: '100vh',
   },
   flexRow: {
     display: 'flex',
