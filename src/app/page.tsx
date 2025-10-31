@@ -13,6 +13,7 @@ import { useModal } from '../../utils/hook/modalHook'
 import ExpenseConfiguration from './ExpenseConfiguration'
 import ThemeButton from '../../components/themeButton'
 import Text, { TextTag } from '../../components/text'
+import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
 
 
 export default function Home() {
@@ -20,12 +21,20 @@ export default function Home() {
   const [valueList, setValueList] = useState<Expense[]>([])
 
   const { openModal } = useModal()
+  const { addKey, getValue } = useTranslate()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const parsed: number = parseFloat(e.target.value)
 
     if (!isNaN(parsed))
       setValue(parsed)
+  }
+
+  function translate() {
+    addKey('title', 'Minhas Contas', LanguageOption.PT_BR)
+    addKey('subTitle', 'Despesas', LanguageOption.PT_BR)
+    addKey('title', 'My Finances', LanguageOption.EN)
+    addKey('subTitle', 'Expenses', LanguageOption.EN)
   }
 
   const handleAddNewClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -81,13 +90,15 @@ export default function Home() {
     }
   }
 
+  translate()
+
   useEffect(() => {
     SyncExpenses()
   }, [])
 
   return <main style={styles.page}>
-    <Text textTag={TextTag.H1}>Minhas Contas</Text>
-    <Text textTag={TextTag.H3}>Despesas</Text>
+    <Text textTag={TextTag.H1}>{getValue('title')}</Text>
+    <Text textTag={TextTag.H3}>{getValue('subTitle')}</Text>
 
     <div style={{ ...styles.flexRow, gap: '1rem' }}>
       <StyledInput
