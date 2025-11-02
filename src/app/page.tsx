@@ -8,11 +8,11 @@ import { EXPENSES_ENDPOINT, handleDELETE, handleGET, handlePOST, handlePUT } fro
 import { ExpenseResponse } from '@/comunication/expense'
 import { Expense } from '@/domain/Expense'
 import ThemeCard from '../../components/themeCard'
-import StyledInput from '../../components/input'
 import { useModal } from '../../utils/hook/modalHook'
 import ExpenseConfiguration from './ExpenseConfiguration'
 import ThemeButton from '../../components/themeButton'
 import Text, { TextTag } from '../../components/text'
+import Spin from '../../components/spin'
 
 
 export default function Home() {
@@ -90,11 +90,11 @@ export default function Home() {
     <Text textTag={TextTag.H3}>Despesas</Text>
 
     <div style={{ ...styles.flexRow, gap: '1rem' }}>
-      <StyledInput
-        type={'number'}
+      <Spin
         name={'expenseValue'}
         value={value}
         changeHandle={handleChange}
+        setValueHandle={setValue}
       />
 
       <ThemeButton
