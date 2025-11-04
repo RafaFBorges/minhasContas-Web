@@ -17,6 +17,7 @@ interface SpinProps {
   max?: number;
   min?: number;
   setValueHandle?: (newValue: number) => void;
+  height: number;
 }
 
 export default function Spin({
@@ -28,9 +29,10 @@ export default function Spin({
   style = null,
   max = MAX_VALUE,
   min = MIN_VALUE,
-  setValueHandle = () => { }
+  setValueHandle = () => { },
+  height = 36
 }: SpinProps) {
-  let spinStyle: React.CSSProperties = styles.spin
+  let spinStyle: React.CSSProperties = { ...styles.spin, height: height }
   if (style != null)
     spinStyle = { ...spinStyle, ...style }
 
@@ -56,7 +58,7 @@ export default function Spin({
       max={max}
       min={min}
     />
-    <div style={styles.buttonArea}>
+    <div style={{ ...styles.buttonArea, top: (height - 34) / 2}}>
       <ThemeButton
         clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => IconClick(1)}
         Icon={UpIcon}
@@ -74,15 +76,20 @@ export default function Spin({
 const styles: { [key: string]: React.CSSProperties } = {
   spin: {
     display: 'flex',
+    position: 'relative',
     width: '100%',
     border: 'none',
     borderRadius: '8px',
     boxSizing: 'border-box',
   },
   buttonArea: {
+    position: 'absolute',
     display: 'flex',
+    gap: 2,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
+    right: 4,
+    zIndex: 10,
   }
 }

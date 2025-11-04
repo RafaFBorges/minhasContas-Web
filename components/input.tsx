@@ -12,6 +12,7 @@ interface StyledInputProps {
   step?: number | null;
   max?: number;
   min?: number;
+  height?: number;
 }
 
 export default function StyledInput({
@@ -24,9 +25,10 @@ export default function StyledInput({
   style = null,
   step = null,
   max = MAX_VALUE,
-  min = MIN_VALUE
+  min = MIN_VALUE,
+  height = 36
 }: StyledInputProps) {
-  let inputStyle = styles.input
+  let inputStyle: React.CSSProperties = { ...styles.input, height: height }
   if (style != null)
     inputStyle = { ...inputStyle, ...style }
 
