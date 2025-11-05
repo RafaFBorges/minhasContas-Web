@@ -42,7 +42,7 @@ export function TranslateProvider({ children }: { children: ReactNode }) {
       throw new Error('Key has already setted.')
 
     const aLang: string = lang != '' ? lang : language
-    let newDict : TranslateType = { ...dictionary.current }
+    const newDict : TranslateType = { ...dictionary.current }
     newDict[`${aLang}_${key}`] = value
 
     dictionary.current = newDict
