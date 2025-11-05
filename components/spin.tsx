@@ -61,12 +61,12 @@ export default function Spin({
     />
     <div style={{ ...styles.buttonArea, top: (height - 34) / 2 }}>
       <ThemeButton
-        clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => IconClick(1)}
+        clickHandle={() => IconClick(1)}
         Icon={UpIcon}
         isClickableIcon
       />
       <ThemeButton
-        clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => IconClick(-1)}
+        clickHandle={() => IconClick(-1)}
         Icon={DownIcon}
         isClickableIcon
       />

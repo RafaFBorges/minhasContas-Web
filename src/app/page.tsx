@@ -37,7 +37,7 @@ export default function Home() {
     addKey('subTitle', 'Expenses', LanguageOption.EN)
   }
 
-  const handleAddNewClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleAddNewClick = async () => {
     const response = await handlePOST(EXPENSES_ENDPOINT, { "value": value, "date": new Date() })
 
     if (response != null)
