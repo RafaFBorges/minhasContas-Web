@@ -12,7 +12,6 @@ interface SpinProps {
   value: number | string;
   placeholder?: string;
   changeHandle: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  clickHandle?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   style?: React.CSSProperties | null;
   max?: number;
   min?: number;
@@ -25,7 +24,6 @@ export default function Spin({
   value,
   placeholder,
   changeHandle,
-  clickHandle,
   style = null,
   max = MAX_VALUE,
   min = MIN_VALUE,
@@ -61,12 +59,12 @@ export default function Spin({
     />
     <div style={{ ...styles.buttonArea, top: (height - 34) / 2 }}>
       <ThemeButton
-        clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => IconClick(1)}
+        clickHandle={() => IconClick(1)}
         Icon={UpIcon}
         isClickableIcon
       />
       <ThemeButton
-        clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => IconClick(-1)}
+        clickHandle={() => IconClick(-1)}
         Icon={DownIcon}
         isClickableIcon
       />

@@ -26,14 +26,14 @@ export default function Card({ title, date, id = -1, editClickHandle = null, del
         <div style={styles.buttonsArea}>
           {editClickHandle != null &&
             <ThemeButton
-              clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => editClickHandle(id)}
+              clickHandle={() => editClickHandle(id)}
               Icon={EditIcon}
               isClickableIcon
             />
           }
           {deleteClickHandle != null &&
             <ThemeButton
-              clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => deleteClickHandle(id)}
+              clickHandle={() => deleteClickHandle(id)}
               Icon={DeleteIcon}
               isClickableIcon
             />

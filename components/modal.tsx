@@ -18,7 +18,7 @@ export default function Modal({ children, closeModal, title, enabledVerify = tru
       <div style={{ ...styles.titleRow, margin: '0 0 0.5rem 0' }}>
         <h6 style={styles.title}>{title}</h6>
         <ThemeButton
-          clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => closeModal()}
+          clickHandle={() => closeModal()}
           Icon={CloseIcon}
           isClickableIcon
         />
@@ -28,13 +28,13 @@ export default function Modal({ children, closeModal, title, enabledVerify = tru
       </div>
       <div style={{ ...styles.titleRow, margin: '0.5rem 0 0 0' }}>
         <ThemeButton
-          clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => closeModal()}
+          clickHandle={() => closeModal()}
           width='40%'
         >
           Cancelar
         </ThemeButton>
         <ThemeButton
-          clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => {
+          clickHandle={() => {
             if (onAccept != null)
               onAccept(data)
 
