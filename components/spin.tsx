@@ -57,8 +57,9 @@ export default function Spin({
       style={style}
       max={max}
       min={min}
+      height={height}
     />
-    <div style={{ ...styles.buttonArea, top: (height - 34) / 2}}>
+    <div style={{ ...styles.buttonArea, top: (height - 34) / 2 }}>
       <ThemeButton
         clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => IconClick(1)}
         Icon={UpIcon}
