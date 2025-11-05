@@ -17,7 +17,7 @@ interface SpinProps {
   max?: number;
   min?: number;
   setValueHandle?: (newValue: number) => void;
-  height: number;
+  height?: number;
 }
 
 export default function Spin({
