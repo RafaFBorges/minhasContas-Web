@@ -12,7 +12,6 @@ interface SpinProps {
   value: number | string;
   placeholder?: string;
   changeHandle: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  clickHandle?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   style?: React.CSSProperties | null;
   max?: number;
   min?: number;
@@ -25,7 +24,6 @@ export default function Spin({
   value,
   placeholder,
   changeHandle,
-  clickHandle,
   style = null,
   max = MAX_VALUE,
   min = MIN_VALUE,

@@ -7,7 +7,6 @@ interface StyledInputProps {
   value: number | string;
   placeholder?: string;
   changeHandle?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  clickHandle?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   style?: React.CSSProperties | null;
   step?: number | null;
   max?: number;
@@ -21,7 +20,6 @@ export default function StyledInput({
   value,
   placeholder,
   changeHandle,
-  clickHandle,
   style = null,
   step = null,
   max = MAX_VALUE,
