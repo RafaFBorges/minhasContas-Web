@@ -17,9 +17,10 @@ interface TextProps {
   textTag?: TextTag;
   style?: React.CSSProperties | null;
   disabled?: boolean;
+  noWrap?: boolean;
 }
 
-export default function Text({ children, textTag = TextTag.P, style = null, disabled = false }: TextProps) {
+export default function Text({ children, textTag = TextTag.P, style = null, disabled = false, noWrap = false }: TextProps) {
   const { config } = useTheme()
 
   let textStyle: React.CSSProperties = (style != null)
@@ -29,6 +30,9 @@ export default function Text({ children, textTag = TextTag.P, style = null, disa
   textStyle = (disabled)
     ? { ...textStyle, color: config.disabledFontColor }
     : { ...textStyle, color: config.fontColor }
+
+  if (noWrap)
+    textStyle = { ...textStyle, whiteSpace: 'nowrap' }
 
   return React.createElement(textTag, { style: textStyle }, children)
 }
