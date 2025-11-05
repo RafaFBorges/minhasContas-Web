@@ -32,6 +32,7 @@ export default function ExpenseConfiguration({ oldValue, enabledVerify = null }:
       setEnabledSave(enabledVerify(value))
 
     setData('value', value)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return <div style={styles.content}>

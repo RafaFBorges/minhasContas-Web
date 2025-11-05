@@ -30,7 +30,7 @@ export async function handleGET(endpoint: string) {
     console.log(logMessage)
 
     return data
-  } catch (err) {
+  } catch {
     return Response.json({ error: "Falha ao buscar dados" }, { status: 500 })
   }
 }
@@ -64,7 +64,7 @@ export async function handlePOST(endpoint: string, body: object) {
     console.log(logMessage)
 
     return data
-  } catch (err) {
+  } catch {
     return Response.json({ error: "Erro ao processar" }, { status: 400 });
   }
 }
@@ -86,7 +86,7 @@ export async function handleDELETE(endpoint: string) {
       throw new Error("Erro HTTP: " + response.status)
 
     return response.status == 204
-  } catch (err) {
+  } catch {
     return false
   }
 }
@@ -120,7 +120,7 @@ export async function handlePUT(endpoint: string, body: object) {
     console.log(logMessage)
 
     return data
-  } catch (err) {
+  } catch {
     return Response.json({ error: "Erro ao processar" }, { status: 400 });
   }
 }
