@@ -1,5 +1,5 @@
 
-import React from 'react'
+import React, { useState } from 'react'
 
 import { FaChevronUp as UpIcon, FaChevronDown as DownIcon } from 'react-icons/fa'
 
@@ -30,6 +30,8 @@ export default function Spin({
   setValueHandle = () => { },
   height = 36
 }: SpinProps) {
+  const [isHovered, setIsHovered] = useState<boolean>(false)
+
   let spinStyle: React.CSSProperties = { ...styles.spin, height: height }
   if (style != null)
     spinStyle = { ...spinStyle, ...style }
@@ -45,7 +47,19 @@ export default function Spin({
     setValueHandle(newValue)
   }
 
-  return <div style={spinStyle}>
+  const handleMouseEnter = () => {
+    setIsHovered(true)
+  }
+
+  const handleMouseLeave = () => {
+    setIsHovered(false)
+  }
+
+  return <div
+    onMouseEnter={handleMouseEnter}
+    onMouseLeave={handleMouseLeave}
+    style={spinStyle}
+  >
     <StyledInput
       type={'number'}
       name={name}
@@ -57,18 +71,20 @@ export default function Spin({
       min={min}
       height={height}
     />
-    <div style={{ ...styles.buttonArea, top: (height - 34) / 2 }}>
-      <ThemeButton
-        clickHandle={() => IconClick(1)}
-        Icon={UpIcon}
-        isClickableIcon
-      />
-      <ThemeButton
-        clickHandle={() => IconClick(-1)}
-        Icon={DownIcon}
-        isClickableIcon
-      />
-    </div>
+    {isHovered &&
+      <div style={{ ...styles.buttonArea, top: (height - 34) / 2 }}>
+        <ThemeButton
+          clickHandle={() => IconClick(1)}
+          Icon={UpIcon}
+          isClickableIcon
+        />
+        <ThemeButton
+          clickHandle={() => IconClick(-1)}
+          Icon={DownIcon}
+          isClickableIcon
+        />
+      </div>
+    }
   </div>
 }
 
