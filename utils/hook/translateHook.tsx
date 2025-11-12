@@ -42,7 +42,7 @@ export function TranslateProvider({ children }: { children: ReactNode }) {
       throw new Error('Key has already setted.')
 
     const aLang: string = lang != '' ? lang : language
-    const newDict : TranslateType = { ...dictionary.current }
+    const newDict: TranslateType = { ...dictionary.current }
     newDict[`${aLang}_${key}`] = value
 
     dictionary.current = newDict
@@ -54,7 +54,7 @@ export function TranslateProvider({ children }: { children: ReactNode }) {
 
     if (dictionary.current[key] != undefined)
       throw new Error('Key has never been setted.')
-    console.log(JSON.stringify(dictionary, null, 2))
+
     return dictionary.current[`${language}_${key}`]
   }
 
