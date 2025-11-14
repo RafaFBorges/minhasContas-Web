@@ -126,20 +126,13 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
     return themeToConfig(loadTheme(lastValue))
   }
 
-  function ThemeClientSync(): null {
-    useEffect(() => { document.cookie = `${THEME_KEY}=${localStorage.getItem(THEME_KEY) || ThemeOptions.LIGHT}; path=/; max-age=31536000` }, [])
-
-    return null
-  }
-
   return <ThemeContext.Provider
     value={{
       setTheme,
       config,
     }}
   >
-    <body className={`${geistSans.variable} ${geistMono.variable}`} style={{ backgroundColor: config.backgroundColor }}>
-      <ThemeClientSync />
+    <body className={`${geistSans.variable} ${geistMono.variable}`} style={{ backgroundColor: config.backgroundColor }}>      
       <div style={styles.row}>
         <ThemeButton
           isSecondary
