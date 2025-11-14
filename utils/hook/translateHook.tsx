@@ -1,7 +1,9 @@
 "use client"
 
 import { createContext, useContext, ReactNode, useState, useRef } from 'react'
+import { saveCookie } from '@/app/actions/cookiesManager'
 
+import { LANG_KEY } from '../DataConstants'
 
 type TranslateType = {
   [key: string]: string;
@@ -29,9 +31,9 @@ export function useTranslate() {
   return context
 }
 
-export function TranslateProvider({ children }: { children: ReactNode }) {
+export function TranslateProvider({ children, lang }: { children: ReactNode, lang: string | undefined }) {
   const dictionary = useRef<TranslateType>({})
-  const [language, setLanguage] = useState<LanguageOption>(LanguageOption.PT_BR)
+  const [language, setLanguage] = useState<LanguageOption>(loadLanguage(lang))
   const validValues = Object.values(LanguageOption)
 
   function addKey(key: string, value: string, lang: string = '') {
@@ -58,11 +60,29 @@ export function TranslateProvider({ children }: { children: ReactNode }) {
     return dictionary.current[`${language}_${key}`]
   }
 
-  function setLang(newLanguage: LanguageOption) {
+  async function setLang(newLanguage: LanguageOption) {
     if (!validValues.includes(newLanguage))
       throw new Error('newLanguage is not in options.')
 
     setLanguage(newLanguage)
+    localStorage.setItem(LANG_KEY, newLanguage)
+    await saveCookie(LANG_KEY, newLanguage)
+  }
+
+  function isValidLanguage(theme: string): boolean {
+    return Object.values(LanguageOption).includes(theme as LanguageOption)
+  }
+
+  function loadLanguage(lastValue: string | undefined): LanguageOption {
+    if (lastValue != null && isValidLanguage(lastValue)) {
+      console.log('TranslateProvider.loadLanguage > [LOADED] theme=' + lastValue)
+
+      return lastValue as LanguageOption
+    }
+
+    console.log('TranslateProvider.loadLanguage > [INVALID] theme=' + lastValue)
+
+    return LanguageOption.PT_BR
   }
 
   return <TranslateContext.Provider
