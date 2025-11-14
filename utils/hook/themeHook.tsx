@@ -145,11 +145,11 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
           isSecondary
           borderRadius='8px'
           iconSize='16'
-          clickHandle={() => {
+          clickHandle={async () => {
             if (language == LanguageOption.PT_BR)
-              setLang(LanguageOption.EN)
+              await setLang(LanguageOption.EN)
             else
-              setLang(LanguageOption.PT_BR)
+              await setLang(LanguageOption.PT_BR)
           }}
           Icon={LanguageIcon}
         />

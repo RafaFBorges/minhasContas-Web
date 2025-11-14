@@ -7,7 +7,7 @@ import { ModalProvider } from '../../utils/hook/modalHook'
 import { ThemeProvider } from '../../utils/hook/themeHook'
 import { TranslateProvider } from '../../utils/hook/translateHook'
 import { MouseProvider } from '../../utils/hook/mouseHook'
-import { THEME_KEY } from '../../utils/DataConstants'
+import { LANG_KEY, THEME_KEY } from '../../utils/DataConstants'
 
 export const metadata: Metadata = {
   title: { default: 'Minhas Contas', template: '%s | Minhas Contas' },
@@ -20,9 +20,10 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const initialTheme = await getCookie(THEME_KEY)
+  const initialLanguage = await getCookie(LANG_KEY)
 
   return <MouseProvider>
-    <TranslateProvider>
+    <TranslateProvider lang={initialLanguage}>
       <ThemeProvider theme={initialTheme}>
         <ModalProvider>
           {children}
