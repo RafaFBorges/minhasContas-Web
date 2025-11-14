@@ -1,49 +1,17 @@
 "use client"
 
-import { createContext, useContext, ReactNode, useState } from 'react'
+import { createContext, useContext, ReactNode, useState, useEffect } from 'react'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { FaPaintBrush as ThemeIcon, FaGlobe as LanguageIcon } from 'react-icons/fa'
 
 import ThemeButton from '../../components/themeButton'
 import { LanguageOption, useTranslate } from './translateHook'
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-})
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-})
-
-interface ThemeContextType {
-  setTheme: (newTheme: ThemeOptions) => void;
-  config: ThemeStyleProps;
-}
-
-export interface ThemeStyleProps {
-  color: string;
-  backgroundColor: string;
-  fontSize: string | number;
-  fontColor: string;
-  disabledFontColor: string;
-  cardBackground: string;
-}
+import { saveCookie } from '@/app/actions/cookiesManager'
+import { THEME_KEY } from '../DataConstants'
 
 export enum ThemeOptions {
   LIGHT = 'light',
   DARK = 'dark',
-}
-
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
-
-export function useTheme() {
-  const context = useContext(ThemeContext)
-  if (!context)
-    throw new Error('useTheme must be used within a ThemeProvider')
-
-  return context
 }
 
 const LIGHT_CONFIG = {
@@ -64,9 +32,43 @@ const DARK_CONFIG = {
   cardBackground: '#1d1d1d',
 }
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [settedTheme, setSettedTheme] = useState<ThemeOptions>(ThemeOptions.LIGHT)
-  const [config, setConfig] = useState<ThemeStyleProps>(LIGHT_CONFIG)
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+})
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+})
+
+interface ThemeContextType {
+  setTheme: (newTheme: ThemeOptions) => Promise<void>;
+  config: ThemeStyleProps;
+}
+
+export interface ThemeStyleProps {
+  color: string;
+  backgroundColor: string;
+  fontSize: string | number;
+  fontColor: string;
+  disabledFontColor: string;
+  cardBackground: string;
+}
+
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
+
+export function useTheme() {
+  const context = useContext(ThemeContext)
+  if (!context)
+    throw new Error('useTheme must be used within a ThemeProvider')
+
+  return context
+}
+
+export function ThemeProvider({ children, theme }: { children: ReactNode, theme: string | undefined }) {
+  const [settedTheme, setSettedTheme] = useState<ThemeOptions>(() => loadTheme(theme, true))
+  const [config, setConfig] = useState<ThemeStyleProps>(() => loadConfig(theme))
   const { language, setLang } = useTranslate()
 
   function setLightTheme() {
@@ -77,15 +79,57 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setConfig(DARK_CONFIG)
   }
 
-  function setTheme(newTheme: ThemeOptions) {
-    console.log('ThemeProvider.setTheme: setted=' + settedTheme + ' new=' + newTheme)
+  function isValidTheme(theme: string): boolean {
+    return Object.values(ThemeOptions).includes(theme as ThemeOptions)
+  }
+
+  async function setTheme(newTheme: ThemeOptions) {
+    if (!isValidTheme(newTheme) || newTheme == settedTheme) {
+      console.log('ThemeProvider.setTheme > [ERROR] setted=' + settedTheme + ' new=' + newTheme)
+      return
+    }
 
     setSettedTheme(newTheme)
+    localStorage.setItem(THEME_KEY, newTheme)
+    await saveCookie(THEME_KEY, newTheme)
 
     if (newTheme == ThemeOptions.LIGHT)
       setLightTheme()
     else if (newTheme == ThemeOptions.DARK)
       setDarkTheme()
+
+    console.log('ThemeProvider.setTheme > [CHANGED] setted=' + settedTheme + ' new=' + newTheme)
+  }
+
+  function themeToConfig(themeOption: ThemeOptions): ThemeStyleProps {
+    switch (themeOption) {
+      case ThemeOptions.LIGHT: return LIGHT_CONFIG
+      case ThemeOptions.DARK: return DARK_CONFIG
+      default: return LIGHT_CONFIG
+    }
+  }
+
+  function loadTheme(lastValue: string | undefined, log: boolean = false): ThemeOptions {
+    if (lastValue != null && isValidTheme(lastValue)) {
+      if (log)
+        console.log('ThemeProvider.loadTheme > [LOADED] theme=' + lastValue)
+
+      return lastValue as ThemeOptions
+    } else if (log) {
+      console.log('ThemeProvider.loadTheme > [INVALID] theme=' + lastValue)
+    }
+
+    return ThemeOptions.LIGHT
+  }
+
+  function loadConfig(lastValue: string | undefined): ThemeStyleProps {
+    return themeToConfig(loadTheme(lastValue))
+  }
+
+  function ThemeClientSync(): null {
+    useEffect(() => { document.cookie = `${THEME_KEY}=${localStorage.getItem(THEME_KEY) || ThemeOptions.LIGHT}; path=/; max-age=31536000` }, [])
+
+    return null
   }
 
   return <ThemeContext.Provider
@@ -95,6 +139,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }}
   >
     <body className={`${geistSans.variable} ${geistMono.variable}`} style={{ backgroundColor: config.backgroundColor }}>
+      <ThemeClientSync />
       <div style={styles.row}>
         <ThemeButton
           isSecondary
@@ -112,11 +157,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
           isSecondary
           borderRadius='8px'
           iconSize='16'
-          clickHandle={() => {
+          clickHandle={async () => {
             if (settedTheme == ThemeOptions.LIGHT)
-              setTheme(ThemeOptions.DARK)
+              await setTheme(ThemeOptions.DARK)
             else
-              setTheme(ThemeOptions.LIGHT)
+              await setTheme(ThemeOptions.LIGHT)
           }}
           Icon={ThemeIcon}
         />
