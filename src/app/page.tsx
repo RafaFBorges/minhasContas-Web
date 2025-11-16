@@ -118,6 +118,7 @@ export default function Home() {
         key={item.id}
         id={item.id}
         title={item.asText}
+        category={item.category}
         editClickHandle={() => handleEditClick(item)}
         deleteClickHandle={handleDeleteClick}
         date={item.lastDate}
