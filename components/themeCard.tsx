@@ -7,6 +7,7 @@ import { useTheme } from '../utils/hook/themeHook'
 export default function ThemeCard({
   title,
   date,
+  category,
   id = -1,
   editClickHandle = null,
   deleteClickHandle = null
@@ -16,6 +17,7 @@ export default function ThemeCard({
   return <Card
     title={title}
     date={date}
+    category={category}
     id={id}
     editClickHandle={editClickHandle}
     deleteClickHandle={deleteClickHandle}
