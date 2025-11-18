@@ -41,7 +41,7 @@ export default function Home() {
     const response = await handlePOST(EXPENSES_ENDPOINT, { "value": value, "date": new Date() })
 
     if (response != null)
-      setValueList([...valueList, new Expense(response.id, response.value, response.dates)])
+      setValueList([...valueList, new Expense(response.id, response.value, response.dates, response.category)])
   }
 
   const handleDeleteClick = async (index: number) => {
@@ -83,7 +83,7 @@ export default function Home() {
         throw Error('Invalid Expense response')
 
       const expensesList: Expense[] = []
-      serverExpensesList.forEach(expense => expensesList.push(new Expense(expense.id, expense.value, expense.dates)))
+      serverExpensesList.forEach(expense => expensesList.push(new Expense(expense.id, expense.value, expense.dates, expense.category)))
       setValueList(expensesList)
     } catch (err) {
       console.error("HOME.useEffect : [Error] erro=", err)
@@ -118,6 +118,7 @@ export default function Home() {
         key={item.id}
         id={item.id}
         title={item.asText}
+        category={item.category}
         editClickHandle={() => handleEditClick(item)}
         deleteClickHandle={handleDeleteClick}
         date={item.lastDate}

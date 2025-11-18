@@ -4,20 +4,33 @@ import { FaTrash as DeleteIcon, FaEdit as EditIcon } from 'react-icons/fa'
 
 import ThemeButton from '../themeButton'
 import Text, { TextTag } from '../text'
+import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
 
 export interface CardProps {
   title: string;
   date: string;
+  category?: string;
   id: number;
   editClickHandle?: null | ((index: number) => void);
   deleteClickHandle?: null | ((index: number) => void);
   backgroundColor?: string;
 }
 
-export default function Card({ title, date, id = -1, editClickHandle = null, deleteClickHandle = null, backgroundColor = '' }: CardProps) {
+export default function Card({ title, date, category, id = -1, editClickHandle = null, deleteClickHandle = null, backgroundColor = '' }: CardProps) {
+  const UNKOWN_CATEGORY_KEY = 'unkownCategory'
+
+  const { addKey, getValue } = useTranslate()
+
   let style = styles.card
   if (backgroundColor != '')
     style = { ...style, backgroundColor: backgroundColor }
+
+  function translate() {
+    addKey(UNKOWN_CATEGORY_KEY, 'desconhecido', LanguageOption.PT_BR)
+    addKey(UNKOWN_CATEGORY_KEY, 'unkown', LanguageOption.EN)
+  }
+
+  translate()
 
   return <div style={style}>
     <div style={styles.content}>
@@ -40,6 +53,9 @@ export default function Card({ title, date, id = -1, editClickHandle = null, del
           }
         </div>
       </div>
+      <div style={styles.category}>
+        <Text textTag={TextTag.P} style={styles.categoryTitle} disabled>{category ? category : getValue(UNKOWN_CATEGORY_KEY)}</Text>
+      </div>
       <Text textTag={TextTag.P} style={styles.date} disabled>{date}</Text>
     </div>
   </div>
@@ -59,12 +75,17 @@ const styles: { [key: string]: React.CSSProperties } = {
   flexRow: {
     display: 'flex',
     gap: '0.5em',
-    margin: '0 0 0.5rem 0',
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
     maxWidth: '350px',
     boxSizing: 'border-box',
+  },
+  category: {
+    margin: '0 0 0.5rem 0',
+  },
+  categoryTitle: {
+    fontSize: '0.85rem',
   },
   title: {
     fontSize: '1.25rem',

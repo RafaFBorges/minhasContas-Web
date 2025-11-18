@@ -2,11 +2,13 @@ export class Expense {
   private __id: number
   private __value: number
   private __dates: Array<Date>
+  private __category: string
 
-  constructor(id: number, value: number, date: Array<Date> = []) {
+  constructor(id: number, value: number, date: Array<Date> = [], category: string = '') {
     this.__id = id
     this.__value = value
     this.__dates = []
+    this.__category = category
 
     date.forEach(item => { this.__dates.push(new Date(item)) })
   }
@@ -21,6 +23,10 @@ export class Expense {
 
   set value(newValue: number) {
     this.__value = newValue
+  }
+
+  get category(): string {
+    return this.__category
   }
 
   get asText(): string {
