@@ -21,7 +21,7 @@ export default function Home() {
   const [valueList, setValueList] = useState<Expense[]>([])
 
   const { openModal } = useModal()
-  const { addKey, getValue } = useTranslate()
+  const { addKey, getValue, language } = useTranslate()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const parsed: number = parseFloat(e.target.value)
@@ -41,7 +41,7 @@ export default function Home() {
     const response = await handlePOST(EXPENSES_ENDPOINT, { "value": value, "date": new Date() })
 
     if (response != null)
-      setValueList([...valueList, new Expense(response.id, response.value, response.dates, response.category)])
+      setValueList([...valueList, new Expense(response.id, response.value, response.dates, response.category, language)])
   }
 
   const handleDeleteClick = async (index: number) => {
@@ -83,7 +83,7 @@ export default function Home() {
         throw Error('Invalid Expense response')
 
       const expensesList: Expense[] = []
-      serverExpensesList.forEach(expense => expensesList.push(new Expense(expense.id, expense.value, expense.dates, expense.category)))
+      serverExpensesList.forEach(expense => expensesList.push(new Expense(expense.id, expense.value, expense.dates, expense.category, language)))
       setValueList(expensesList)
     } catch (err) {
       console.error("HOME.useEffect : [Error] erro=", err)
@@ -95,6 +95,12 @@ export default function Home() {
   useEffect(() => {
     SyncExpenses()
   }, [])
+
+  useEffect(() => {
+    const expensesList: Expense[] = []
+    valueList.forEach(expense => expensesList.push(new Expense(expense.id, expense.value, expense.datesList, expense.category, language)))
+    setValueList(expensesList)
+  }, [language])
 
   return <main style={styles.page}>
     <Text textTag={TextTag.H1}>{getValue('title')}</Text>
