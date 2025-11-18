@@ -11,7 +11,12 @@ type TranslateType = {
 
 export enum LanguageOption {
   PT_BR = 'pt-BR',
-  EN = 'en',
+  EN = 'en-US',
+}
+
+const validValues = Object.values(LanguageOption)
+export function isValidLanguage(language: string): boolean {
+  return Object.values(LanguageOption).includes(language as LanguageOption)
 }
 
 interface TranslateContextType {
@@ -34,7 +39,6 @@ export function useTranslate() {
 export function TranslateProvider({ children, lang }: { children: ReactNode, lang: string | undefined }) {
   const dictionary = useRef<TranslateType>({})
   const [language, setLanguage] = useState<LanguageOption>(loadLanguage(lang))
-  const validValues = Object.values(LanguageOption)
 
   function addKey(key: string, value: string, lang: string = '') {
     if (key == '')
@@ -67,10 +71,6 @@ export function TranslateProvider({ children, lang }: { children: ReactNode, lan
     setLanguage(newLanguage)
     localStorage.setItem(LANG_KEY, newLanguage)
     await saveCookie(LANG_KEY, newLanguage)
-  }
-
-  function isValidLanguage(theme: string): boolean {
-    return Object.values(LanguageOption).includes(theme as LanguageOption)
   }
 
   function loadLanguage(lastValue: string | undefined): LanguageOption {
