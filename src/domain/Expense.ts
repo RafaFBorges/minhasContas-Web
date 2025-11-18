@@ -58,6 +58,6 @@ export class Expense {
     if (this.__dates.length <= 0)
       return ''
 
-    return this.__dates[this.__dates.length - 1].toLocaleDateString('pt-BR')
+    return this.__dates[this.__dates.length - 1].toLocaleDateString(this.__format)
   }
 }
