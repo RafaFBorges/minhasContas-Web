@@ -17,6 +17,10 @@ import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
 
 
 export default function Home() {
+  const TITLE_KEY = 'Home.Title'
+  const SUBTITLE_KEY = 'Home.Subtitle'
+  const PROPERTIES_TITLE_KEY = 'Home.PropertiesTitle'
+
   const [value, setValue] = useState<number>(0)
   const [valueList, setValueList] = useState<Expense[]>([])
 
@@ -31,10 +35,12 @@ export default function Home() {
   }
 
   function translate() {
-    addKey('title', 'Minhas Contas', LanguageOption.PT_BR)
-    addKey('subTitle', 'Despesas', LanguageOption.PT_BR)
-    addKey('title', 'My Finances', LanguageOption.EN)
-    addKey('subTitle', 'Expenses', LanguageOption.EN)
+    addKey(TITLE_KEY, 'Minhas Contas', LanguageOption.PT_BR)
+    addKey(SUBTITLE_KEY, 'Despesas', LanguageOption.PT_BR)
+    addKey(PROPERTIES_TITLE_KEY, 'Editar despesa', LanguageOption.PT_BR)
+    addKey(TITLE_KEY, 'My Finances', LanguageOption.EN)
+    addKey(SUBTITLE_KEY, 'Expenses', LanguageOption.EN)
+    addKey(PROPERTIES_TITLE_KEY, 'Edit expense', LanguageOption.EN)
   }
 
   const handleAddNewClick = async () => {
@@ -70,7 +76,7 @@ export default function Home() {
   }
 
   const handleEditClick = (expense: Expense) => {
-    openModal('Editar despesa', () => expenseEditContent(expense), (item: unknown) => handleEditExpense(item, expense), true)
+    openModal(getValue(PROPERTIES_TITLE_KEY), () => expenseEditContent(expense), (item: unknown) => handleEditExpense(item, expense), true)
   }
 
   async function SyncExpenses() {
@@ -103,8 +109,8 @@ export default function Home() {
   }, [language])
 
   return <main style={styles.page}>
-    <Text textTag={TextTag.H1}>{getValue('title')}</Text>
-    <Text textTag={TextTag.H3}>{getValue('subTitle')}</Text>
+    <Text textTag={TextTag.H1}>{getValue(TITLE_KEY)}</Text>
+    <Text textTag={TextTag.H3}>{getValue(SUBTITLE_KEY)}</Text>
 
     <div style={{ ...styles.flexRow, gap: '1rem' }}>
       <Spin

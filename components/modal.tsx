@@ -4,6 +4,9 @@ import { FaTimes as CloseIcon } from 'react-icons/fa'
 
 import { ModalFormProps } from '@/app/ModalPagePropsInterface'
 import ThemeButton from './themeButton'
+import { useTheme } from '../utils/hook/themeHook'
+import Text, { TextTag } from './text'
+import { LanguageOption, useTranslate } from '../utils/hook/translateHook'
 
 interface ModalProps extends ModalFormProps {
   children: React.ReactNode;
@@ -13,10 +16,25 @@ interface ModalProps extends ModalFormProps {
 }
 
 export default function Modal({ children, closeModal, title, enabledVerify = true, onAccept = null, data = {} }: ModalProps) {
+  const SAVE_KEY = 'Modal.Save'
+  const CANCEL_KEY = 'Modal.Cancel'
+
+  const { config } = useTheme()
+  const { addKey, getValue } = useTranslate()
+
+  function translate() {
+    addKey(SAVE_KEY, 'Salvar', LanguageOption.PT_BR)
+    addKey(SAVE_KEY, 'Save', LanguageOption.EN)
+    addKey(CANCEL_KEY, 'Cancelar', LanguageOption.PT_BR)
+    addKey(CANCEL_KEY, 'Cancel', LanguageOption.EN)
+  }
+
+  translate()
+
   return <div style={styles.overlay}>
-    <div style={styles.modal}>
+    <div style={{ ...styles.modal, backgroundColor: config.backgroundColor }}>
       <div style={{ ...styles.titleRow, margin: '0 0 0.5rem 0' }}>
-        <h6 style={styles.title}>{title}</h6>
+        <Text textTag={TextTag.H6} style={styles.title}>{title}</Text>
         <ThemeButton
           clickHandle={() => closeModal()}
           Icon={CloseIcon}
@@ -31,7 +49,7 @@ export default function Modal({ children, closeModal, title, enabledVerify = tru
           clickHandle={() => closeModal()}
           width='40%'
         >
-          Cancelar
+          {getValue(CANCEL_KEY)}
         </ThemeButton>
         <ThemeButton
           clickHandle={() => {
@@ -43,7 +61,7 @@ export default function Modal({ children, closeModal, title, enabledVerify = tru
           width='40%'
           enabled={enabledVerify}
         >
-          Salvar
+          {getValue(SAVE_KEY)}
         </ThemeButton>
       </div>
     </div>

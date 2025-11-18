@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState } from 'react'
 
-import StyledInput from '../../components/input'
 import ModalContentProps from './ModalPagePropsInterface'
 import { useModal } from '../../utils/hook/modalHook'
+import Spin from '../../components/spin'
 
 interface ExpenseConfigurationProps extends ModalContentProps<number> {
   oldValue: number;
@@ -12,19 +12,14 @@ interface ExpenseConfigurationProps extends ModalContentProps<number> {
 
 export default function ExpenseConfiguration({ oldValue, enabledVerify = null }: ExpenseConfigurationProps) {
   const [value, setValue] = useState<number>(oldValue)
+
   const { setEnabledSave, setData } = useModal()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const parsed: number = parseFloat(e.target.value)
 
-    if (!isNaN(parsed)) {
+    if (!isNaN(parsed))
       setValue(parsed)
-
-      if (enabledVerify != null)
-        setEnabledSave(enabledVerify(parsed))
-
-      setData('value', parsed)
-    }
   }
 
   useEffect(() => {
@@ -32,15 +27,14 @@ export default function ExpenseConfiguration({ oldValue, enabledVerify = null }:
       setEnabledSave(enabledVerify(value))
 
     setData('value', value)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [value])
 
   return <div style={styles.content}>
-    <StyledInput
-      type={'number'}
+    <Spin
       name={'expenseValue'}
       value={value}
       changeHandle={handleChange}
+      setValueHandle={setValue}
     />
   </div>
 }
