@@ -4,6 +4,8 @@ import { FaTimes as CloseIcon } from 'react-icons/fa'
 
 import { ModalFormProps } from '@/app/ModalPagePropsInterface'
 import ThemeButton from './themeButton'
+import { useTheme } from '../utils/hook/themeHook'
+import Text, { TextTag } from './text'
 
 interface ModalProps extends ModalFormProps {
   children: React.ReactNode;
@@ -13,10 +15,12 @@ interface ModalProps extends ModalFormProps {
 }
 
 export default function Modal({ children, closeModal, title, enabledVerify = true, onAccept = null, data = {} }: ModalProps) {
+  const { config } = useTheme()
+
   return <div style={styles.overlay}>
-    <div style={styles.modal}>
+    <div style={{ ...styles.modal, backgroundColor: config.backgroundColor }}>
       <div style={{ ...styles.titleRow, margin: '0 0 0.5rem 0' }}>
-        <h6 style={styles.title}>{title}</h6>
+        <Text textTag={TextTag.H6} style={styles.title}>{title}</Text>
         <ThemeButton
           clickHandle={() => closeModal()}
           Icon={CloseIcon}
