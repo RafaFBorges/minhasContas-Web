@@ -5,18 +5,19 @@ import { FaTrash as DeleteIcon, FaEdit as EditIcon } from 'react-icons/fa'
 import ThemeButton from '../themeButton'
 import Text, { TextTag } from '../text'
 import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
+import { Category } from '@/domain/Category'
 
 export interface CardProps {
   title: string;
   date: string;
-  category?: string;
+  categories?: Array<Category>;
   id: number;
   editClickHandle?: null | ((index: number) => void);
   deleteClickHandle?: null | ((index: number) => void);
   backgroundColor?: string;
 }
 
-export default function Card({ title, date, category, id = -1, editClickHandle = null, deleteClickHandle = null, backgroundColor = '' }: CardProps) {
+export default function Card({ title, date, categories, id = -1, editClickHandle = null, deleteClickHandle = null, backgroundColor = '' }: CardProps) {
   const UNKOWN_CATEGORY_KEY = 'unkownCategory'
 
   const { addKey, getValue } = useTranslate()
@@ -28,6 +29,18 @@ export default function Card({ title, date, category, id = -1, editClickHandle =
   function translate() {
     addKey(UNKOWN_CATEGORY_KEY, 'desconhecido', LanguageOption.PT_BR)
     addKey(UNKOWN_CATEGORY_KEY, 'unkown', LanguageOption.EN)
+  }
+
+  function printCategories() {
+    console.log('Card > ' + JSON.stringify(categories, null, 2))
+    if (categories == null || categories.length == 0)
+      return <Text textTag={TextTag.P} style={styles.categoryTitle} disabled>{getValue(UNKOWN_CATEGORY_KEY)}</Text>
+
+    return categories.map((item, index) => <Text key={index} textTag={TextTag.P} style={styles.categoryTitle} disabled>
+      {item != null
+        ? item.name
+        : getValue(UNKOWN_CATEGORY_KEY)}
+    </Text>)
   }
 
   translate()
@@ -53,9 +66,7 @@ export default function Card({ title, date, category, id = -1, editClickHandle =
           }
         </div>
       </div>
-      <div style={styles.category}>
-        <Text textTag={TextTag.P} style={styles.categoryTitle} disabled>{category ? category : getValue(UNKOWN_CATEGORY_KEY)}</Text>
-      </div>
+      <div style={styles.category}>{printCategories()}</div>
       <Text textTag={TextTag.P} style={styles.date} disabled>{date}</Text>
     </div>
   </div>
@@ -82,6 +93,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     boxSizing: 'border-box',
   },
   category: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: '0.4em',
     margin: '0 0 0.5rem 0',
   },
   categoryTitle: {

@@ -1,17 +1,18 @@
 import { isValidLanguage, LanguageOption } from "../../utils/hook/translateHook"
+import { Category } from "./Category"
 
 export class Expense {
   private __id: number
   private __value: number
   private __dates: Array<Date>
-  private __category: string
+  private __categories: Array<Category>
   private __format: LanguageOption
 
-  constructor(id: number, value: number, date: Array<Date> = [], category: string = '', format: LanguageOption = LanguageOption.PT_BR) {
+  constructor(id: number, value: number, date: Array<Date> = [], categories: Array<Category> = [], format: LanguageOption = LanguageOption.PT_BR) {
     this.__id = id
     this.__value = value
     this.__dates = []
-    this.__category = category
+    this.__categories = categories
     this.__format = format
 
     date.forEach(item => this.__dates.push(new Date(item)))
@@ -29,8 +30,8 @@ export class Expense {
     this.__value = newValue
   }
 
-  get category(): string {
-    return this.__category
+  get categories(): Array<Category> {
+    return this.__categories
   }
 
   get asText(): string {

@@ -14,6 +14,8 @@ import ThemeButton from '../../components/themeButton'
 import Text, { TextTag } from '../../components/text'
 import Spin from '../../components/spin'
 import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
+import { Category } from '@/domain/Category'
+import { CategoryResponse } from '@/comunication/category'
 
 
 export default function Home() {
@@ -89,7 +91,13 @@ export default function Home() {
         throw Error('Invalid Expense response')
 
       const expensesList: Expense[] = []
-      serverExpensesList.forEach(expense => expensesList.push(new Expense(expense.id, expense.value, expense.dates, expense.category, language)))
+      serverExpensesList.forEach(expense => {
+        const categoryList: Category[] = []
+
+        expense.categories.forEach((category: CategoryResponse) => categoryList.push(new Category(category.id, category.owner, category.name)))
+        expensesList.push(new Expense(expense.id, expense.value, expense.dates, categoryList, language))
+      })
+
       setValueList(expensesList)
     } catch (err) {
       console.error("HOME.useEffect : [Error] erro=", err)
@@ -104,7 +112,7 @@ export default function Home() {
 
   useEffect(() => {
     const expensesList: Expense[] = []
-    valueList.forEach(expense => expensesList.push(new Expense(expense.id, expense.value, expense.datesList, expense.category, language)))
+    valueList.forEach(expense => expensesList.push(new Expense(expense.id, expense.value, expense.datesList, expense.categories, language)))
     setValueList(expensesList)
   }, [language])
 
@@ -130,7 +138,7 @@ export default function Home() {
         key={item.id}
         id={item.id}
         title={item.asText}
-        category={item.category}
+        categories={item.categories}
         editClickHandle={() => handleEditClick(item)}
         deleteClickHandle={handleDeleteClick}
         date={item.lastDate}
