@@ -18,21 +18,37 @@ interface TextProps {
   style?: React.CSSProperties | null;
   disabled?: boolean;
   noWrap?: boolean;
+  noSelection?: boolean;
+  color?: string;
 }
 
-export default function Text({ children, textTag = TextTag.P, style = null, disabled = false, noWrap = false }: TextProps) {
+export default function Text({ children, textTag = TextTag.P, style = null, disabled = false, noWrap = false, noSelection = false, color = '' }: TextProps) {
   const { config } = useTheme()
 
   let textStyle: React.CSSProperties = (style != null)
     ? style
     : {}
 
-  textStyle = (disabled)
-    ? { ...textStyle, color: config.disabledFontColor }
-    : { ...textStyle, color: config.fontColor }
+  textStyle = (color != '')
+    ? { ...textStyle, color: color }
+    : (disabled)
+      ? { ...textStyle, color: config.disabledFontColor }
+      : { ...textStyle, color: config.fontColor }
 
   if (noWrap)
     textStyle = { ...textStyle, whiteSpace: 'nowrap' }
 
+  if (noSelection)
+    textStyle = { ...textStyle, ...styles.notSelectable }
+
   return React.createElement(textTag, { style: textStyle }, children)
+}
+
+const styles: { [key: string]: React.CSSProperties } = {
+  notSelectable: {
+    WebkitUserSelect: 'none',
+    MozUserSelect: 'none',
+    msUserSelect: 'none',
+    userSelect: 'none',
+  }
 }
