@@ -6,6 +6,7 @@ import ThemeButton from '../themeButton'
 import Text, { TextTag } from '../text'
 import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
 import { Category } from '@/domain/Category'
+import { isLight, lightenCor } from '../../utils/colors'
 
 export interface CardProps {
   title: string;
@@ -32,15 +33,25 @@ export default function Card({ title, date, categories, id = -1, editClickHandle
   }
 
   function printCategories() {
-    console.log('Card > ' + JSON.stringify(categories, null, 2))
-    if (categories == null || categories.length == 0)
-      return <Text textTag={TextTag.P} style={styles.categoryTitle} disabled>{getValue(UNKOWN_CATEGORY_KEY)}</Text>
+    const clRed = '#DC143C'
 
-    return categories.map((item, index) => <Text key={index} textTag={TextTag.P} style={styles.categoryTitle} disabled>
-      {item != null
-        ? item.name
-        : getValue(UNKOWN_CATEGORY_KEY)}
-    </Text>)
+    if (categories == null || categories.length == 0) {
+      const backColor: string = lightenCor(clRed, 35)
+      return <div style={{ ...styles.tagContainer, borderColor: clRed, backgroundColor: backColor }}>
+        <Text textTag={TextTag.P} style={styles.categoryTitle} color={isLight(backColor) ? '#000' : '#FFF'} disabled noSelection>{getValue(UNKOWN_CATEGORY_KEY)}</Text>
+      </div>
+    }
+
+    return categories.map((item, index) => {
+      const backColor: string = lightenCor(clRed, 35)
+      return <div style={{ ...styles.tagContainer, borderColor: clRed, backgroundColor: backColor }}>
+        <Text key={index} textTag={TextTag.P} style={styles.categoryTitle} color={isLight(backColor) ? '#000' : '#FFF'} disabled noSelection>
+          {item != null
+            ? item.name
+            : getValue(UNKOWN_CATEGORY_KEY)}
+        </Text>
+      </div>
+    })
   }
 
   translate()
@@ -114,4 +125,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     margin: '0 0 1rem 0',
     fontSize: '1rem',
   },
+  tagContainer: {
+    border: '1px solid red',
+    borderRadius: '8px',
+    padding: '2px 4px',
+  }
 }
