@@ -5,13 +5,17 @@ import React, { useEffect, useState } from 'react'
 import ModalContentProps from './ModalPagePropsInterface'
 import { useModal } from '../../utils/hook/modalHook'
 import Spin from '../../components/spin'
+import TagList from '../../components/tagList'
+import { Category } from '@/domain/Category'
 
 interface ExpenseConfigurationProps extends ModalContentProps<number> {
   oldValue: number;
+  oldCategories: Array<Category>;
 }
 
-export default function ExpenseConfiguration({ oldValue, enabledVerify = null }: ExpenseConfigurationProps) {
+export default function ExpenseConfiguration({ oldValue, oldCategories, enabledVerify = null }: ExpenseConfigurationProps) {
   const [value, setValue] = useState<number>(oldValue)
+  const [categories, setCategories] = useState<Array<Category>>(oldCategories)
 
   const { setEnabledSave, setData } = useModal()
 
@@ -36,11 +40,15 @@ export default function ExpenseConfiguration({ oldValue, enabledVerify = null }:
       changeHandle={handleChange}
       setValueHandle={setValue}
     />
+    <TagList style={styles.tagContainer} itensList={categories} />
   </div>
 }
 
 const styles: { [key: string]: React.CSSProperties } = {
   content: {
     width: '100%',
+  },
+  tagContainer: {
+    marginTop: '0.5em'
   }
 }

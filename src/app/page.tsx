@@ -73,6 +73,7 @@ export default function Home() {
   const expenseEditContent = (expense: Expense) => {
     return <ExpenseConfiguration
       oldValue={expense.value}
+      oldCategories={expense.categories}
       enabledVerify={(item: number) => expense.value != item}
     />
   }
