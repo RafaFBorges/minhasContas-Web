@@ -1,10 +1,13 @@
 import React from 'react'
 
+import { FaPlus as AddIcon } from 'react-icons/fa'
 
 import Text, { TextTag } from './text'
 import { useTranslate } from './../utils/hook/translateHook'
 import { Category } from '@/domain/Category'
 import { isLight, lightenCor } from './../utils/colors'
+import ThemeButton from './themeButton'
+import { useTheme } from '../utils/hook/themeHook'
 
 export interface TagListProps {
   style?: React.CSSProperties | null;
@@ -14,21 +17,29 @@ export interface TagListProps {
 
 export default function TagList({ style, itensList, color = '#DC143C' }: TagListProps) {
   const UNKOWN_CATEGORY_KEY = 'unkownCategory'
+
   const { getValue } = useTranslate()
+  const { config } = useTheme()
 
-  const backColor: string = lightenCor(color, 35)
+  function printTag(name: string, index: number, isDisabled: boolean) {
+    const tagColor: string = isDisabled
+      ? config.disabledFontColor
+      : color == ''
+        ? config.tagDefaultColor
+        : color
 
-  function printTag(name: string, index: number) {
-    return <div key={index} style={{ ...styles.tagContainer, borderColor: color, backgroundColor: backColor }}>
+    const backColor: string = lightenCor(tagColor, 35)
+
+    return <div key={index} style={{ ...styles.tagContainer, borderColor: tagColor, backgroundColor: backColor }}>
       <Text textTag={TextTag.P} style={styles.categoryTitle} color={isLight(backColor) ? '#000' : '#FFF'} disabled noSelection>{name}</Text>
     </div>
   }
 
   function printContainer() {
     if (itensList == null || itensList.length == 0)
-      return printTag(getValue(UNKOWN_CATEGORY_KEY), 0)
+      return printTag(getValue(UNKOWN_CATEGORY_KEY), 0, false)
 
-    return itensList.map((item, index) => printTag(item != null ? item.name : getValue(UNKOWN_CATEGORY_KEY), index))
+    return itensList.map((item, index) => printTag(item != null ? item.name : getValue(UNKOWN_CATEGORY_KEY), index, false))
   }
 
   return <div style={{ ...styles.container, ...style }}> {printContainer()}</div >

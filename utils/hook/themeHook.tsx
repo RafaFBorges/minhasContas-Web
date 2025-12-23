@@ -21,6 +21,7 @@ const LIGHT_CONFIG = {
   fontColor: '#121212ff',
   disabledFontColor: '#555',
   cardBackground: '#fff',
+  tagDefaultColor: '#1439dcff',
 }
 
 const DARK_CONFIG = {
@@ -30,6 +31,7 @@ const DARK_CONFIG = {
   fontColor: '#fff',
   disabledFontColor: '#808080',
   cardBackground: '#1d1d1d',
+  tagDefaultColor: '#dc143cff',
 }
 
 const geistSans = Geist({
@@ -54,6 +56,7 @@ export interface ThemeStyleProps {
   fontColor: string;
   disabledFontColor: string;
   cardBackground: string;
+  tagDefaultColor: string;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
@@ -132,7 +135,7 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
       config,
     }}
   >
-    <body className={`${geistSans.variable} ${geistMono.variable}`} style={{ backgroundColor: config.backgroundColor }}>      
+    <body className={`${geistSans.variable} ${geistMono.variable}`} style={{ backgroundColor: config.backgroundColor }}>
       <div style={styles.row}>
         <ThemeButton
           isSecondary
