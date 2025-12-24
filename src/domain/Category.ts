@@ -1,8 +1,17 @@
+import { Tag } from "./Tag"
+
 export class Category {
   private __id: number
   private __owner: number
   private __name: string
   private __date: Date
+
+  static getTagList(categoryList: Array<Category> | undefined): Array<Tag> | null {
+    if (categoryList == null)
+      return null
+
+    return categoryList.map(item => new Tag(item.id, item.name, true))
+  }
 
   constructor(id: number, owner: number, name: string, date: Date | null = null) {
     this.__id = id

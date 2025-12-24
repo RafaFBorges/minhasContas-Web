@@ -40,7 +40,7 @@ export default function ExpenseConfiguration({ oldValue, oldCategories, enabledV
       changeHandle={handleChange}
       setValueHandle={setValue}
     />
-    <TagList style={styles.tagContainer} itensList={categories} />
+    <TagList style={styles.tagContainer} itensList={Category.getTagList(categories)} selectable addNewTags />
   </div>
 }
 
