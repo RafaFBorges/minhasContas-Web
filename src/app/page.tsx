@@ -91,9 +91,14 @@ export default function Home() {
       const response = await handlePUT(EXPENSES_ENDPOINT + '/' + expense.id, request)
 
       if (response != null) {
-        expense.value = response.value
-        expense.date = response.lastDate
-        setValueList([...valueList])
+        const categoryList: Category[] = []
+        response.categories.forEach((category: CategoryResponse) => categoryList.push(new Category(category.id, category.owner, category.name)))
+
+        setValueList(valueList.map(item => {
+          return (item.id == response.id)
+            ? new Expense(response.id, response.value, response.dates, categoryList, language)
+            : item
+        }))
       }
     }
   }
@@ -123,7 +128,6 @@ export default function Home() {
       const expensesList: Expense[] = []
       serverExpensesList.forEach(expense => {
         const categoryList: Category[] = []
-
         expense.categories.forEach((category: CategoryResponse) => categoryList.push(new Category(category.id, category.owner, category.name)))
         expensesList.push(new Expense(expense.id, expense.value, expense.dates, categoryList, language))
       })
