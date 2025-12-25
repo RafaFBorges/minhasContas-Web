@@ -55,7 +55,7 @@ export default function Card({ title, date, categories, id = -1, editClickHandle
           }
         </div>
       </div>
-      <TagList tagList={Category.getTagList(categories)} />
+      <TagList style={styles.tagList} tagList={Category.getTagList(categories)} />
       <Text textTag={TextTag.P} style={styles.date} disabled>{date}</Text>
     </div>
   </div>
@@ -93,5 +93,8 @@ const styles: { [key: string]: React.CSSProperties } = {
   date: {
     margin: '0 0 1rem 0',
     fontSize: '1rem',
+  },
+  tagList: {
+    margin: '0 0 0.5rem 0',
   }
 }

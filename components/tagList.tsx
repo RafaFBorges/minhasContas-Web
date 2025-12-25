@@ -74,7 +74,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: 'flex',
     flexDirection: 'row',
     gap: '0.4em',
-    margin: '0 0 0.5rem 0',
   },
   tagContainer: {
     border: '1px solid red',
