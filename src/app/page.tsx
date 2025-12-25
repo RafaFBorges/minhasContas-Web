@@ -12,7 +12,7 @@ import {
   handlePOST,
   handlePUT
 } from '@/comunication/ApiResthandler'
-import { ExpenseResponse } from '@/comunication/expense'
+import { ExpenseRequest, ExpenseResponse } from '@/comunication/expense'
 import { Expense } from '@/domain/Expense'
 import ThemeCard from '../../components/themeCard'
 import { useModal } from '../../utils/hook/modalHook'
@@ -70,8 +70,25 @@ export default function Home() {
   }
 
   const handleEditExpense = async (item: unknown, expense: Expense) => {
-    if (item != null && typeof item === 'object' && 'value' in item && item['value'] != null) {
-      const response = await handlePUT(EXPENSES_ENDPOINT + '/' + expense.id, { "value": item['value'], "date": new Date() })
+    if (item == null || typeof item !== 'object')
+      return
+
+    let shouldSend: boolean = false
+    let request: ExpenseRequest = {} as ExpenseRequest
+
+    if ('value' in item && item.value != null) {
+      shouldSend = true
+      request.value = item.value as number
+    }
+
+    if ('categories' in item && item.categories != null && Array.isArray(item.categories)) {
+      shouldSend = true
+      request.categoryIds = item.categories.filter(item => !item.disabled).map(item => item.id)
+    }
+
+    if (shouldSend) {
+      request.date = new Date().toISOString()
+      const response = await handlePUT(EXPENSES_ENDPOINT + '/' + expense.id, request)
 
       if (response != null) {
         expense.value = response.value

@@ -35,7 +35,9 @@ export class Expense {
   }
 
   get asText(): string {
-    return `R$ ${this.__value.toLocaleString(this.__format, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    return this.__value != null
+      ? `R$ ${this.__value.toLocaleString(this.__format, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      : ''
   }
 
   set format(newFormat: LanguageOption) {
@@ -56,7 +58,7 @@ export class Expense {
   }
 
   get lastDate(): string {
-    if (this.__dates.length <= 0)
+    if (this.__dates.length <= 0 || this.__dates[this.__dates.length - 1] == null)
       return ''
 
     return this.__dates[this.__dates.length - 1].toLocaleDateString(this.__format)

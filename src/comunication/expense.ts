@@ -7,3 +7,9 @@ export interface ExpenseResponse {
   lastDate: string;
   categories: CategoryResponse[];
 }
+
+export interface ExpenseRequest {
+  value?: number;
+  date?: string;
+  categoryIds?: number[];
+}
