@@ -1,13 +1,40 @@
 import { Tag } from "./Tag"
 
 export class Category {
-  public static Categories: Category[] = []
+  private static __categories: Category[] = []
+  private static __categoriesDict: Record<number, number> = {}
 
-  static getTagList(categoryList: Array<Category> | undefined): Array<Tag> {
+  public static get Categories(): Category[] {
+    return [...this.__categories]
+  }
+
+  public static clearCategories(): void {
+    this.__categories = []
+    this.__categoriesDict = {}
+  }
+
+  public static addCategory(newCategory: Category): void {
+    this.__categoriesDict[newCategory.id] = this.__categories.length
+    this.__categories.push(newCategory)
+  }
+
+  static getTagList(categoryList: Array<Category> | undefined, isEnabledCategories: boolean = false): Array<Tag> {
     if (categoryList == null)
       return []
 
-    return categoryList.map(item => new Tag(item.id, item.name, true))
+    if (!isEnabledCategories)
+      return categoryList.map(item => new Tag(item.id, item.name, false))
+
+    let missingCategory: Record<number, number> = { ...this.__categoriesDict }
+    let newList = categoryList.map(item => {
+      delete missingCategory[item.id]
+      return new Tag(item.id, item.name, false)
+    })
+    Object
+      .values(missingCategory)
+      .forEach(item => newList.splice(item, 0, new Tag(this.__categories[item].id, this.__categories[item].name, true)))
+
+    return newList
   }
 
   private __id: number

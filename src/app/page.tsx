@@ -81,7 +81,7 @@ export default function Home() {
   }
 
   const expenseEditContent = (expense: Expense) => {
-    const tags: Array<Tag> = Category.getTagList(expense.categories)
+    const tags: Array<Tag> = Category.getTagList(expense.categories, true)
     return <ExpenseConfiguration
       oldValue={expense.value}
       oldCategories={tags}
@@ -125,8 +125,8 @@ export default function Home() {
       if (!(serverCategoriesList != null) || !Array.isArray(serverCategoriesList))
         throw Error('Invalid Category response')
 
-      Category.Categories = []
-      serverCategoriesList.forEach(category => Category.Categories.push(new Category(category.id, category.owner, category.name, category.dates)))
+      Category.clearCategories()
+      serverCategoriesList.forEach(category => Category.addCategory(new Category(category.id, category.owner, category.name, category.dates)))
     } catch (err) {
       console.error("HOME.useEffect.SyncCategories : [Error] erro=", err)
     }
@@ -145,7 +145,7 @@ export default function Home() {
     setValueList(expensesList)
   }, [language])
 
-  useEffect(() => setTagList(Category.getTagList(Category.Categories)), [Category.Categories])
+  useEffect(() => setTagList(Category.getTagList(Category.Categories, true)), [Category.Categories])
 
   return <main style={styles.page}>
     <Text textTag={TextTag.H1}>{getValue(TITLE_KEY)}</Text>
