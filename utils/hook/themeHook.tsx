@@ -172,7 +172,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     width: '100%',
     display: 'flex',
     gap: '0.5em',
-    padding: '0.4em',
+    padding: '0.4em 1em',
     alignItems: 'center',
     justifyContent: 'flex-end',
   },

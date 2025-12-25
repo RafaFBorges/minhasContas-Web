@@ -4,7 +4,14 @@ import React, { useEffect, useState } from 'react'
 
 import { FaPlus as AddIcon } from 'react-icons/fa'
 
-import { EXPENSES_ENDPOINT, handleDELETE, handleGET, handlePOST, handlePUT } from '@/comunication/ApiResthandler'
+import {
+  CATEGORIES_ENDPOINT,
+  EXPENSES_ENDPOINT,
+  handleDELETE,
+  handleGET,
+  handlePOST,
+  handlePUT
+} from '@/comunication/ApiResthandler'
 import { ExpenseResponse } from '@/comunication/expense'
 import { Expense } from '@/domain/Expense'
 import ThemeCard from '../../components/themeCard'
@@ -17,6 +24,7 @@ import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
 import { Category } from '@/domain/Category'
 import { CategoryResponse } from '@/comunication/category'
 import { Tag } from '@/domain/Tag'
+import TagList from '../../components/tagList'
 
 
 export default function Home() {
@@ -26,6 +34,8 @@ export default function Home() {
 
   const [value, setValue] = useState<number>(0)
   const [valueList, setValueList] = useState<Expense[]>([])
+  const [categoriesList, setCategoriesList] = useState<Category[]>([])
+  const [tagList, setTagList] = useState<Array<Tag>>([])
 
   const { openModal } = useModal()
   const { addKey, getValue, language } = useTranslate()
@@ -103,7 +113,24 @@ export default function Home() {
 
       setValueList(expensesList)
     } catch (err) {
-      console.error("HOME.useEffect : [Error] erro=", err)
+      console.error("HOME.useEffect.SyncExpenses : [Error] erro=", err)
+    }
+  }
+
+  async function SyncCategories() {
+    try {
+      console.log("HOME.useEffect : [initial load] fetching categories")
+
+      const serverCategoriesList: Promise<CategoryResponse[]> = await handleGET(CATEGORIES_ENDPOINT)
+
+      if (!(serverCategoriesList != null) || !Array.isArray(serverCategoriesList))
+        throw Error('Invalid Category response')
+
+      const categoriesList: Category[] = []
+      serverCategoriesList.forEach(category => categoriesList.push(new Category(category.id, category.owner, category.name, category.dates)))
+      setCategoriesList(categoriesList)
+    } catch (err) {
+      console.error("HOME.useEffect.SyncCategories : [Error] erro=", err)
     }
   }
 
@@ -111,6 +138,7 @@ export default function Home() {
 
   useEffect(() => {
     SyncExpenses()
+    SyncCategories()
   }, [])
 
   useEffect(() => {
@@ -118,6 +146,8 @@ export default function Home() {
     valueList.forEach(expense => expensesList.push(new Expense(expense.id, expense.value, expense.datesList, expense.categories, language)))
     setValueList(expensesList)
   }, [language])
+
+  useEffect(() => setTagList(Category.getTagList(categoriesList)), [categoriesList])
 
   return <main style={styles.page}>
     <Text textTag={TextTag.H1}>{getValue(TITLE_KEY)}</Text>
@@ -136,6 +166,7 @@ export default function Home() {
         Icon={AddIcon}
       />
     </div>
+    <TagList style={styles.tagContainer} tagList={tagList} selectable addNewTags allowEmpty />
     {valueList != null && valueList.map(item => {
       return <ThemeCard
         style={styles.cardContainer}
@@ -153,7 +184,7 @@ export default function Home() {
 
 const styles: { [key: string]: React.CSSProperties } = {
   page: {
-    padding: '0em 2em 2em 2rem',
+    padding: '0em 1em 1em 1rem',
     fontFamily: 'sans-serif',
   },
   flexRow: {
@@ -166,5 +197,8 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   cardContainer: {
     marginTop: '1.2rem',
+  },
+  tagContainer: {
+    marginTop: '0.5em',
   }
 }

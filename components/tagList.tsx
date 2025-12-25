@@ -84,6 +84,12 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: 'flex',
     flexDirection: 'row',
     gap: '0.4em',
+    maxWidth: '100%',
+    overflowX: 'auto',
+    WebkitOverflowScrolling: 'touch',
+    flexWrap: 'nowrap',
+    scrollbarWidth: 'none',
+    msOverflowStyle: 'none',
   },
   tagContainer: {
     border: '1px solid red',
