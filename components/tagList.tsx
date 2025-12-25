@@ -16,10 +16,20 @@ export interface TagListProps {
   color?: string;
   selectable?: boolean;
   addNewTags?: boolean;
+  allowEmpty?: boolean;
   onClick?: (item: number) => void | undefined;
 }
 
-export default function TagList({ style, tagList, setTagList = undefined, color = '', selectable = false, addNewTags = false, onClick = undefined }: TagListProps) {
+export default function TagList({
+  style,
+  tagList,
+  setTagList = undefined,
+  color = '',
+  selectable = false,
+  addNewTags = false,
+  allowEmpty = false,
+  onClick = undefined
+}: TagListProps) {
   const UNKOWN_CATEGORY_KEY = 'unkownCategory'
 
   const { getValue } = useTranslate()
@@ -53,7 +63,7 @@ export default function TagList({ style, tagList, setTagList = undefined, color 
 
   function printContainer() {
     if (tagList == null || tagList.length == 0)
-      return printTag(getValue(UNKOWN_CATEGORY_KEY), 0, false)
+      return allowEmpty ? null : printTag(getValue(UNKOWN_CATEGORY_KEY), 0, false)
 
     return tagList.map((item, index) => printTag(item != null ? item.name : getValue(UNKOWN_CATEGORY_KEY), index, item != null ? item.disabled : false))
   }
