@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, ReactNode, useState, useEffect } from 'react'
+import { createContext, useContext, ReactNode, useState } from 'react'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { FaPaintBrush as ThemeIcon, FaGlobe as LanguageIcon } from 'react-icons/fa'
 

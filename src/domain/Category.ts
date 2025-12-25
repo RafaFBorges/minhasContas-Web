@@ -1,10 +1,7 @@
 import { Tag } from "./Tag"
 
 export class Category {
-  private __id: number
-  private __owner: number
-  private __name: string
-  private __date: Date
+  public static Categories: Category[] = []
 
   static getTagList(categoryList: Array<Category> | undefined): Array<Tag> {
     if (categoryList == null)
@@ -12,6 +9,11 @@ export class Category {
 
     return categoryList.map(item => new Tag(item.id, item.name, true))
   }
+
+  private __id: number
+  private __owner: number
+  private __name: string
+  private __date: Date
 
   constructor(id: number, owner: number, name: string, date: Date | null = null) {
     this.__id = id

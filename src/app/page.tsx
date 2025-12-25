@@ -34,7 +34,6 @@ export default function Home() {
 
   const [value, setValue] = useState<number>(0)
   const [valueList, setValueList] = useState<Expense[]>([])
-  const [categoriesList, setCategoriesList] = useState<Category[]>([])
   const [tagList, setTagList] = useState<Array<Tag>>([])
 
   const { openModal } = useModal()
@@ -126,9 +125,8 @@ export default function Home() {
       if (!(serverCategoriesList != null) || !Array.isArray(serverCategoriesList))
         throw Error('Invalid Category response')
 
-      const categoriesList: Category[] = []
-      serverCategoriesList.forEach(category => categoriesList.push(new Category(category.id, category.owner, category.name, category.dates)))
-      setCategoriesList(categoriesList)
+      Category.Categories = []
+      serverCategoriesList.forEach(category => Category.Categories.push(new Category(category.id, category.owner, category.name, category.dates)))
     } catch (err) {
       console.error("HOME.useEffect.SyncCategories : [Error] erro=", err)
     }
@@ -147,7 +145,7 @@ export default function Home() {
     setValueList(expensesList)
   }, [language])
 
-  useEffect(() => setTagList(Category.getTagList(categoriesList)), [categoriesList])
+  useEffect(() => setTagList(Category.getTagList(Category.Categories)), [Category.Categories])
 
   return <main style={styles.page}>
     <Text textTag={TextTag.H1}>{getValue(TITLE_KEY)}</Text>
