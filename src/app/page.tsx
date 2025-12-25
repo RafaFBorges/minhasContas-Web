@@ -138,6 +138,7 @@ export default function Home() {
     </div>
     {valueList != null && valueList.map(item => {
       return <ThemeCard
+        style={styles.cardContainer}
         key={item.id}
         id={item.id}
         title={item.asText}
@@ -163,4 +164,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     maxWidth: '350px',
     boxSizing: 'border-box',
   },
+  cardContainer: {
+    marginTop: '1.2rem',
+  }
 }

@@ -5,6 +5,7 @@ import Card, { CardProps } from './api/card'
 import { useTheme } from '../utils/hook/themeHook'
 
 export default function ThemeCard({
+  style,
   title,
   date,
   categories,
@@ -15,6 +16,7 @@ export default function ThemeCard({
   const { config } = useTheme()
 
   return <Card
+    style={style}
     title={title}
     date={date}
     categories={categories}
