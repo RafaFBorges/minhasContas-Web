@@ -6,9 +6,9 @@ export class Category {
   private __name: string
   private __date: Date
 
-  static getTagList(categoryList: Array<Category> | undefined): Array<Tag> | null {
+  static getTagList(categoryList: Array<Category> | undefined): Array<Tag> {
     if (categoryList == null)
-      return null
+      return []
 
     return categoryList.map(item => new Tag(item.id, item.name, true))
   }

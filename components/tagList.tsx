@@ -11,19 +11,19 @@ import { Tag } from '@/domain/Tag'
 
 export interface TagListProps {
   style?: React.CSSProperties | null;
-  itensList: Array<Tag> | null;
+  tagList: Array<Tag> | null;
+  setTagList?: (newList: Array<Tag>) => void | undefined;
   color?: string;
   selectable?: boolean;
   addNewTags?: boolean;
   onClick?: (item: number) => void | undefined;
 }
 
-export default function TagList({ style, itensList, color = '', selectable = false, addNewTags = false, onClick = undefined }: TagListProps) {
+export default function TagList({ style, tagList, setTagList = undefined, color = '', selectable = false, addNewTags = false, onClick = undefined }: TagListProps) {
   const UNKOWN_CATEGORY_KEY = 'unkownCategory'
 
   const { getValue } = useTranslate()
   const { config } = useTheme()
-  const [tagList, setTagList] = useState(itensList)
 
   function printTag(name: string, index: number, isDisabled: boolean) {
     const tagColor: string = isDisabled
@@ -39,10 +39,9 @@ export default function TagList({ style, itensList, color = '', selectable = fal
       style={{ ...styles.tagContainer, borderColor: tagColor, backgroundColor: backColor }}
       onClick={selectable
         ? () => {
-          if (tagList != null && 0 <= index && index < tagList.length) {
+          if (tagList != null && 0 <= index && index < tagList.length && setTagList != null) {
             const newtag = tagList[index]
             newtag.disabled = !newtag.disabled
-            console.log('Clicou na tag> first=' + JSON.stringify(tagList.slice(0, index), null, 2) + ' netag=' + JSON.stringify(newtag, null, 2) + ' end=' + JSON.stringify(tagList.slice(index + 1), null, 2))
             setTagList([...tagList.slice(0, index), newtag, ...tagList.slice(index + 1)])
           }
         }

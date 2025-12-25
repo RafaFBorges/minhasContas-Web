@@ -6,16 +6,22 @@ import ModalContentProps from './ModalPagePropsInterface'
 import { useModal } from '../../utils/hook/modalHook'
 import Spin from '../../components/spin'
 import TagList from '../../components/tagList'
-import { Category } from '@/domain/Category'
+import { Tag } from '@/domain/Tag'
 
-interface ExpenseConfigurationProps extends ModalContentProps<number> {
+
+export interface ExpenseVerifyData {
+  value: number;
+  tags: Array<Tag>;
+}
+
+interface ExpenseConfigurationProps extends ModalContentProps<ExpenseVerifyData> {
   oldValue: number;
-  oldCategories: Array<Category>;
+  oldCategories: Array<Tag>;
 }
 
 export default function ExpenseConfiguration({ oldValue, oldCategories, enabledVerify = null }: ExpenseConfigurationProps) {
   const [value, setValue] = useState<number>(oldValue)
-  const [categories, setCategories] = useState<Array<Category>>(oldCategories)
+  const [categories, setCategories] = useState<Array<Tag>>(oldCategories.map((tag: Tag) => tag.clone()))
 
   const { setEnabledSave, setData } = useModal()
 
@@ -28,10 +34,14 @@ export default function ExpenseConfiguration({ oldValue, oldCategories, enabledV
 
   useEffect(() => {
     if (enabledVerify != null)
-      setEnabledSave(enabledVerify(value))
+      setEnabledSave(enabledVerify({
+        value: value,
+        tags: categories
+      }))
 
     setData('value', value)
-  }, [value])
+    setData('categories', categories)
+  }, [value, categories])
 
   return <div style={styles.content}>
     <Spin
@@ -40,7 +50,7 @@ export default function ExpenseConfiguration({ oldValue, oldCategories, enabledV
       changeHandle={handleChange}
       setValueHandle={setValue}
     />
-    <TagList style={styles.tagContainer} itensList={Category.getTagList(categories)} selectable addNewTags />
+    <TagList style={styles.tagContainer} tagList={categories} setTagList={setCategories} selectable addNewTags />
   </div>
 }
 

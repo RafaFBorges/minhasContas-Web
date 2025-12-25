@@ -9,13 +9,14 @@ import { ExpenseResponse } from '@/comunication/expense'
 import { Expense } from '@/domain/Expense'
 import ThemeCard from '../../components/themeCard'
 import { useModal } from '../../utils/hook/modalHook'
-import ExpenseConfiguration from './ExpenseConfiguration'
+import ExpenseConfiguration, { ExpenseVerifyData } from './ExpenseConfiguration'
 import ThemeButton from '../../components/themeButton'
 import Text, { TextTag } from '../../components/text'
 import Spin from '../../components/spin'
 import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
 import { Category } from '@/domain/Category'
 import { CategoryResponse } from '@/comunication/category'
+import { Tag } from '@/domain/Tag'
 
 
 export default function Home() {
@@ -71,10 +72,11 @@ export default function Home() {
   }
 
   const expenseEditContent = (expense: Expense) => {
+    const tags: Array<Tag> = Category.getTagList(expense.categories)
     return <ExpenseConfiguration
       oldValue={expense.value}
-      oldCategories={expense.categories}
-      enabledVerify={(item: number) => expense.value != item}
+      oldCategories={tags}
+      enabledVerify={(item: ExpenseVerifyData) => expense.value != item.value || !Tag.sameTagList(tags, item.tags)}
     />
   }
 
