@@ -57,10 +57,18 @@ export default function Home() {
   }
 
   const handleAddNewClick = async () => {
-    const response = await handlePOST(EXPENSES_ENDPOINT, { "value": value, "date": new Date() })
+    let request: ExpenseRequest = {}
+    request.value = value
+    request.categoryIds = tagList.filter(item => !item.disabled).map(item => item.id)
+    request.date = new Date().toISOString()
+    const response = await handlePOST(EXPENSES_ENDPOINT, request)
 
-    if (response != null)
-      setValueList([...valueList, new Expense(response.id, response.value, response.dates, response.category, language)])
+    if (response != null) {
+      const categoryList: Category[] = []
+      response.categories.forEach((category: CategoryResponse) => categoryList.push(new Category(category.id, category.owner, category.name)))
+
+      setValueList([...valueList, new Expense(response.id, response.value, response.dates, categoryList, language)])
+    }
   }
 
   const handleDeleteClick = async (index: number) => {
@@ -74,7 +82,7 @@ export default function Home() {
       return
 
     let shouldSend: boolean = false
-    let request: ExpenseRequest = {} as ExpenseRequest
+    let request: ExpenseRequest = {}
 
     if ('value' in item && item.value != null) {
       shouldSend = true
@@ -187,7 +195,7 @@ export default function Home() {
         Icon={AddIcon}
       />
     </div>
-    <TagList style={styles.tagContainer} tagList={tagList} selectable addNewTags allowEmpty />
+    <TagList style={styles.tagContainer} tagList={tagList} setTagList={setTagList} selectable addNewTags allowEmpty />
     {valueList != null && valueList.map(item => {
       return <ThemeCard
         style={styles.cardContainer}
