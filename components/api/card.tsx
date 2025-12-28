@@ -64,13 +64,14 @@ export default function Card({ title, date, categories, style = null, id = -1, e
 
 const styles: { [key: string]: React.CSSProperties } = {
   card: {
+    flexShrink: 0,
     borderRadius: '8px',
     boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
     overflow: 'hidden',
     maxWidth: '350px',
   },
   content: {
-    padding: '1rem',
+    padding: '0.7rem',
   },
   flexRow: {
     display: 'flex',

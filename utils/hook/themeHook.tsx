@@ -135,7 +135,7 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
       config,
     }}
   >
-    <body className={`${geistSans.variable} ${geistMono.variable}`} style={{ backgroundColor: config.backgroundColor }}>
+    <body className={`${geistSans.variable} ${geistMono.variable}`} style={{ ...styles.body, backgroundColor: config.backgroundColor }}>
       <div style={styles.row}>
         <ThemeButton
           isSecondary
@@ -168,7 +168,14 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
 }
 
 const styles: { [key: string]: React.CSSProperties } = {
+  body: {
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: '100vh',
+  },
   row: {
+    flexGrow: 0,
+    boxSizing: 'border-box',
     width: '100%',
     display: 'flex',
     gap: '0.5em',

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 import { FaPlus as AddIcon } from 'react-icons/fa'
 
@@ -68,7 +68,11 @@ export default function TagList({
     return tagList.map((item, index) => printTag(item != null ? item.name : getValue(UNKOWN_CATEGORY_KEY), index, item != null ? item.disabled : false))
   }
 
-  return <div style={{ ...styles.container, ...style }}>
+  return <div style={{
+    ...styles.container,
+    height: addNewTags ? '46px' : '40px',
+    ...style
+  }}>
     {addNewTags &&
       <ThemeButton
         clickHandle={() => console.log('Clicou')}
@@ -85,9 +89,11 @@ const styles: { [key: string]: React.CSSProperties } = {
     flexDirection: 'row',
     gap: '0.4em',
     maxWidth: '100%',
+    boxSizing: 'border-box',
+    flexWrap: 'nowrap',
+    alignItems: 'center',
     overflowX: 'auto',
     WebkitOverflowScrolling: 'touch',
-    flexWrap: 'nowrap',
     scrollbarWidth: 'none',
     msOverflowStyle: 'none',
   },

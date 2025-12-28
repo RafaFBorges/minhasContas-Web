@@ -196,18 +196,19 @@ export default function Home() {
       />
     </div>
     <TagList style={styles.tagContainer} tagList={tagList} setTagList={setTagList} selectable addNewTags allowEmpty />
-    {valueList != null && valueList.map(item => {
-      return <ThemeCard
-        style={styles.cardContainer}
-        key={item.id}
-        id={item.id}
-        title={item.asText}
-        categories={item.categories}
-        editClickHandle={() => handleEditClick(item)}
-        deleteClickHandle={handleDeleteClick}
-        date={item.lastDate}
-      />
-    })}
+    <div style={styles.scrollList}>
+      {valueList != null && valueList.map(item => {
+        return <ThemeCard
+          key={item.id}
+          id={item.id}
+          title={item.asText}
+          categories={item.categories}
+          editClickHandle={() => handleEditClick(item)}
+          deleteClickHandle={handleDeleteClick}
+          date={item.lastDate}
+        />
+      })}
+    </div>
   </main>
 }
 
@@ -215,6 +216,11 @@ const styles: { [key: string]: React.CSSProperties } = {
   page: {
     padding: '0em 1em 1em 1rem',
     fontFamily: 'sans-serif',
+    display: 'flex',
+    flexDirection: 'column',
+    flex: 1,
+    minHeight: 0,
+    boxSizing: 'border-box',
   },
   flexRow: {
     display: 'flex',
@@ -224,10 +230,16 @@ const styles: { [key: string]: React.CSSProperties } = {
     maxWidth: '350px',
     boxSizing: 'border-box',
   },
-  cardContainer: {
-    marginTop: '1.2rem',
-  },
   tagContainer: {
     marginTop: '0.5em',
+  },
+  scrollList: {
+    flexGrow: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    overflowY: 'auto',
+    boxSizing: 'border-box',
+    gap: '0.7em',
+    marginTop: '1em',
   }
 }

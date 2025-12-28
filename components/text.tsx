@@ -22,7 +22,15 @@ interface TextProps {
   color?: string;
 }
 
-export default function Text({ children, textTag = TextTag.P, style = null, disabled = false, noWrap = false, noSelection = false, color = '' }: TextProps) {
+export default function Text({
+  children,
+  textTag = TextTag.P,
+  style = null,
+  disabled = false,
+  noWrap = false,
+  noSelection = false,
+  color = ''
+}: TextProps) {
   const { config } = useTheme()
 
   let textStyle: React.CSSProperties = (style != null)
