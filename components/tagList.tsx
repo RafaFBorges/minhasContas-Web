@@ -68,11 +68,7 @@ export default function TagList({
     return tagList.map((item, index) => printTag(item != null ? item.name : getValue(UNKOWN_CATEGORY_KEY), index, item != null ? item.disabled : false))
   }
 
-  return <div style={{
-    ...styles.container,
-    height: addNewTags ? '46px' : '40px',
-    ...style
-  }}>
+  return <div style={{ ...styles.container, ...style }}>
     {addNewTags &&
       <ThemeButton
         clickHandle={() => console.log('Clicou')}
@@ -86,6 +82,7 @@ export default function TagList({
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
     display: 'flex',
+    flexShrink: 0,
     flexDirection: 'row',
     gap: '0.4em',
     maxWidth: '100%',
