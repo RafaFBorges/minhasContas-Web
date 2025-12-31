@@ -25,6 +25,7 @@ import { Category } from '@/domain/Category'
 import { CategoryResponse } from '@/comunication/category'
 import { Tag } from '@/domain/Tag'
 import TagList from '../../components/tagList'
+import FilterList from '../../components/filterList'
 
 
 export default function Home() {
@@ -36,6 +37,7 @@ export default function Home() {
   const [valueList, setValueList] = useState<Expense[]>([])
   const [categoriesList, setCategoriesList] = useState<Category[]>([])
   const [tagList, setTagList] = useState<Array<Tag>>([])
+  const [filterList, setFilterList] = useState<Array<Tag>>([])
 
   const { openModal } = useModal()
   const { addKey, getValue, language } = useTranslate()
@@ -176,7 +178,10 @@ export default function Home() {
     setValueList(expensesList)
   }, [language])
 
-  useEffect(() => setTagList(Category.getTagList(categoriesList, true)), [categoriesList])
+  useEffect(() => {
+    setTagList(Category.getTagList(categoriesList, true))
+    setFilterList(Category.getTagList(categoriesList, true))
+  }, [categoriesList])
 
   return <main style={styles.page}>
     <Text textTag={TextTag.H1}>{getValue(TITLE_KEY)}</Text>
@@ -196,6 +201,8 @@ export default function Home() {
       />
     </div>
     <TagList style={styles.tagContainer} tagList={tagList} setTagList={setTagList} selectable addNewTags allowEmpty />
+
+    <FilterList style={styles.filterContainer} tagList={filterList} setTagList={setFilterList} />
     <div style={styles.scrollList}>
       {valueList != null && valueList.map(item => {
         return <ThemeCard
@@ -230,6 +237,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     maxWidth: '350px',
     boxSizing: 'border-box',
   },
+  filterContainer: {
+    marginTop: '1.2em',
+  },
   tagContainer: {
     marginTop: '0.5em',
   },
@@ -240,6 +250,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     overflowY: 'auto',
     boxSizing: 'border-box',
     gap: '0.7em',
-    marginTop: '1em',
+    marginTop: '0.3em',
   }
 }

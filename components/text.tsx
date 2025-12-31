@@ -20,6 +20,7 @@ interface TextProps {
   noWrap?: boolean;
   noSelection?: boolean;
   color?: string;
+  onClick?: (item: number) => void;
 }
 
 export default function Text({
@@ -29,7 +30,8 @@ export default function Text({
   disabled = false,
   noWrap = false,
   noSelection = false,
-  color = ''
+  color = '',
+  onClick = () => { }
 }: TextProps) {
   const { config } = useTheme()
 
@@ -49,7 +51,7 @@ export default function Text({
   if (noSelection)
     textStyle = { ...textStyle, ...styles.notSelectable }
 
-  return React.createElement(textTag, { style: textStyle }, children)
+  return React.createElement(textTag, { style: textStyle, onClick: onClick }, children)
 }
 
 const styles: { [key: string]: React.CSSProperties } = {

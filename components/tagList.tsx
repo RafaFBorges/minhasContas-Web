@@ -17,7 +17,6 @@ export interface TagListProps {
   selectable?: boolean;
   addNewTags?: boolean;
   allowEmpty?: boolean;
-  onClick?: (item: number) => void | undefined;
 }
 
 export default function TagList({
@@ -28,7 +27,6 @@ export default function TagList({
   selectable = false,
   addNewTags = false,
   allowEmpty = false,
-  onClick = undefined
 }: TagListProps) {
   const UNKOWN_CATEGORY_KEY = 'unkownCategory'
 
