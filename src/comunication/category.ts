@@ -4,3 +4,9 @@ export interface CategoryResponse {
   date: string;
   owner: number;
 }
+
+export interface CategoryRequest {
+  name: string;
+  owner?: number;
+  date?: string;
+}

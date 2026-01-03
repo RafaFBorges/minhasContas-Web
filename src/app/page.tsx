@@ -166,9 +166,8 @@ export default function Home() {
     }
   }
 
-  translate()
-
   useEffect(() => {
+    translate()
     SyncExpenses()
     SyncCategories()
   }, [])
@@ -201,7 +200,7 @@ export default function Home() {
         Icon={AddIcon}
       />
     </div>
-    <TagList style={styles.tagContainer} tagList={tagList} setTagList={setTagList} selectable addNewTags allowEmpty />
+    <TagList style={styles.tagContainer} tagList={tagList} setTagList={setTagList} setCategories={setCategoriesList} selectable addNewTags allowEmpty />
 
     <FilterList
       style={styles.filterContainer}

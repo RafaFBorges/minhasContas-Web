@@ -1,13 +1,18 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import { FaPlus as AddIcon } from 'react-icons/fa'
 
 import Text, { TextTag } from '../text'
-import { useTranslate } from '../../utils/hook/translateHook'
+import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
 import { isLight, lightenCor } from '../../utils/colors'
 import ThemeButton from '../themeButton'
 import { useTheme } from '../../utils/hook/themeHook'
 import { Tag } from '@/domain/Tag'
+import { useModal } from '../../utils/hook/modalHook'
+import CategoryConfiguration, { CategoryVerifyData } from '@/app/CategoryConfiguration'
+import { CategoryRequest } from '@/comunication/category'
+import { CATEGORIES_ENDPOINT, handlePOST } from '@/comunication/ApiResthandler'
+import { Category } from '@/domain/Category'
 
 export interface TagListProps {
   style?: React.CSSProperties | null;
@@ -17,6 +22,7 @@ export interface TagListProps {
   selectable?: boolean;
   addNewTags?: boolean;
   allowEmpty?: boolean;
+  setCategories?: (newList: Category[]) => void | undefined;
 }
 
 export default function TagList({
@@ -27,11 +33,45 @@ export default function TagList({
   selectable = false,
   addNewTags = false,
   allowEmpty = false,
+  setCategories = undefined,
 }: TagListProps) {
+  const NEW_CATEGORY_TITLE_KEY = 'TagList.PropertiesTitle'
   const UNKOWN_CATEGORY_KEY = 'unkownCategory'
 
-  const { getValue } = useTranslate()
+  const { getValue, addKey } = useTranslate()
   const { config } = useTheme()
+  const { openModal } = useModal()
+
+  const handleCreateCategory = async (item: CategoryVerifyData) => {
+    let request: CategoryRequest = {} as CategoryRequest
+    request.name = item.name
+    request.owner = 1
+    request.date = new Date().toISOString()
+    const response = await handlePOST(CATEGORIES_ENDPOINT, request)
+
+    if (response != null) {
+      Category.addCategory(new Category(response.id, response.owner, response.name, response.date))
+
+      if (setCategories != null)
+        setCategories(Category.Categories)
+    }
+  }
+
+  const categoryCreate = () => {
+    return <CategoryConfiguration
+      oldValue={''}
+      enabledVerify={(item: CategoryVerifyData) => item != null && item.name != '' && 4 <= item.name.length}
+    />
+  }
+
+  const handleEditClick = () => {
+    openModal(getValue(NEW_CATEGORY_TITLE_KEY), categoryCreate, (item: unknown) => handleCreateCategory(item as CategoryVerifyData), true)
+  }
+
+  function translate() {
+    addKey(NEW_CATEGORY_TITLE_KEY, 'Nova categoria', LanguageOption.PT_BR)
+    addKey(NEW_CATEGORY_TITLE_KEY, 'New category', LanguageOption.EN)
+  }
 
   function printTag(name: string, index: number, isDisabled: boolean) {
     const tagColor: string = isDisabled
@@ -66,10 +106,12 @@ export default function TagList({
     return tagList.map((item, index) => printTag(item != null ? item.name : getValue(UNKOWN_CATEGORY_KEY), index, item != null ? item.disabled : false))
   }
 
+  useEffect(() => translate(), [])
+
   return <div style={{ ...styles.container, ...style }}>
     {addNewTags &&
       <ThemeButton
-        clickHandle={() => console.log('Clicou')}
+        clickHandle={handleEditClick}
         Icon={AddIcon}
       />
     }
