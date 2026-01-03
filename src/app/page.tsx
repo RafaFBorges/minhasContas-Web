@@ -144,7 +144,6 @@ export default function Home() {
       })
 
       setValueList(expensesList)
-      setFilteredexpenses(expensesList)
     } catch (err) {
       console.error("HOME.useEffect.SyncExpenses : [Error] erro=", err)
     }

@@ -73,6 +73,12 @@ export default function FilterList({
     </Text>
   }
 
+  function printContainer() {
+    return (tagList == null || tagList.length == 0)
+      ? null
+      : tagList.map((item, index) => item != null ? printTag(item.name, index, item.disabled) : null)
+  }
+
   useEffect(() => {
     if (setTagList != null && tagList != null && 0 < tagList.length && tagList[0].name != 'Todas') {
       selected.current = 0
@@ -87,11 +93,15 @@ export default function FilterList({
 
   }, [tagList])
 
-  function printContainer() {
-    return (tagList == null || tagList.length == 0)
-      ? null
-      : tagList.map((item, index) => item != null ? printTag(item.name, index, item.disabled) : null)
-  }
+  useEffect(() => {
+    if (setter != null && listToFilter != null && filterCondition != null) {
+      const index: number = selected == null || selected.current == null ? -1 : selected.current
+
+      tagList == null || index <= 0
+        ? setter(listToFilter)
+        : setter(listToFilter.filter(item => filterCondition(item, tagList[index])))
+    }
+  }, [listToFilter])
 
   return <div style={{ ...styles.container, ...style }}>
     <FilterIcon
