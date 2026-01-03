@@ -6,7 +6,7 @@ import ThemeButton from '../themeButton'
 import Text, { TextTag } from '../text'
 import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
 import { Category } from '@/domain/Category'
-import TagList from '../tagList'
+import TagList from '../lists/tagList'
 
 export interface CardProps {
   style?: React.CSSProperties | null;

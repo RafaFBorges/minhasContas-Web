@@ -2,11 +2,11 @@ import React from 'react'
 
 import { FaPlus as AddIcon } from 'react-icons/fa'
 
-import Text, { TextTag } from './text'
-import { useTranslate } from './../utils/hook/translateHook'
-import { isLight, lightenCor } from './../utils/colors'
-import ThemeButton from './themeButton'
-import { useTheme } from '../utils/hook/themeHook'
+import Text, { TextTag } from '../text'
+import { useTranslate } from '../../utils/hook/translateHook'
+import { isLight, lightenCor } from '../../utils/colors'
+import ThemeButton from '../themeButton'
+import { useTheme } from '../../utils/hook/themeHook'
 import { Tag } from '@/domain/Tag'
 
 export interface TagListProps {

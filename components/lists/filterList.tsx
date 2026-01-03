@@ -2,9 +2,9 @@ import React, { useEffect, useRef } from 'react'
 
 import { FaFilter as FilterIcon } from 'react-icons/fa'
 
-import Text, { TextTag } from './text'
-import { lightenCor } from './../utils/colors'
-import { useTheme } from '../utils/hook/themeHook'
+import Text, { TextTag } from '../text'
+import { lightenCor } from '../../utils/colors'
+import { useTheme } from '../../utils/hook/themeHook'
 import { Tag } from '@/domain/Tag'
 import { Expense } from '@/domain/Expense'
 

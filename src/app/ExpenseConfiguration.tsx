@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react'
 import ModalContentProps from './ModalPagePropsInterface'
 import { useModal } from '../../utils/hook/modalHook'
 import Spin from '../../components/spin'
-import TagList from '../../components/tagList'
+import TagList from '../../components/lists/tagList'
 import { Tag } from '@/domain/Tag'
 
 

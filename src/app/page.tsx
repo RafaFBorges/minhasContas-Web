@@ -24,8 +24,8 @@ import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
 import { Category } from '@/domain/Category'
 import { CategoryResponse } from '@/comunication/category'
 import { Tag } from '@/domain/Tag'
-import TagList from '../../components/tagList'
-import FilterList from '../../components/filterList'
+import TagList from '../../components/lists/tagList'
+import FilterList from '../../components/lists/filterList'
 
 
 export default function Home() {
