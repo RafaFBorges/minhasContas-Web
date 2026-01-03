@@ -6,10 +6,14 @@ import Text, { TextTag } from './text'
 import { lightenCor } from './../utils/colors'
 import { useTheme } from '../utils/hook/themeHook'
 import { Tag } from '@/domain/Tag'
+import { Expense } from '@/domain/Expense'
 
 export interface FilterListProps {
   style?: React.CSSProperties | null;
   tagList: Array<Tag> | null;
+  listToFilter?: Expense[];
+  setter?: (newList: Expense[]) => void | undefined;
+  filterCondition?: (item: Expense, category: Tag) => boolean;
   setTagList?: (newList: Array<Tag>) => void | undefined;
   color?: string;
   onClick?: (item: number) => void | undefined;
@@ -20,6 +24,9 @@ export default function FilterList({
   tagList,
   setTagList = undefined,
   color = '',
+  listToFilter = undefined,
+  setter = undefined,
+  filterCondition = undefined,
   onClick = undefined
 }: FilterListProps) {
   const { config } = useTheme()
@@ -51,6 +58,12 @@ export default function FilterList({
           }
 
           setTagList(newList)
+
+          if (setter != null && listToFilter != null && filterCondition != null) {
+            selected.current == 0
+              ? setter(listToFilter)
+              : setter(listToFilter.filter(item => filterCondition(item, newList[index])))
+          }
         }
 
         onClick != null ? onClick : () => { console.log('CLICOU CARAI') }
@@ -73,11 +86,11 @@ export default function FilterList({
     }
 
   }, [tagList])
-  function printContainer() {
-    if (tagList == null || tagList.length == 0)
-      return
 
-    return tagList.map((item, index) => printTag(item != null ? item.name : getValue(UNKOWN_CATEGORY_KEY), index, item != null ? item.disabled : false))
+  function printContainer() {
+    return (tagList == null || tagList.length == 0)
+      ? null
+      : tagList.map((item, index) => item != null ? printTag(item.name, index, item.disabled) : null)
   }
 
   return <div style={{ ...styles.container, ...style }}>

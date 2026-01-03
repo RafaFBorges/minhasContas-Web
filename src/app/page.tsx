@@ -35,6 +35,7 @@ export default function Home() {
 
   const [value, setValue] = useState<number>(0)
   const [valueList, setValueList] = useState<Expense[]>([])
+  const [filteredexpenses, setFilteredexpenses] = useState<Expense[]>([])
   const [categoriesList, setCategoriesList] = useState<Category[]>([])
   const [tagList, setTagList] = useState<Array<Tag>>([])
   const [filterList, setFilterList] = useState<Array<Tag>>([])
@@ -143,6 +144,7 @@ export default function Home() {
       })
 
       setValueList(expensesList)
+      setFilteredexpenses(expensesList)
     } catch (err) {
       console.error("HOME.useEffect.SyncExpenses : [Error] erro=", err)
     }
@@ -202,9 +204,16 @@ export default function Home() {
     </div>
     <TagList style={styles.tagContainer} tagList={tagList} setTagList={setTagList} selectable addNewTags allowEmpty />
 
-    <FilterList style={styles.filterContainer} tagList={filterList} setTagList={setFilterList} />
+    <FilterList
+      style={styles.filterContainer}
+      tagList={filterList}
+      setTagList={setFilterList}
+      listToFilter={valueList}
+      setter={setFilteredexpenses}
+      filterCondition={(item: Expense, category: Tag): boolean => item.isCategory(category.id)}
+    />
     <div style={styles.scrollList}>
-      {valueList != null && valueList.map(item => {
+      {filteredexpenses != null && filteredexpenses.map(item => {
         return <ThemeCard
           key={item.id}
           id={item.id}

@@ -63,4 +63,12 @@ export class Expense {
 
     return this.__dates[this.__dates.length - 1].toLocaleDateString(this.__format)
   }
+
+  public isCategory(id: number) {
+    for (let i = 0; i < this.__categories.length; i++)
+      if (this.__categories[i].id == id)
+        return true
+
+    return false
+  }
 }
