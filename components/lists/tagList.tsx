@@ -118,17 +118,25 @@ export default function TagList({
         Icon={AddIcon}
       />
     }
-    {printContainer()}
-  </div >
+    <div style={{ ...styles.containerList }}>{printContainer()}</div>
+  </div>
 }
 
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
     display: 'flex',
-    flexShrink: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: '0.4em',
+    width: '100%',
+    boxSizing: 'border-box',
+  },
+  containerList: {
+    flex: 1,
+    minWidth: 0,
+    display: 'flex',
     flexDirection: 'row',
     gap: '0.4em',
-    maxWidth: '100%',
     boxSizing: 'border-box',
     flexWrap: 'nowrap',
     alignItems: 'center',

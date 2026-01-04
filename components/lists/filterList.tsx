@@ -97,17 +97,28 @@ export default function FilterList({
       color={config.color}
       size={24}
     />
-    {printContainer()}
-  </div >
+    <div style={{ ...styles.containerList }}>
+      {printContainer()}
+    </div >
+  </div>
 }
 
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
     display: 'flex',
-    flexShrink: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: '0.4em',
+    width: '100%',
+    boxSizing: 'border-box',
+  },
+  containerList: {
+    flex: 1,
+    minWidth: 0,
+    display: 'flex',
     flexDirection: 'row',
     gap: '0.6em',
-    maxWidth: '100%',
     boxSizing: 'border-box',
     flexWrap: 'nowrap',
     alignItems: 'center',
