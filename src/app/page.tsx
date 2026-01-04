@@ -4,16 +4,28 @@ import React, { useEffect, useState } from 'react'
 
 import { FaPlus as AddIcon } from 'react-icons/fa'
 
-import { EXPENSES_ENDPOINT, handleDELETE, handleGET, handlePOST, handlePUT } from '@/comunication/ApiResthandler'
-import { ExpenseResponse } from '@/comunication/expense'
+import {
+  CATEGORIES_ENDPOINT,
+  EXPENSES_ENDPOINT,
+  handleDELETE,
+  handleGET,
+  handlePOST,
+  handlePUT
+} from '@/comunication/ApiResthandler'
+import { ExpenseRequest, ExpenseResponse } from '@/comunication/expense'
 import { Expense } from '@/domain/Expense'
 import ThemeCard from '../../components/themeCard'
 import { useModal } from '../../utils/hook/modalHook'
-import ExpenseConfiguration from './ExpenseConfiguration'
+import ExpenseConfiguration, { ExpenseVerifyData } from './ExpenseConfiguration'
 import ThemeButton from '../../components/themeButton'
 import Text, { TextTag } from '../../components/text'
 import Spin from '../../components/spin'
 import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
+import { Category } from '@/domain/Category'
+import { CategoryResponse } from '@/comunication/category'
+import { Tag } from '@/domain/Tag'
+import TagList from '../../components/lists/tagList'
+import FilterList from '../../components/lists/filterList'
 
 
 export default function Home() {
@@ -23,6 +35,10 @@ export default function Home() {
 
   const [value, setValue] = useState<number>(0)
   const [valueList, setValueList] = useState<Expense[]>([])
+  const [filteredexpenses, setFilteredexpenses] = useState<Expense[]>([])
+  const [categoriesList, setCategoriesList] = useState<Category[]>([])
+  const [tagList, setTagList] = useState<Array<Tag>>([])
+  const [filterList, setFilterList] = useState<Array<Tag>>([])
 
   const { openModal } = useModal()
   const { addKey, getValue, language } = useTranslate()
@@ -44,10 +60,18 @@ export default function Home() {
   }
 
   const handleAddNewClick = async () => {
-    const response = await handlePOST(EXPENSES_ENDPOINT, { "value": value, "date": new Date() })
+    const request: ExpenseRequest = {}
+    request.value = value
+    request.categoryIds = tagList.filter(item => !item.disabled).map(item => item.id)
+    request.date = new Date().toISOString()
+    const response = await handlePOST(EXPENSES_ENDPOINT, request)
 
-    if (response != null)
-      setValueList([...valueList, new Expense(response.id, response.value, response.dates, response.category, language)])
+    if (response != null) {
+      const categoryList: Category[] = []
+      response.categories.forEach((category: CategoryResponse) => categoryList.push(new Category(category.id, category.owner, category.name)))
+
+      setValueList([...valueList, new Expense(response.id, response.value, response.dates, categoryList, language)])
+    }
   }
 
   const handleDeleteClick = async (index: number) => {
@@ -57,21 +81,45 @@ export default function Home() {
   }
 
   const handleEditExpense = async (item: unknown, expense: Expense) => {
-    if (item != null && typeof item === 'object' && 'value' in item && item['value'] != null) {
-      const response = await handlePUT(EXPENSES_ENDPOINT + '/' + expense.id, { "value": item['value'], "date": new Date() })
+    if (item == null || typeof item !== 'object')
+      return
+
+    let shouldSend: boolean = false
+    const request: ExpenseRequest = {}
+
+    if ('value' in item && item.value != null) {
+      shouldSend = true
+      request.value = item.value as number
+    }
+
+    if ('categories' in item && item.categories != null && Array.isArray(item.categories)) {
+      shouldSend = true
+      request.categoryIds = item.categories.filter(item => !item.disabled).map(item => item.id)
+    }
+
+    if (shouldSend) {
+      request.date = new Date().toISOString()
+      const response = await handlePUT(EXPENSES_ENDPOINT + '/' + expense.id, request)
 
       if (response != null) {
-        expense.value = response.value
-        expense.date = response.lastDate
-        setValueList([...valueList])
+        const categoryList: Category[] = []
+        response.categories.forEach((category: CategoryResponse) => categoryList.push(new Category(category.id, category.owner, category.name)))
+
+        setValueList(valueList.map(item => {
+          return (item.id == response.id)
+            ? new Expense(response.id, response.value, response.dates, categoryList, language)
+            : item
+        }))
       }
     }
   }
 
   const expenseEditContent = (expense: Expense) => {
+    const tags: Array<Tag> = Category.getTagList(expense.categories, true)
     return <ExpenseConfiguration
       oldValue={expense.value}
-      enabledVerify={(item: number) => expense.value != item}
+      oldCategories={tags}
+      enabledVerify={(item: ExpenseVerifyData) => expense.value != item.value || !Tag.sameTagList(tags, item.tags)}
     />
   }
 
@@ -89,24 +137,53 @@ export default function Home() {
         throw Error('Invalid Expense response')
 
       const expensesList: Expense[] = []
-      serverExpensesList.forEach(expense => expensesList.push(new Expense(expense.id, expense.value, expense.dates, expense.category, language)))
+      serverExpensesList.forEach(expense => {
+        const categoryList: Category[] = []
+        expense.categories.forEach((category: CategoryResponse) => categoryList.push(new Category(category.id, category.owner, category.name)))
+        expensesList.push(new Expense(expense.id, expense.value, expense.dates, categoryList, language))
+      })
+
       setValueList(expensesList)
     } catch (err) {
-      console.error("HOME.useEffect : [Error] erro=", err)
+      console.error("HOME.useEffect.SyncExpenses : [Error] erro=", err)
     }
   }
 
-  translate()
+  async function SyncCategories() {
+    try {
+      console.log("HOME.useEffect : [initial load] fetching categories")
+
+      const serverCategoriesList: Promise<CategoryResponse[]> = await handleGET(CATEGORIES_ENDPOINT)
+
+      if (!(serverCategoriesList != null) || !Array.isArray(serverCategoriesList))
+        throw Error('Invalid Category response')
+
+      Category.clearCategories()
+      serverCategoriesList.forEach(category => Category.addCategory(new Category(category.id, category.owner, category.name, category.dates)))
+      setCategoriesList(Category.Categories)
+    } catch (err) {
+      console.error("HOME.useEffect.SyncCategories : [Error] erro=", err)
+    }
+  }
 
   useEffect(() => {
+    translate()
     SyncExpenses()
+    SyncCategories()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
     const expensesList: Expense[] = []
-    valueList.forEach(expense => expensesList.push(new Expense(expense.id, expense.value, expense.datesList, expense.category, language)))
+    valueList.forEach(expense => expensesList.push(new Expense(expense.id, expense.value, expense.datesList, expense.categories, language)))
     setValueList(expensesList)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language])
+
+  useEffect(() => {
+    setTagList(Category.getTagList(categoriesList, true))
+    setFilterList(Category.getTagList(categoriesList, true))
+  }, [categoriesList])
 
   return <main style={styles.page}>
     <Text textTag={TextTag.H1}>{getValue(TITLE_KEY)}</Text>
@@ -125,24 +202,41 @@ export default function Home() {
         Icon={AddIcon}
       />
     </div>
-    {valueList != null && valueList.map(item => {
-      return <ThemeCard
-        key={item.id}
-        id={item.id}
-        title={item.asText}
-        category={item.category}
-        editClickHandle={() => handleEditClick(item)}
-        deleteClickHandle={handleDeleteClick}
-        date={item.lastDate}
-      />
-    })}
+    <TagList style={styles.tagContainer} tagList={tagList} setTagList={setTagList} setCategories={setCategoriesList} selectable addNewTags allowEmpty />
+
+    <FilterList
+      style={styles.filterContainer}
+      tagList={filterList}
+      setTagList={setFilterList}
+      listToFilter={valueList}
+      setter={setFilteredexpenses}
+      filterCondition={(item: Expense, category: Tag): boolean => item.isCategory(category.id)}
+    />
+    <div style={styles.scrollList}>
+      {filteredexpenses != null && filteredexpenses.map(item => {
+        return <ThemeCard
+          key={item.id}
+          id={item.id}
+          title={item.asText}
+          categories={item.categories}
+          editClickHandle={() => handleEditClick(item)}
+          deleteClickHandle={handleDeleteClick}
+          date={item.lastDate}
+        />
+      })}
+    </div>
   </main>
 }
 
 const styles: { [key: string]: React.CSSProperties } = {
   page: {
-    padding: '0em 2em 2em 2rem',
+    padding: '0em 1em 1em 1rem',
     fontFamily: 'sans-serif',
+    display: 'flex',
+    flexDirection: 'column',
+    flex: 1,
+    minHeight: 0,
+    boxSizing: 'border-box',
   },
   flexRow: {
     display: 'flex',
@@ -152,4 +246,19 @@ const styles: { [key: string]: React.CSSProperties } = {
     maxWidth: '350px',
     boxSizing: 'border-box',
   },
+  filterContainer: {
+    marginTop: '1.2em',
+  },
+  tagContainer: {
+    marginTop: '0.5em',
+  },
+  scrollList: {
+    flexGrow: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    overflowY: 'auto',
+    boxSizing: 'border-box',
+    gap: '0.7em',
+    marginTop: '0.3em',
+  }
 }

@@ -5,9 +5,10 @@ import Card, { CardProps } from './api/card'
 import { useTheme } from '../utils/hook/themeHook'
 
 export default function ThemeCard({
+  style,
   title,
   date,
-  category,
+  categories,
   id = -1,
   editClickHandle = null,
   deleteClickHandle = null
@@ -15,9 +16,10 @@ export default function ThemeCard({
   const { config } = useTheme()
 
   return <Card
+    style={style}
     title={title}
     date={date}
-    category={category}
+    categories={categories}
     id={id}
     editClickHandle={editClickHandle}
     deleteClickHandle={deleteClickHandle}

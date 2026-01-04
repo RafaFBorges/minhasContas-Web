@@ -30,7 +30,7 @@ export default function StyledInput({
   if (style != null)
     inputStyle = { ...inputStyle, ...style }
 
-  if (type = 'number') {
+  if (type == 'number') {
     return <input
       type={type}
       name={name}

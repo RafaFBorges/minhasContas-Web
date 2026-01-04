@@ -1,17 +1,18 @@
 import { isValidLanguage, LanguageOption } from "../../utils/hook/translateHook"
+import { Category } from "./Category"
 
 export class Expense {
   private __id: number
   private __value: number
   private __dates: Array<Date>
-  private __category: string
+  private __categories: Array<Category>
   private __format: LanguageOption
 
-  constructor(id: number, value: number, date: Array<Date> = [], category: string = '', format: LanguageOption = LanguageOption.PT_BR) {
+  constructor(id: number, value: number, date: Array<Date> = [], categories: Array<Category> = [], format: LanguageOption = LanguageOption.PT_BR) {
     this.__id = id
     this.__value = value
     this.__dates = []
-    this.__category = category
+    this.__categories = categories
     this.__format = format
 
     date.forEach(item => this.__dates.push(new Date(item)))
@@ -29,12 +30,14 @@ export class Expense {
     this.__value = newValue
   }
 
-  get category(): string {
-    return this.__category
+  get categories(): Array<Category> {
+    return this.__categories
   }
 
   get asText(): string {
-    return `R$ ${this.__value.toLocaleString(this.__format, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    return this.__value != null
+      ? `R$ ${this.__value.toLocaleString(this.__format, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      : ''
   }
 
   set format(newFormat: LanguageOption) {
@@ -55,9 +58,17 @@ export class Expense {
   }
 
   get lastDate(): string {
-    if (this.__dates.length <= 0)
+    if (this.__dates.length <= 0 || this.__dates[this.__dates.length - 1] == null)
       return ''
 
     return this.__dates[this.__dates.length - 1].toLocaleDateString(this.__format)
+  }
+
+  public isCategory(id: number) {
+    for (let i = 0; i < this.__categories.length; i++)
+      if (this.__categories[i].id == id)
+        return true
+
+    return false
   }
 }

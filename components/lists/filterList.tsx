@@ -1,0 +1,133 @@
+import React, { useEffect, useRef } from 'react'
+
+import { FaFilter as FilterIcon } from 'react-icons/fa'
+
+import Text, { TextTag } from '../text'
+import { useTheme } from '../../utils/hook/themeHook'
+import { Tag } from '@/domain/Tag'
+import { Expense } from '@/domain/Expense'
+
+export interface FilterListProps {
+  style?: React.CSSProperties | null;
+  tagList: Array<Tag> | null;
+  listToFilter?: Expense[];
+  setter?: (newList: Expense[]) => void | undefined;
+  filterCondition?: (item: Expense, category: Tag) => boolean;
+  setTagList?: (newList: Array<Tag>) => void | undefined;
+}
+
+export default function FilterList({
+  style,
+  tagList,
+  setTagList = undefined,
+  listToFilter = undefined,
+  setter = undefined,
+  filterCondition = undefined,
+}: FilterListProps) {
+  const { config } = useTheme()
+  const selected = useRef<number | null>(0)
+
+  function printTag(name: string, index: number, isDisabled: boolean) {
+    return <Text
+      key={index}
+      noSelection
+      textTag={TextTag.P}
+      style={isDisabled ? {} : styles.selected}
+      color={config.fontColor}
+      onClick={() => {
+        if (tagList != null && 0 <= index && index < tagList.length && setTagList != null) {
+          const newList: Array<Tag> = [...tagList]
+          newList[index].disabled = false
+
+          if (selected != null && selected.current != null) {
+            newList[selected.current].disabled = true
+            selected.current = index
+          }
+
+          setTagList(newList)
+
+          if (setter != null && listToFilter != null && filterCondition != null) {
+            if (selected.current == 0)
+              setter(listToFilter)
+            else
+              setter(listToFilter.filter(item => filterCondition(item, newList[index])))
+          }
+        }
+      }}
+    >
+      {name}
+    </Text>
+  }
+
+  function printContainer() {
+    return (tagList == null || tagList.length == 0)
+      ? null
+      : tagList.map((item, index) => item != null ? printTag(item.name, index, item.disabled) : null)
+  }
+
+  useEffect(() => {
+    if (setTagList != null && tagList != null && 0 < tagList.length && tagList[0].name != 'Todas') {
+      selected.current = 0
+      setTagList([
+        new Tag(-1, 'Todas', false),
+        ...tagList.map(item => {
+          item.disabled = true
+          return item
+        })
+      ])
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tagList])
+
+  useEffect(() => {
+    if (setter != null && listToFilter != null && filterCondition != null) {
+      const index: number = selected == null || selected.current == null ? -1 : selected.current
+
+      if (tagList == null || index <= 0)
+        setter(listToFilter)
+      else
+        setter(listToFilter.filter(item => filterCondition(item, tagList[index])))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listToFilter])
+
+  return <div style={{ ...styles.container, ...style }}>
+    <FilterIcon
+      style={styles.icon}
+      color={config.color}
+      size={24}
+    />
+    {printContainer()}
+  </div >
+}
+
+const styles: { [key: string]: React.CSSProperties } = {
+  container: {
+    display: 'flex',
+    flexShrink: 0,
+    flexDirection: 'row',
+    gap: '0.6em',
+    maxWidth: '100%',
+    boxSizing: 'border-box',
+    flexWrap: 'nowrap',
+    alignItems: 'center',
+    overflowX: 'auto',
+    WebkitOverflowScrolling: 'touch',
+    scrollbarWidth: 'none',
+    msOverflowStyle: 'none',
+  },
+  tagContainer: {
+    border: '1px solid red',
+    borderRadius: '8px',
+    padding: '2px 4px',
+  },
+  title: {
+    fontSize: '0.85rem',
+  },
+  selected: {
+    fontWeight: 'bold',
+  },
+  icon: {
+    flexShrink: 0
+  }
+}

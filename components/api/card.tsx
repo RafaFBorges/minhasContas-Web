@@ -5,25 +5,28 @@ import { FaTrash as DeleteIcon, FaEdit as EditIcon } from 'react-icons/fa'
 import ThemeButton from '../themeButton'
 import Text, { TextTag } from '../text'
 import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
+import { Category } from '@/domain/Category'
+import TagList from '../lists/tagList'
 
 export interface CardProps {
+  style?: React.CSSProperties | null;
   title: string;
   date: string;
-  category?: string;
+  categories?: Array<Category>;
   id: number;
   editClickHandle?: null | ((index: number) => void);
   deleteClickHandle?: null | ((index: number) => void);
   backgroundColor?: string;
 }
 
-export default function Card({ title, date, category, id = -1, editClickHandle = null, deleteClickHandle = null, backgroundColor = '' }: CardProps) {
+export default function Card({ title, date, categories, style = null, id = -1, editClickHandle = null, deleteClickHandle = null, backgroundColor = '' }: CardProps) {
   const UNKOWN_CATEGORY_KEY = 'unkownCategory'
 
-  const { addKey, getValue } = useTranslate()
+  const { addKey } = useTranslate()
 
-  let style = styles.card
+  let cardStyle: React.CSSProperties = style != null ? { ...styles.card, ...style } : styles.card
   if (backgroundColor != '')
-    style = { ...style, backgroundColor: backgroundColor }
+    cardStyle = { ...cardStyle, backgroundColor: backgroundColor }
 
   function translate() {
     addKey(UNKOWN_CATEGORY_KEY, 'desconhecido', LanguageOption.PT_BR)
@@ -32,7 +35,7 @@ export default function Card({ title, date, category, id = -1, editClickHandle =
 
   translate()
 
-  return <div style={style}>
+  return <div style={cardStyle}>
     <div style={styles.content}>
       <div style={styles.flexRow}>
         <Text textTag={TextTag.H6} style={styles.title} noWrap>{title}</Text>
@@ -53,9 +56,7 @@ export default function Card({ title, date, category, id = -1, editClickHandle =
           }
         </div>
       </div>
-      <div style={styles.category}>
-        <Text textTag={TextTag.P} style={styles.categoryTitle} disabled>{category ? category : getValue(UNKOWN_CATEGORY_KEY)}</Text>
-      </div>
+      <TagList style={styles.tagList} tagList={Category.getTagList(categories)} />
       <Text textTag={TextTag.P} style={styles.date} disabled>{date}</Text>
     </div>
   </div>
@@ -63,14 +64,14 @@ export default function Card({ title, date, category, id = -1, editClickHandle =
 
 const styles: { [key: string]: React.CSSProperties } = {
   card: {
+    flexShrink: 0,
     borderRadius: '8px',
     boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
     overflow: 'hidden',
     maxWidth: '350px',
-    marginTop: '2rem',
   },
   content: {
-    padding: '1rem',
+    padding: '0.7rem',
   },
   flexRow: {
     display: 'flex',
@@ -80,12 +81,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     width: '100%',
     maxWidth: '350px',
     boxSizing: 'border-box',
-  },
-  category: {
-    margin: '0 0 0.5rem 0',
-  },
-  categoryTitle: {
-    fontSize: '0.85rem',
   },
   title: {
     fontSize: '1.25rem',
@@ -100,4 +95,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     margin: '0 0 1rem 0',
     fontSize: '1rem',
   },
+  tagList: {
+    margin: '0 0 0.5rem 0',
+  }
 }

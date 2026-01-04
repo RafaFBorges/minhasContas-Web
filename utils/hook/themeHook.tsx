@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, ReactNode, useState, useEffect } from 'react'
+import { createContext, useContext, ReactNode, useState } from 'react'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { FaPaintBrush as ThemeIcon, FaGlobe as LanguageIcon } from 'react-icons/fa'
 
@@ -21,6 +21,7 @@ const LIGHT_CONFIG = {
   fontColor: '#121212ff',
   disabledFontColor: '#555',
   cardBackground: '#fff',
+  tagDefaultColor: '#1439dcff',
 }
 
 const DARK_CONFIG = {
@@ -30,6 +31,7 @@ const DARK_CONFIG = {
   fontColor: '#fff',
   disabledFontColor: '#808080',
   cardBackground: '#1d1d1d',
+  tagDefaultColor: '#dc143cff',
 }
 
 const geistSans = Geist({
@@ -54,6 +56,7 @@ export interface ThemeStyleProps {
   fontColor: string;
   disabledFontColor: string;
   cardBackground: string;
+  tagDefaultColor: string;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
@@ -132,7 +135,7 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
       config,
     }}
   >
-    <body className={`${geistSans.variable} ${geistMono.variable}`} style={{ backgroundColor: config.backgroundColor }}>      
+    <body className={`${geistSans.variable} ${geistMono.variable}`} style={{ ...styles.body, backgroundColor: config.backgroundColor }}>
       <div style={styles.row}>
         <ThemeButton
           isSecondary
@@ -165,11 +168,18 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
 }
 
 const styles: { [key: string]: React.CSSProperties } = {
+  body: {
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: '100vh',
+  },
   row: {
+    flexGrow: 0,
+    boxSizing: 'border-box',
     width: '100%',
     display: 'flex',
     gap: '0.5em',
-    padding: '0.4em',
+    padding: '0.4em 1em',
     alignItems: 'center',
     justifyContent: 'flex-end',
   },
