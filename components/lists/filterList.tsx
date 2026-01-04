@@ -3,7 +3,6 @@ import React, { useEffect, useRef } from 'react'
 import { FaFilter as FilterIcon } from 'react-icons/fa'
 
 import Text, { TextTag } from '../text'
-import { lightenCor } from '../../utils/colors'
 import { useTheme } from '../../utils/hook/themeHook'
 import { Tag } from '@/domain/Tag'
 import { Expense } from '@/domain/Expense'
@@ -15,32 +14,20 @@ export interface FilterListProps {
   setter?: (newList: Expense[]) => void | undefined;
   filterCondition?: (item: Expense, category: Tag) => boolean;
   setTagList?: (newList: Array<Tag>) => void | undefined;
-  color?: string;
-  onClick?: (item: number) => void | undefined;
 }
 
 export default function FilterList({
   style,
   tagList,
   setTagList = undefined,
-  color = '',
   listToFilter = undefined,
   setter = undefined,
   filterCondition = undefined,
-  onClick = undefined
 }: FilterListProps) {
   const { config } = useTheme()
   const selected = useRef<number | null>(0)
 
   function printTag(name: string, index: number, isDisabled: boolean) {
-    const tagColor: string = isDisabled
-      ? config.disabledFontColor
-      : color == ''
-        ? config.tagDefaultColor
-        : color
-
-    const backColor: string = lightenCor(tagColor, 35)
-
     return <Text
       key={index}
       noSelection
@@ -60,13 +47,12 @@ export default function FilterList({
           setTagList(newList)
 
           if (setter != null && listToFilter != null && filterCondition != null) {
-            selected.current == 0
-              ? setter(listToFilter)
-              : setter(listToFilter.filter(item => filterCondition(item, newList[index])))
+            if (selected.current == 0)
+              setter(listToFilter)
+            else
+              setter(listToFilter.filter(item => filterCondition(item, newList[index])))
           }
         }
-
-        onClick != null ? onClick : () => { console.log('CLICOU CARAI') }
       }}
     >
       {name}
@@ -90,17 +76,19 @@ export default function FilterList({
         })
       ])
     }
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tagList])
 
   useEffect(() => {
     if (setter != null && listToFilter != null && filterCondition != null) {
       const index: number = selected == null || selected.current == null ? -1 : selected.current
 
-      tagList == null || index <= 0
-        ? setter(listToFilter)
-        : setter(listToFilter.filter(item => filterCondition(item, tagList[index])))
+      if (tagList == null || index <= 0)
+        setter(listToFilter)
+      else
+        setter(listToFilter.filter(item => filterCondition(item, tagList[index])))
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listToFilter])
 
   return <div style={{ ...styles.container, ...style }}>

@@ -25,8 +25,8 @@ export class Category {
     if (!isEnabledCategories)
       return categoryList.map(item => new Tag(item.id, item.name, false))
 
-    let missingCategory: Record<number, number> = { ...this.__categoriesDict }
-    let newList = categoryList.map(item => {
+    const missingCategory: Record<number, number> = { ...this.__categoriesDict }
+    const newList = categoryList.map(item => {
       delete missingCategory[item.id]
       return new Tag(item.id, item.name, false)
     })
@@ -46,9 +46,7 @@ export class Category {
     this.__id = id
     this.__owner = owner
     this.__name = name
-    date == null
-      ? this.__date = new Date()
-      : this.__date = date
+    this.__date = date == null ? new Date() : date
   }
 
   get id(): number {

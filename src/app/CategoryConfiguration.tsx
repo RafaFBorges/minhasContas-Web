@@ -37,14 +37,19 @@ export default function CategoryConfiguration({ oldValue, enabledVerify = null }
       }))
 
     setData('name', name)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name])
 
   useEffect(() => {
     translate()
     setPlaceholder(getValue(NAME_PLACEHOLDER_KEY))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  useEffect(() => setPlaceholder(getValue(NAME_PLACEHOLDER_KEY)), [language])
+  useEffect(() => {
+    setPlaceholder(getValue(NAME_PLACEHOLDER_KEY))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [language])
 
   return <div style={styles.content}>
     <StyledInput

@@ -60,7 +60,7 @@ export default function Home() {
   }
 
   const handleAddNewClick = async () => {
-    let request: ExpenseRequest = {}
+    const request: ExpenseRequest = {}
     request.value = value
     request.categoryIds = tagList.filter(item => !item.disabled).map(item => item.id)
     request.date = new Date().toISOString()
@@ -85,7 +85,7 @@ export default function Home() {
       return
 
     let shouldSend: boolean = false
-    let request: ExpenseRequest = {}
+    const request: ExpenseRequest = {}
 
     if ('value' in item && item.value != null) {
       shouldSend = true
@@ -170,12 +170,14 @@ export default function Home() {
     translate()
     SyncExpenses()
     SyncCategories()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
     const expensesList: Expense[] = []
     valueList.forEach(expense => expensesList.push(new Expense(expense.id, expense.value, expense.datesList, expense.categories, language)))
     setValueList(expensesList)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language])
 
   useEffect(() => {

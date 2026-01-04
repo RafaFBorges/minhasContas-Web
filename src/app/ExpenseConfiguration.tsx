@@ -41,6 +41,7 @@ export default function ExpenseConfiguration({ oldValue, oldCategories, enabledV
 
     setData('value', value)
     setData('categories', categories)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, categories])
 
   return <div style={styles.content}>

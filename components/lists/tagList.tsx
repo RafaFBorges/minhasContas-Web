@@ -43,7 +43,7 @@ export default function TagList({
   const { openModal } = useModal()
 
   const handleCreateCategory = async (item: CategoryVerifyData) => {
-    let request: CategoryRequest = {} as CategoryRequest
+    const request: CategoryRequest = {} as CategoryRequest
     request.name = item.name
     request.owner = 1
     request.date = new Date().toISOString()
@@ -106,7 +106,10 @@ export default function TagList({
     return tagList.map((item, index) => printTag(item != null ? item.name : getValue(UNKOWN_CATEGORY_KEY), index, item != null ? item.disabled : false))
   }
 
-  useEffect(() => translate(), [])
+  useEffect(() => {
+    translate()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return <div style={{ ...styles.container, ...style }}>
     {addNewTags &&
