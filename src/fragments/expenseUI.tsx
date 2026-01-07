@@ -67,13 +67,9 @@ export default function ExpenseUI({
   }
 
   useEffect(() => {
-    console.log('ExpenseUI.useEffect > useCategories=' + (setTagList != null))
-    const hasEnabled = (enabledVerify != null)
-    console.log('ExpenseUI.useEffect > hasEnabledVerify=' + hasEnabled)
     if (enabledVerify == null)
       return
 
-    console.log('ExpenseUI.useEffect > passed data=' + JSON.stringify({ value: value, tags: categories }, null, 2) + 'hasEnabledVerify=' + hasEnabled)
     setEnabledSave(enabledVerify({
       value: value,
       tags: categories
