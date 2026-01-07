@@ -2,14 +2,11 @@
 
 import React, { useEffect, useState } from 'react'
 
-import { FaPlus as AddIcon } from 'react-icons/fa'
-
 import {
   CATEGORIES_ENDPOINT,
   EXPENSES_ENDPOINT,
   handleDELETE,
   handleGET,
-  handlePOST,
   handlePUT
 } from '@/comunication/ApiResthandler'
 import { ExpenseRequest, ExpenseResponse } from '@/comunication/expense'
@@ -17,15 +14,13 @@ import { Expense } from '@/domain/Expense'
 import ThemeCard from '../../components/themeCard'
 import { useModal } from '../../utils/hook/modalHook'
 import ExpenseConfiguration, { ExpenseVerifyData } from './ExpenseConfiguration'
-import ThemeButton from '../../components/themeButton'
 import Text, { TextTag } from '../../components/text'
-import Spin from '../../components/spin'
 import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
 import { Category } from '@/domain/Category'
 import { CategoryResponse } from '@/comunication/category'
 import { Tag } from '@/domain/Tag'
-import TagList from '../../components/lists/tagList'
 import FilterList from '../../components/lists/filterList'
+import ExpenseUI from '@/fragments/expenseUI'
 
 
 export default function Home() {
@@ -33,7 +28,6 @@ export default function Home() {
   const SUBTITLE_KEY = 'Home.Subtitle'
   const PROPERTIES_TITLE_KEY = 'Home.PropertiesTitle'
 
-  const [value, setValue] = useState<number>(0)
   const [valueList, setValueList] = useState<Expense[]>([])
   const [filteredexpenses, setFilteredexpenses] = useState<Expense[]>([])
   const [categoriesList, setCategoriesList] = useState<Category[]>([])
@@ -43,13 +37,6 @@ export default function Home() {
   const { openModal } = useModal()
   const { addKey, getValue, language } = useTranslate()
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const parsed: number = parseFloat(e.target.value)
-
-    if (!isNaN(parsed))
-      setValue(parsed)
-  }
-
   function translate() {
     addKey(TITLE_KEY, 'Minhas Contas', LanguageOption.PT_BR)
     addKey(SUBTITLE_KEY, 'Despesas', LanguageOption.PT_BR)
@@ -57,21 +44,6 @@ export default function Home() {
     addKey(TITLE_KEY, 'My Finances', LanguageOption.EN)
     addKey(SUBTITLE_KEY, 'Expenses', LanguageOption.EN)
     addKey(PROPERTIES_TITLE_KEY, 'Edit expense', LanguageOption.EN)
-  }
-
-  const handleAddNewClick = async () => {
-    const request: ExpenseRequest = {}
-    request.value = value
-    request.categoryIds = tagList.filter(item => !item.disabled).map(item => item.id)
-    request.date = new Date().toISOString()
-    const response = await handlePOST(EXPENSES_ENDPOINT, request)
-
-    if (response != null) {
-      const categoryList: Category[] = []
-      response.categories.forEach((category: CategoryResponse) => categoryList.push(new Category(category.id, category.owner, category.name)))
-
-      setValueList([...valueList, new Expense(response.id, response.value, response.dates, categoryList, language)])
-    }
   }
 
   const handleDeleteClick = async (index: number) => {
@@ -189,20 +161,13 @@ export default function Home() {
     <Text textTag={TextTag.H1}>{getValue(TITLE_KEY)}</Text>
     <Text textTag={TextTag.H3}>{getValue(SUBTITLE_KEY)}</Text>
 
-    <div style={{ ...styles.flexRow, gap: '1rem' }}>
-      <Spin
-        name={'expenseValue'}
-        value={value}
-        changeHandle={handleChange}
-        setValueHandle={setValue}
-      />
-
-      <ThemeButton
-        clickHandle={handleAddNewClick}
-        Icon={AddIcon}
-      />
-    </div>
-    <TagList style={styles.tagContainer} tagList={tagList} setTagList={setTagList} setCategories={setCategoriesList} selectable addNewTags allowEmpty />
+    <ExpenseUI
+      hasAddButton
+      tagList={tagList}
+      setTagList={setTagList}
+      setValueList={(item: Expense) => setValueList([...valueList, item])}
+      setCategoriesList={setCategoriesList}
+    />
 
     <FilterList
       style={styles.filterContainer}
@@ -238,19 +203,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     minHeight: 0,
     boxSizing: 'border-box',
   },
-  flexRow: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    maxWidth: '350px',
-    boxSizing: 'border-box',
-  },
   filterContainer: {
     marginTop: '1.2em',
-  },
-  tagContainer: {
-    marginTop: '0.5em',
   },
   scrollList: {
     flexGrow: 1,
