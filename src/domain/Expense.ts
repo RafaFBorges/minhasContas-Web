@@ -1,3 +1,4 @@
+import { getRealString } from "../../utils/financialUtils"
 import { isValidLanguage, LanguageOption } from "../../utils/hook/translateHook"
 import { Category } from "./Category"
 
@@ -36,7 +37,7 @@ export class Expense {
 
   get asText(): string {
     return this.__value != null
-      ? `R$ ${this.__value.toLocaleString(this.__format, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      ? getRealString(this.__value, this.__format)
       : ''
   }
 

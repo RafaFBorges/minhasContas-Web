@@ -21,13 +21,14 @@ import { CategoryResponse } from '@/comunication/category'
 import { Tag } from '@/domain/Tag'
 import FilterList from '../../components/lists/filterList'
 import ExpenseUI from '@/fragments/expenseUI'
+import { getRealString } from '../../utils/financialUtils'
 
 
 export default function Home() {
-  const TITLE_KEY = 'Home.Title'
   const SUBTITLE_KEY = 'Home.Subtitle'
   const PROPERTIES_TITLE_KEY = 'Home.PropertiesTitle'
 
+  const [total, setTotal] = useState<number>(0)
   const [valueList, setValueList] = useState<Expense[]>([])
   const [filteredexpenses, setFilteredexpenses] = useState<Expense[]>([])
   const [categoriesList, setCategoriesList] = useState<Category[]>([])
@@ -38,10 +39,8 @@ export default function Home() {
   const { addKey, getValue, language } = useTranslate()
 
   function translate() {
-    addKey(TITLE_KEY, 'Minhas Contas', LanguageOption.PT_BR)
     addKey(SUBTITLE_KEY, 'Despesas', LanguageOption.PT_BR)
     addKey(PROPERTIES_TITLE_KEY, 'Editar despesa', LanguageOption.PT_BR)
-    addKey(TITLE_KEY, 'My Finances', LanguageOption.EN)
     addKey(SUBTITLE_KEY, 'Expenses', LanguageOption.EN)
     addKey(PROPERTIES_TITLE_KEY, 'Edit expense', LanguageOption.EN)
   }
@@ -108,14 +107,17 @@ export default function Home() {
       if (!(serverExpensesList != null) || !Array.isArray(serverExpensesList))
         throw Error('Invalid Expense response')
 
+      let total: number = 0
       const expensesList: Expense[] = []
       serverExpensesList.forEach(expense => {
         const categoryList: Category[] = []
         expense.categories.forEach((category: CategoryResponse) => categoryList.push(new Category(category.id, category.owner, category.name)))
         expensesList.push(new Expense(expense.id, expense.value, expense.dates, categoryList, language))
+        total += expense.value
       })
 
       setValueList(expensesList)
+      setTotal(total)
     } catch (err) {
       console.error("HOME.useEffect.SyncExpenses : [Error] erro=", err)
     }
@@ -146,6 +148,13 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
+    let total: number = 0
+    valueList.forEach(expense => total += expense.value)
+    setTotal(total)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [valueList])
+
+  useEffect(() => {
     const expensesList: Expense[] = []
     valueList.forEach(expense => expensesList.push(new Expense(expense.id, expense.value, expense.datesList, expense.categories, language)))
     setValueList(expensesList)
@@ -158,7 +167,7 @@ export default function Home() {
   }, [categoriesList])
 
   return <main style={styles.page}>
-    <Text textTag={TextTag.H1}>{getValue(TITLE_KEY)}</Text>
+    <Text textTag={TextTag.H1}>{getRealString(total, language)}</Text>
     <Text textTag={TextTag.H3}>{getValue(SUBTITLE_KEY)}</Text>
 
     <ExpenseUI
