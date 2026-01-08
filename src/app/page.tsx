@@ -22,6 +22,7 @@ import { Tag } from '@/domain/Tag'
 import FilterList from '../../components/lists/filterList'
 import ExpenseUI from '@/fragments/expenseUI'
 import { getRealString } from '../../utils/financialUtils'
+import { getSideColor } from '../../utils/colors'
 
 
 export default function Home() {
@@ -167,7 +168,7 @@ export default function Home() {
   }, [categoriesList])
 
   return <main style={styles.page}>
-    <Text textTag={TextTag.H1}>{getRealString(total, language)}</Text>
+    <Text textTag={TextTag.H1} color={getSideColor(total)}>{getRealString(total, language)}</Text>
     <Text textTag={TextTag.H3}>{getValue(SUBTITLE_KEY)}</Text>
 
     <ExpenseUI

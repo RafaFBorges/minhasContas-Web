@@ -22,6 +22,9 @@ const LIGHT_CONFIG = {
   disabledFontColor: '#555',
   cardBackground: '#fff',
   tagDefaultColor: '#1439dcff',
+  GainSideColor: '#00D84C',
+  NeutralSidedColor: '#727272ff',
+  LossSideColor: '#ff0839ff',
 }
 
 const DARK_CONFIG = {
@@ -32,6 +35,9 @@ const DARK_CONFIG = {
   disabledFontColor: '#808080',
   cardBackground: '#1d1d1d',
   tagDefaultColor: '#dc143cff',
+  GainSideColor: '#54f523ff',
+  NeutralSidedColor: '#727272ff',
+  LossSideColor: '#ff4757ff',
 }
 
 const geistSans = Geist({
@@ -57,6 +63,9 @@ export interface ThemeStyleProps {
   disabledFontColor: string;
   cardBackground: string;
   tagDefaultColor: string;
+  LossSideColor: string;
+  NeutralSidedColor: string;
+  GainSideColor: string;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
