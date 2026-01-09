@@ -42,11 +42,13 @@ export class Category {
   private __name: string
   private __date: Date
 
-  constructor(id: number, owner: number, name: string, date: Date | null = null) {
+  constructor(id: number, owner: number, name: string, date: Date | string | null = null) {
     this.__id = id
     this.__owner = owner
     this.__name = name
-    this.__date = date == null ? new Date() : date
+    this.__date = date == null
+      ? new Date()
+      : typeof date === 'string' ? new Date(date) : date
   }
 
   get id(): number {

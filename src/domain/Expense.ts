@@ -9,7 +9,7 @@ export class Expense {
   private __categories: Array<Category>
   private __format: LanguageOption
 
-  constructor(id: number, value: number, date: Array<Date> = [], categories: Array<Category> = [], format: LanguageOption = LanguageOption.PT_BR) {
+  constructor(id: number, value: number, date: Array<Date> | Array<string> = [], categories: Array<Category> = [], format: LanguageOption = LanguageOption.PT_BR) {
     this.__id = id
     this.__value = value
     this.__dates = []

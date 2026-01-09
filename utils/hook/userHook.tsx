@@ -5,9 +5,8 @@ import { createContext, useContext, ReactNode, useState, useEffect } from 'react
 import { Expense } from '@/domain/Expense'
 import { useTranslate } from './translateHook'
 import { Category } from '@/domain/Category'
-import { CategoryResponse } from '@/comunication/category'
-import { CATEGORIES_ENDPOINT, EXPENSES_ENDPOINT, handleGET } from '@/comunication/ApiResthandler'
-import { ExpenseResponse } from '@/comunication/expense'
+import { CategoryResponse, SyncCategories } from '@/comunication/category'
+import { ExpenseResponse, SyncExpenses } from '@/comunication/expense'
 
 
 interface UserContextType {
@@ -16,9 +15,10 @@ interface UserContextType {
   total: number;
   deleteFinancial: (index: number) => void;
   editFinancial: (id: number, expense: Expense) => void;
-  replaceFinancial: (list: Expense[]) => void;
+  editFinancialResponse: (response: ExpenseResponse) => void;
+  replaceFinancial: (list: ExpenseResponse[]) => void;
   addFinancial: (item: Expense) => void;
-  replaceCategories: (list: Category[]) => void;
+  replaceCategories: (list: CategoryResponse[]) => void;
   replaceTotal: (value: number) => void
   addCategory: (category: Category) => void;
 }
@@ -63,6 +63,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }))
   }
 
+  const editFinancialResponse = (response: ExpenseResponse) => {
+    const categoryList: Category[] = []
+    response.categories.forEach((category: CategoryResponse) => categoryList.push(new Category(category.id, category.owner, category.name)))
+    editFinancial(response.id, new Expense(response.id, response.value, response.dates, categoryList, language))
+  }
+
   const addFinancial = (item: Expense) => {
     setFinancialList([...financialList, item])
     setTotal(total + item.value)
@@ -73,55 +79,30 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setCategoriesList(Category.Categories)
   }
 
-  const replaceFinancial = (list: Expense[]) => setFinancialList(list)
-  const replaceCategories = (list: Category[]) => setCategoriesList(list)
+  const replaceFinancial = (list: ExpenseResponse[]) => {
+    let total: number = 0
+    const expensesList: Expense[] = []
+    list.forEach(expense => {
+      const categoryList: Category[] = []
+      expense.categories.forEach((category: CategoryResponse) => categoryList.push(new Category(category.id, category.owner, category.name)))
+      expensesList.push(new Expense(expense.id, expense.value, expense.dates, categoryList, language))
+      total += expense.value
+    })
+
+    setFinancialList(expensesList)
+    setTotal(total)
+  }
   const replaceTotal = (value: number) => setTotal(value)
 
-  async function SyncExpenses() {
-    try {
-      console.log("HOME.useEffect : [initial load] fetching expenses")
-
-      const serverExpensesList: Promise<ExpenseResponse[]> = await handleGET(EXPENSES_ENDPOINT)
-
-      if (!(serverExpensesList != null) || !Array.isArray(serverExpensesList))
-        throw Error('Invalid Expense response')
-
-      let total: number = 0
-      const expensesList: Expense[] = []
-      serverExpensesList.forEach(expense => {
-        const categoryList: Category[] = []
-        expense.categories.forEach((category: CategoryResponse) => categoryList.push(new Category(category.id, category.owner, category.name)))
-        expensesList.push(new Expense(expense.id, expense.value, expense.dates, categoryList, language))
-        total += expense.value
-      })
-
-      setFinancialList(expensesList)
-      setTotal(total)
-    } catch (err) {
-      console.error("HOME.useEffect.SyncExpenses : [Error] erro=", err)
-    }
-  }
-
-  async function SyncCategories() {
-    try {
-      console.log("HOME.useEffect : [initial load] fetching categories")
-
-      const serverCategoriesList: Promise<CategoryResponse[]> = await handleGET(CATEGORIES_ENDPOINT)
-
-      if (!(serverCategoriesList != null) || !Array.isArray(serverCategoriesList))
-        throw Error('Invalid Category response')
-
-      Category.clearCategories()
-      serverCategoriesList.forEach(category => Category.addCategory(new Category(category.id, category.owner, category.name, category.dates)))
-      replaceCategories(Category.Categories)
-    } catch (err) {
-      console.error("HOME.useEffect.SyncCategories : [Error] erro=", err)
-    }
+  const replaceCategories = (list: CategoryResponse[]) => {
+    Category.clearCategories()
+    list.forEach(category => Category.addCategory(new Category(category.id, category.owner, category.name, category.date)))
+    setCategoriesList(Category.Categories)
   }
 
   useEffect(() => {
-    SyncExpenses()
-    SyncCategories()
+    SyncExpenses(replaceFinancial)
+    SyncCategories(replaceCategories)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -138,12 +119,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
       categoriesList,
       deleteFinancial,
       editFinancial,
+      editFinancialResponse,
       replaceFinancial,
       addFinancial,
       addCategory,
       replaceCategories,
       total,
-      replaceTotal
+      replaceTotal,
     }}
   >
     {children}

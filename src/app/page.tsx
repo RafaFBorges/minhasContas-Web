@@ -5,9 +5,8 @@ import React, { useEffect, useState } from 'react'
 import {
   EXPENSES_ENDPOINT,
   handleDELETE,
-  handlePUT
 } from '@/comunication/ApiResthandler'
-import { ExpenseRequest } from '@/comunication/expense'
+import { handleEditExpense } from '@/comunication/expense'
 import { Expense } from '@/domain/Expense'
 import ThemeCard from '../../components/themeCard'
 import { useModal } from '../../utils/hook/modalHook'
@@ -15,7 +14,6 @@ import ExpenseConfiguration, { ExpenseVerifyData } from './ExpenseConfiguration'
 import Text, { TextTag } from '../../components/text'
 import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
 import { Category } from '@/domain/Category'
-import { CategoryResponse } from '@/comunication/category'
 import { Tag } from '@/domain/Tag'
 import FilterList from '../../components/lists/filterList'
 import ExpenseUI from '@/fragments/expenseUI'
@@ -39,7 +37,7 @@ export default function Home() {
     categoriesList,
     total,
     deleteFinancial,
-    editFinancial,
+    editFinancialResponse,
   } = useUser()
 
   function translate() {
@@ -57,37 +55,9 @@ export default function Home() {
   }
 
   const handleEditClick = (expense: Expense) => {
-    openModal(getValue(PROPERTIES_TITLE_KEY), () => expenseEditContent(expense), (item: unknown) => handleEditExpense(item, expense), true)
+    openModal(getValue(PROPERTIES_TITLE_KEY), () => expenseEditContent(expense), (item: unknown) => handleEditExpense(item, expense, editFinancialResponse), true)
   }
 
-  const handleEditExpense = async (item: unknown, expense: Expense) => {
-    if (item == null || typeof item !== 'object')
-      return
-
-    let shouldSend: boolean = false
-    const request: ExpenseRequest = {}
-
-    if ('value' in item && item.value != null) {
-      shouldSend = true
-      request.value = item.value as number
-    }
-
-    if ('categories' in item && item.categories != null && Array.isArray(item.categories)) {
-      shouldSend = true
-      request.categoryIds = item.categories.filter(item => !item.disabled).map(item => item.id)
-    }
-
-    if (shouldSend) {
-      request.date = new Date().toISOString()
-      const response = await handlePUT(EXPENSES_ENDPOINT + '/' + expense.id, request)
-
-      if (response != null) {
-        const categoryList: Category[] = []
-        response.categories.forEach((category: CategoryResponse) => categoryList.push(new Category(category.id, category.owner, category.name)))
-        editFinancial(response.id, new Expense(response.id, response.value, response.dates, categoryList, language))
-      }
-    }
-  }
 
   const expenseEditContent = (expense: Expense) => {
     const tags: Array<Tag> = Category.getTagList(expense.categories, true)
