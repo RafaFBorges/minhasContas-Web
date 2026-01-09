@@ -32,7 +32,6 @@ export default function Home() {
 
   const [total, setTotal] = useState<number>(0)
   const [filteredexpenses, setFilteredexpenses] = useState<Expense[]>([])
-  const [categoriesList, setCategoriesList] = useState<Category[]>([])
   const [tagList, setTagList] = useState<Array<Tag>>([])
   const [filterList, setFilterList] = useState<Array<Tag>>([])
 
@@ -40,10 +39,12 @@ export default function Home() {
   const { addKey, getValue, language } = useTranslate()
   const {
     financialList,
+    categoriesList,
     deleteFinancial,
     editFinancial,
     replaceFinancial,
-    addFinancial
+    addFinancial,
+    replaceCategories
   } = useUser()
 
   function translate() {
@@ -138,7 +139,7 @@ export default function Home() {
 
       Category.clearCategories()
       serverCategoriesList.forEach(category => Category.addCategory(new Category(category.id, category.owner, category.name, category.dates)))
-      setCategoriesList(Category.Categories)
+      replaceCategories(Category.Categories)
     } catch (err) {
       console.error("HOME.useEffect.SyncCategories : [Error] erro=", err)
     }
@@ -172,7 +173,7 @@ export default function Home() {
       tagList={tagList}
       setTagList={setTagList}
       setValueList={addFinancial}
-      setCategoriesList={setCategoriesList}
+      setCategoriesList={replaceCategories}
     />
 
     <FilterList
