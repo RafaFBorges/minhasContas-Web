@@ -3,13 +3,11 @@
 import React, { useEffect, useState } from 'react'
 
 import {
-  CATEGORIES_ENDPOINT,
   EXPENSES_ENDPOINT,
   handleDELETE,
-  handleGET,
   handlePUT
 } from '@/comunication/ApiResthandler'
-import { ExpenseRequest, ExpenseResponse } from '@/comunication/expense'
+import { ExpenseRequest } from '@/comunication/expense'
 import { Expense } from '@/domain/Expense'
 import ThemeCard from '../../components/themeCard'
 import { useModal } from '../../utils/hook/modalHook'
@@ -30,7 +28,6 @@ export default function Home() {
   const SUBTITLE_KEY = 'Home.Subtitle'
   const PROPERTIES_TITLE_KEY = 'Home.PropertiesTitle'
 
-  const [total, setTotal] = useState<number>(0)
   const [filteredexpenses, setFilteredexpenses] = useState<Expense[]>([])
   const [tagList, setTagList] = useState<Array<Tag>>([])
   const [filterList, setFilterList] = useState<Array<Tag>>([])
@@ -40,11 +37,11 @@ export default function Home() {
   const {
     financialList,
     categoriesList,
+    total,
     deleteFinancial,
     editFinancial,
-    replaceFinancial,
     addFinancial,
-    replaceCategories
+    replaceCategories,
   } = useUser()
 
   function translate() {
@@ -59,6 +56,10 @@ export default function Home() {
 
     if (wasDeleted)
       deleteFinancial(index)
+  }
+
+  const handleEditClick = (expense: Expense) => {
+    openModal(getValue(PROPERTIES_TITLE_KEY), () => expenseEditContent(expense), (item: unknown) => handleEditExpense(item, expense), true)
   }
 
   const handleEditExpense = async (item: unknown, expense: Expense) => {
@@ -99,65 +100,10 @@ export default function Home() {
     />
   }
 
-  const handleEditClick = (expense: Expense) => {
-    openModal(getValue(PROPERTIES_TITLE_KEY), () => expenseEditContent(expense), (item: unknown) => handleEditExpense(item, expense), true)
-  }
-
-  async function SyncExpenses() {
-    try {
-      console.log("HOME.useEffect : [initial load] fetching expenses")
-
-      const serverExpensesList: Promise<ExpenseResponse[]> = await handleGET(EXPENSES_ENDPOINT)
-
-      if (!(serverExpensesList != null) || !Array.isArray(serverExpensesList))
-        throw Error('Invalid Expense response')
-
-      let total: number = 0
-      const expensesList: Expense[] = []
-      serverExpensesList.forEach(expense => {
-        const categoryList: Category[] = []
-        expense.categories.forEach((category: CategoryResponse) => categoryList.push(new Category(category.id, category.owner, category.name)))
-        expensesList.push(new Expense(expense.id, expense.value, expense.dates, categoryList, language))
-        total += expense.value
-      })
-
-      replaceFinancial(expensesList)
-      setTotal(total)
-    } catch (err) {
-      console.error("HOME.useEffect.SyncExpenses : [Error] erro=", err)
-    }
-  }
-
-  async function SyncCategories() {
-    try {
-      console.log("HOME.useEffect : [initial load] fetching categories")
-
-      const serverCategoriesList: Promise<CategoryResponse[]> = await handleGET(CATEGORIES_ENDPOINT)
-
-      if (!(serverCategoriesList != null) || !Array.isArray(serverCategoriesList))
-        throw Error('Invalid Category response')
-
-      Category.clearCategories()
-      serverCategoriesList.forEach(category => Category.addCategory(new Category(category.id, category.owner, category.name, category.dates)))
-      replaceCategories(Category.Categories)
-    } catch (err) {
-      console.error("HOME.useEffect.SyncCategories : [Error] erro=", err)
-    }
-  }
-
   useEffect(() => {
     translate()
-    SyncExpenses()
-    SyncCategories()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  useEffect(() => {
-    let total: number = 0
-    financialList.forEach(expense => total += expense.value)
-    setTotal(total)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [financialList])
 
   useEffect(() => {
     setTagList(Category.getTagList(categoriesList, true))
