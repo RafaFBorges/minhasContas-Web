@@ -23,6 +23,7 @@ import FilterList from '../../components/lists/filterList'
 import ExpenseUI from '@/fragments/expenseUI'
 import { getRealString } from '../../utils/financialUtils'
 import { getSideColor } from '../../utils/colors'
+import { useUser } from '../../utils/hook/userHook'
 
 
 export default function Home() {
@@ -30,7 +31,6 @@ export default function Home() {
   const PROPERTIES_TITLE_KEY = 'Home.PropertiesTitle'
 
   const [total, setTotal] = useState<number>(0)
-  const [valueList, setValueList] = useState<Expense[]>([])
   const [filteredexpenses, setFilteredexpenses] = useState<Expense[]>([])
   const [categoriesList, setCategoriesList] = useState<Category[]>([])
   const [tagList, setTagList] = useState<Array<Tag>>([])
@@ -38,6 +38,13 @@ export default function Home() {
 
   const { openModal } = useModal()
   const { addKey, getValue, language } = useTranslate()
+  const {
+    financialList,
+    deleteFinancial,
+    editFinancial,
+    replaceFinancial,
+    addFinancial
+  } = useUser()
 
   function translate() {
     addKey(SUBTITLE_KEY, 'Despesas', LanguageOption.PT_BR)
@@ -48,8 +55,9 @@ export default function Home() {
 
   const handleDeleteClick = async (index: number) => {
     const wasDeleted: boolean = await handleDELETE(EXPENSES_ENDPOINT + '/' + index)
+
     if (wasDeleted)
-      setValueList(valueList.filter(expense => expense.id !== index))
+      deleteFinancial(index)
   }
 
   const handleEditExpense = async (item: unknown, expense: Expense) => {
@@ -76,12 +84,7 @@ export default function Home() {
       if (response != null) {
         const categoryList: Category[] = []
         response.categories.forEach((category: CategoryResponse) => categoryList.push(new Category(category.id, category.owner, category.name)))
-
-        setValueList(valueList.map(item => {
-          return (item.id == response.id)
-            ? new Expense(response.id, response.value, response.dates, categoryList, language)
-            : item
-        }))
+        editFinancial(response.id, new Expense(response.id, response.value, response.dates, categoryList, language))
       }
     }
   }
@@ -117,7 +120,7 @@ export default function Home() {
         total += expense.value
       })
 
-      setValueList(expensesList)
+      replaceFinancial(expensesList)
       setTotal(total)
     } catch (err) {
       console.error("HOME.useEffect.SyncExpenses : [Error] erro=", err)
@@ -150,17 +153,10 @@ export default function Home() {
 
   useEffect(() => {
     let total: number = 0
-    valueList.forEach(expense => total += expense.value)
+    financialList.forEach(expense => total += expense.value)
     setTotal(total)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [valueList])
-
-  useEffect(() => {
-    const expensesList: Expense[] = []
-    valueList.forEach(expense => expensesList.push(new Expense(expense.id, expense.value, expense.datesList, expense.categories, language)))
-    setValueList(expensesList)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [language])
+  }, [financialList])
 
   useEffect(() => {
     setTagList(Category.getTagList(categoriesList, true))
@@ -175,7 +171,7 @@ export default function Home() {
       hasAddButton
       tagList={tagList}
       setTagList={setTagList}
-      setValueList={(item: Expense) => setValueList([...valueList, item])}
+      setValueList={addFinancial}
       setCategoriesList={setCategoriesList}
     />
 
@@ -183,7 +179,7 @@ export default function Home() {
       style={styles.filterContainer}
       tagList={filterList}
       setTagList={setFilterList}
-      listToFilter={valueList}
+      listToFilter={financialList}
       setter={setFilteredexpenses}
       filterCondition={(item: Expense, category: Tag): boolean => item.isCategory(category.id)}
     />
