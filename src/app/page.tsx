@@ -109,8 +109,8 @@ export default function Home() {
   }, [categoriesList])
 
   return <main style={styles.page}>
-    <Text textTag={TextTag.H1} color={getSideColor(total)}>{getRealString(total, language)}</Text>
-    <Text textTag={TextTag.H3}>{getValue(SUBTITLE_KEY)}</Text>
+    <Text noWrap textTag={TextTag.H1} color={getSideColor(total)}>{getRealString(total, language)}</Text>
+    <Text noWrap textTag={TextTag.H3}>{getValue(SUBTITLE_KEY)}</Text>
 
     <ExpenseUI
       hasAddButton
