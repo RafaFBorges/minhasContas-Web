@@ -8,6 +8,7 @@ import ThemeButton from '../../components/themeButton'
 import { LanguageOption, useTranslate } from './translateHook'
 import { saveCookie } from '@/app/actions/cookiesManager'
 import { THEME_KEY } from '../DataConstants'
+import { getSideColor } from '../colors'
 
 export enum ThemeOptions {
   LIGHT = 'light',
@@ -53,6 +54,7 @@ const geistMono = Geist_Mono({
 interface ThemeContextType {
   setTheme: (newTheme: ThemeOptions) => Promise<void>;
   config: ThemeStyleProps;
+  sideColor: (value: number) => string;
 }
 
 export interface ThemeStyleProps {
@@ -138,10 +140,15 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
     return themeToConfig(loadTheme(lastValue))
   }
 
+  function sideColor(value: number) {
+    return getSideColor(value, config)
+  }
+
   return <ThemeContext.Provider
     value={{
       setTheme,
       config,
+      sideColor,
     }}
   >
     <body className={`${geistSans.variable} ${geistMono.variable}`} style={{ ...styles.body, backgroundColor: config.backgroundColor }}>

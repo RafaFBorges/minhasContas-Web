@@ -18,8 +18,8 @@ import { Tag } from '@/domain/Tag'
 import FilterList from '../../components/lists/filterList'
 import ExpenseUI from '@/fragments/expenseUI'
 import { getRealString } from '../../utils/financialUtils'
-import { getSideColor } from '../../utils/colors'
 import { useUser } from '../../utils/hook/userHook'
+import { useTheme } from '../../utils/hook/themeHook'
 
 
 export default function Home() {
@@ -32,6 +32,7 @@ export default function Home() {
 
   const { openModal } = useModal()
   const { addKey, getValue, language } = useTranslate()
+  const { sideColor } = useTheme()
   const {
     financialList,
     categoriesList,
@@ -79,7 +80,7 @@ export default function Home() {
   }, [categoriesList])
 
   return <main style={styles.page}>
-    <Text noWrap textTag={TextTag.H1} color={getSideColor(total)}>{getRealString(total, language)}</Text>
+    <Text noWrap textTag={TextTag.H1} color={sideColor(total)}>{getRealString(total, language)}</Text>
     <Text noWrap textTag={TextTag.H3}>{getValue(SUBTITLE_KEY)}</Text>
 
     <ExpenseUI
