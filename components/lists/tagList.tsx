@@ -13,6 +13,7 @@ import CategoryConfiguration, { CategoryVerifyData } from '@/app/CategoryConfigu
 import { CategoryRequest } from '@/comunication/category'
 import { CATEGORIES_ENDPOINT, handlePOST } from '@/comunication/ApiResthandler'
 import { Category } from '@/domain/Category'
+import { useUser } from '../../utils/hook/userHook'
 
 export interface TagListProps {
   style?: React.CSSProperties | null;
@@ -22,7 +23,6 @@ export interface TagListProps {
   selectable?: boolean;
   addNewTags?: boolean;
   allowEmpty?: boolean;
-  setCategories?: (newList: Category[]) => void | undefined;
 }
 
 export default function TagList({
@@ -33,11 +33,11 @@ export default function TagList({
   selectable = false,
   addNewTags = false,
   allowEmpty = false,
-  setCategories = undefined,
 }: TagListProps) {
   const NEW_CATEGORY_TITLE_KEY = 'TagList.PropertiesTitle'
   const UNKOWN_CATEGORY_KEY = 'unkownCategory'
-
+  
+  const { addCategory } = useUser()
   const { getValue, addKey } = useTranslate()
   const { config } = useTheme()
   const { openModal } = useModal()
@@ -49,12 +49,8 @@ export default function TagList({
     request.date = new Date().toISOString()
     const response = await handlePOST(CATEGORIES_ENDPOINT, request)
 
-    if (response != null) {
-      Category.addCategory(new Category(response.id, response.owner, response.name, response.date))
-
-      if (setCategories != null)
-        setCategories(Category.Categories)
-    }
+    if (response != null)
+      addCategory(new Category(response.id, response.owner, response.name, response.date))
   }
 
   const categoryCreate = () => {
@@ -146,6 +142,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     msOverflowStyle: 'none',
   },
   tagContainer: {
+    whiteSpace: 'noWrap',
     border: '1px solid red',
     borderRadius: '8px',
     padding: '2px 4px',

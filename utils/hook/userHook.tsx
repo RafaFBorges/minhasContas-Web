@@ -20,6 +20,7 @@ interface UserContextType {
   addFinancial: (item: Expense) => void;
   replaceCategories: (list: Category[]) => void;
   replaceTotal: (value: number) => void
+  addCategory: (category: Category) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined)
@@ -65,6 +66,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const addFinancial = (item: Expense) => {
     setFinancialList([...financialList, item])
     setTotal(total + item.value)
+  }
+
+  const addCategory = (category: Category) => {
+    Category.addCategory(category)
+    setCategoriesList(Category.Categories)
   }
 
   const replaceFinancial = (list: Expense[]) => setFinancialList(list)
@@ -134,6 +140,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       editFinancial,
       replaceFinancial,
       addFinancial,
+      addCategory,
       replaceCategories,
       total,
       replaceTotal

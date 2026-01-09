@@ -40,8 +40,6 @@ export default function Home() {
     total,
     deleteFinancial,
     editFinancial,
-    addFinancial,
-    replaceCategories,
   } = useUser()
 
   function translate() {
@@ -118,8 +116,6 @@ export default function Home() {
       hasAddButton
       tagList={tagList}
       setTagList={setTagList}
-      setValueList={addFinancial}
-      setCategoriesList={replaceCategories}
     />
 
     <FilterList
@@ -130,6 +126,7 @@ export default function Home() {
       setter={setFilteredexpenses}
       filterCondition={(item: Expense, category: Tag): boolean => item.isCategory(category.id)}
     />
+
     <div style={styles.scrollList}>
       {filteredexpenses != null && filteredexpenses.map(item => {
         return <ThemeCard

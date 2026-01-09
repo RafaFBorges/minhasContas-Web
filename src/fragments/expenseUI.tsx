@@ -15,13 +15,12 @@ import ThemeButton from '../../components/themeButton'
 import TagList from '../../components/lists/tagList'
 import { useModal } from '../../utils/hook/modalHook'
 import { ExpenseVerifyData } from '@/app/ExpenseConfiguration'
+import { useUser } from '../../utils/hook/userHook'
 
 
 interface ExpenseUIProps<T> {
   tagList?: Array<Tag>;
-  setValueList?: (item: Expense) => void | undefined;
   setTagList?: (item: Array<Tag>) => void | undefined;
-  setCategoriesList?: (item: Category[]) => void | undefined;
   hasAddButton?: boolean;
   startValue?: number;
   enabledVerify?: (((item: T) => boolean) | null);
@@ -29,9 +28,7 @@ interface ExpenseUIProps<T> {
 
 export default function ExpenseUI({
   tagList,
-  setValueList,
   setTagList,
-  setCategoriesList,
   hasAddButton = false,
   startValue = 0,
   enabledVerify = null
@@ -39,6 +36,7 @@ export default function ExpenseUI({
   const [value, setValue] = useState<number>(startValue)
   const [categories, setCategories] = useState<Array<Tag>>(tagList != null ? tagList.map((tag: Tag) => tag.clone()) : [])
 
+  const { addFinancial } = useUser()
   const { language } = useTranslate()
   const { setEnabledSave, setData } = useModal()
 
@@ -61,8 +59,7 @@ export default function ExpenseUI({
       const categoryList: Category[] = []
       response.categories.forEach((category: CategoryResponse) => categoryList.push(new Category(category.id, category.owner, category.name)))
 
-      if (setValueList != null)
-        setValueList(new Expense(response.id, response.value, response.dates, categoryList, language))
+      addFinancial(new Expense(response.id, response.value, response.dates, categoryList, language))
     }
   }
 
@@ -89,7 +86,7 @@ export default function ExpenseUI({
         setValueHandle={setValue}
       />
 
-      {hasAddButton && setValueList != null &&
+      {hasAddButton &&
         <ThemeButton
           clickHandle={handleAddNewClick}
           Icon={AddIcon}
@@ -100,7 +97,6 @@ export default function ExpenseUI({
       style={styles.tagContainer}
       tagList={tagList != null && setTagList != null ? tagList : categories}
       setTagList={setTagList != null ? setTagList : setCategories}
-      setCategories={setCategoriesList}
       selectable
       addNewTags
       allowEmpty

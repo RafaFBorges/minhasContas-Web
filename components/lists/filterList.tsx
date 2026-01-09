@@ -31,6 +31,7 @@ export default function FilterList({
     return <Text
       key={index}
       noSelection
+      noWrap
       textTag={TextTag.P}
       style={isDisabled ? {} : styles.selected}
       color={config.fontColor}
