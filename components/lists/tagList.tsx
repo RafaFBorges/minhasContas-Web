@@ -14,6 +14,8 @@ import { CategoryRequest } from '@/comunication/category'
 import { CATEGORIES_ENDPOINT, handlePOST } from '@/comunication/ApiResthandler'
 import { Category } from '@/domain/Category'
 import { useUser } from '../../utils/hook/userHook'
+import { TAG_DISABLED_KEY } from '../../utils/DataConstants'
+import { saveCookie } from '@/app/actions/cookiesManager'
 
 export interface TagListProps {
   style?: React.CSSProperties | null;
@@ -36,7 +38,7 @@ export default function TagList({
 }: TagListProps) {
   const NEW_CATEGORY_TITLE_KEY = 'TagList.PropertiesTitle'
   const UNKOWN_CATEGORY_KEY = 'unkownCategory'
-  
+
   const { addCategory } = useUser()
   const { getValue, addKey } = useTranslate()
   const { config } = useTheme()
@@ -86,6 +88,8 @@ export default function TagList({
           if (tagList != null && 0 <= index && index < tagList.length && setTagList != null) {
             const newtag = tagList[index]
             newtag.disabled = !newtag.disabled
+
+            saveCookie(TAG_DISABLED_KEY + newtag.ToString(), newtag.disabled ? '1' : '0')
             setTagList([...tagList.slice(0, index), newtag, ...tagList.slice(index + 1)])
           }
         }

@@ -36,4 +36,8 @@ export class Tag {
   public clone(): Tag {
     return new Tag(this.__id, this.__name, this.__disabled)
   }
+
+  public ToString(): string {
+    return `${this.__id}_${this.__name}`
+  }
 }

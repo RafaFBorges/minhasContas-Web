@@ -16,6 +16,8 @@ import TagList from '../../components/lists/tagList'
 import { useModal } from '../../utils/hook/modalHook'
 import { ExpenseVerifyData } from '@/app/ExpenseConfiguration'
 import { useUser } from '../../utils/hook/userHook'
+import getCookie from '@/app/actions/cookiesManager'
+import { TAG_DISABLED_KEY } from '../../utils/DataConstants'
 
 
 interface ExpenseUIProps<T> {
@@ -24,6 +26,7 @@ interface ExpenseUIProps<T> {
   hasAddButton?: boolean;
   startValue?: number;
   enabledVerify?: (((item: T) => boolean) | null);
+  isLoadLastEdition?: boolean;
 }
 
 export default function ExpenseUI({
@@ -31,9 +34,11 @@ export default function ExpenseUI({
   setTagList,
   hasAddButton = false,
   startValue = 0,
-  enabledVerify = null
+  enabledVerify = null,
+  isLoadLastEdition = false
 }: ExpenseUIProps<ExpenseVerifyData>) {
   const [value, setValue] = useState<number>(startValue)
+  const [isLoaded, setIsLoaded] = useState<boolean>(false)
   const [categories, setCategories] = useState<Array<Tag>>(tagList != null ? tagList.map((tag: Tag) => tag.clone()) : [])
 
   const { addFinancial } = useUser()
@@ -62,6 +67,38 @@ export default function ExpenseUI({
       addFinancial(new Expense(response.id, response.value, response.dates, categoryList, language))
     }
   }
+
+  async function loadConfig() {
+    const tagsToUpdate: Array<Tag> = (setTagList == null)
+      ? categories
+      : tagList != null
+        ? tagList
+        : []
+
+    let newCategories: Array<Tag> = await Promise.all(
+      tagsToUpdate.map(async (tag: Tag) => {
+        const isDisabled: string | undefined = await getCookie(TAG_DISABLED_KEY + tag.ToString())        
+        if (isDisabled != null && isDisabled == '1' || isDisabled == '0')
+          tag.disabled = isDisabled == '1'
+
+        return tag
+      }))
+
+    if (setTagList != null)
+      setTagList(newCategories)
+    else
+      setCategories(newCategories)
+  }
+
+  useEffect(() => {
+    const canLoadtagList = tagList != null && setTagList != null && 0 < tagList.length
+    const canLoasCategories = (tagList == null || setTagList == null) && 0 < categories.length
+    if (!isLoaded && isLoadLastEdition && (canLoasCategories || canLoadtagList)) {
+      loadConfig()
+
+      setIsLoaded(true)
+    }
+  }, [tagList, categories])
 
   useEffect(() => {
     if (enabledVerify == null)

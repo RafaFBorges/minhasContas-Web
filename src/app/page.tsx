@@ -84,6 +84,7 @@ export default function Home() {
     <Text noWrap textTag={TextTag.H3}>{getValue(SUBTITLE_KEY)}</Text>
 
     <ExpenseUI
+      isLoadLastEdition
       hasAddButton
       tagList={tagList}
       setTagList={setTagList}
