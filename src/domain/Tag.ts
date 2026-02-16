@@ -7,6 +7,10 @@ export class Tag {
     return (listA === listB) || (listA.length == listB.length && listA.every((tag, index) => tag.equals(listB[index])))
   }
 
+  static getClearName(id: number, name: string) {
+    return `${id}_${name.normalize("NFD").replace(/[\u0300-\u036f]/g, "")}`
+  }
+
   constructor(id: number, name: string, disabled: boolean) {
     this.__id = id
     this.__name = name
@@ -35,5 +39,9 @@ export class Tag {
 
   public clone(): Tag {
     return new Tag(this.__id, this.__name, this.__disabled)
+  }
+
+  public ToString(): string {
+    return Tag.getClearName(this.__id, this.__name)
   }
 }
