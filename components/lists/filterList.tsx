@@ -38,13 +38,13 @@ export default function FilterList({
       onClick={() => {
         if (tagList != null && 0 <= index && index < tagList.length && setTagList != null) {
           const newList: Array<Tag> = [...tagList]
-          newList[index].disabled = false
 
           if (selected != null && selected.current != null) {
             newList[selected.current].disabled = true
             selected.current = index
           }
 
+          newList[index].disabled = false
           setTagList(newList)
 
           if (setter != null && listToFilter != null && filterCondition != null) {
