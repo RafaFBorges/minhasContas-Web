@@ -20,7 +20,7 @@ export function isValidLanguage(language: string): boolean {
 }
 
 interface TranslateContextType {
-  addKey: (key: string, value: string, lang?: string) => void;
+  addKey: (key: string, value: string, lang?: string) => string;
   getValue: (key: string) => string;
   language: LanguageOption;
   setLang: (newLanguage: LanguageOption) => void;
@@ -40,7 +40,7 @@ export function TranslateProvider({ children, lang }: { children: ReactNode, lan
   const dictionary = useRef<TranslateType>({})
   const [language, setLanguage] = useState<LanguageOption>(loadLanguage(lang))
 
-  function addKey(key: string, value: string, lang: string = '') {
+  function addKey(key: string, value: string, lang: string = ''): string {
     if (key == '')
       throw new Error('Key is empty')
 
@@ -52,6 +52,11 @@ export function TranslateProvider({ children, lang }: { children: ReactNode, lan
     newDict[`${aLang}_${key}`] = value
 
     dictionary.current = newDict
+
+    if (aLang == language)
+      return value
+    else
+      return dictionary.current[`${language}_${key}`]
   }
 
   function getValue(key: string): string {

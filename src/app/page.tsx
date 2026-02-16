@@ -26,10 +26,6 @@ export default function Home() {
   const SUBTITLE_KEY = 'Home.Subtitle'
   const PROPERTIES_TITLE_KEY = 'Home.PropertiesTitle'
 
-  const [filteredexpenses, setFilteredexpenses] = useState<Expense[]>([])
-  const [tagList, setTagList] = useState<Array<Tag>>([])
-  const [filterList, setFilterList] = useState<Array<Tag>>([])
-
   const { openModal } = useModal()
   const { addKey, getValue, language } = useTranslate()
   const { sideColor } = useTheme()
@@ -42,11 +38,16 @@ export default function Home() {
     filterSelection
   } = useUser()
 
-  function translate() {
-    addKey(SUBTITLE_KEY, 'Despesas', LanguageOption.PT_BR)
+  const [filteredexpenses, setFilteredexpenses] = useState<Expense[]>([])
+  const [tagList, setTagList] = useState<Array<Tag>>([])
+  const [filterList, setFilterList] = useState<Array<Tag>>([])
+  const [expensesText, setExpensesText] = useState<string>(translate())
+
+  function translate(): string {
     addKey(PROPERTIES_TITLE_KEY, 'Editar despesa', LanguageOption.PT_BR)
-    addKey(SUBTITLE_KEY, 'Expenses', LanguageOption.EN)
     addKey(PROPERTIES_TITLE_KEY, 'Edit expense', LanguageOption.EN)
+    addKey(SUBTITLE_KEY, 'Despesas', LanguageOption.PT_BR)
+    return addKey(SUBTITLE_KEY, 'Expenses', LanguageOption.EN)
   }
 
   const handleDeleteClick = async (index: number) => {
@@ -75,13 +76,17 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
+    setExpensesText(getValue(SUBTITLE_KEY))
+  }, [language])
+
+  useEffect(() => {
     setTagList(Category.getTagList(categoriesList, true))
     setFilterList(Category.getTagList(categoriesList, true, filterSelection))
   }, [categoriesList])
 
   return <main style={styles.page}>
     <Text noWrap textTag={TextTag.H1} color={sideColor(total)}>{getRealString(total, language)}</Text>
-    <Text noWrap textTag={TextTag.H3}>{getValue(SUBTITLE_KEY)}</Text>
+    <Text noWrap textTag={TextTag.H3}>{expensesText}</Text>
 
     <ExpenseUI
       isLoadLastEdition
