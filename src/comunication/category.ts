@@ -1,3 +1,4 @@
+import { ExpenseDisabledDictionary, getExpenseDisabledCookie } from '@/app/actions/cookiesManager';
 import { CATEGORIES_ENDPOINT, handleGET } from './ApiResthandler'
 
 export interface CategoryResponse {
@@ -13,9 +14,16 @@ export interface CategoryRequest {
   date?: string;
 }
 
-export async function SyncCategories(setCategories: (list: CategoryResponse[]) => void) {
+export async function SyncCategories(setCategories: (list: CategoryResponse[]) => void, setDisasbledCategories: (dict: ExpenseDisabledDictionary) => void) {
   try {
-    console.log("HOME.useEffect : [initial load] fetching categories")
+    // Cache da configuração inicial
+    console.log("SyncCategories : load cached initial Categories configuration")
+    const disabledCategoriesDict: ExpenseDisabledDictionary = await getExpenseDisabledCookie()
+
+    if (setDisasbledCategories != null)
+      setDisasbledCategories(disabledCategoriesDict)
+
+    console.log("SyncCategories : [initial load] fetching categories")
 
     const serverCategoriesList: Promise<CategoryResponse[]> = await handleGET(CATEGORIES_ENDPOINT)
 
@@ -25,6 +33,6 @@ export async function SyncCategories(setCategories: (list: CategoryResponse[]) =
     if (setCategories != null)
       setCategories(serverCategoriesList)
   } catch (err) {
-    console.error("HOME.useEffect.SyncCategories : [Error] erro=", err)
+    console.error("SyncCategories : [Error] erro=", err)
   }
 }

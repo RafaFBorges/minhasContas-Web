@@ -7,6 +7,7 @@ import { useTranslate } from './translateHook'
 import { Category } from '@/domain/Category'
 import { CategoryResponse, SyncCategories } from '@/comunication/category'
 import { ExpenseResponse, SyncExpenses } from '@/comunication/expense'
+import { ExpenseDisabledDictionary } from '@/app/actions/cookiesManager'
 
 
 interface UserContextType {
@@ -21,6 +22,7 @@ interface UserContextType {
   replaceCategories: (list: CategoryResponse[]) => void;
   replaceTotal: (value: number) => void
   addCategory: (category: Category) => void;
+  disabledCategoriesDict: ExpenseDisabledDictionary;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined)
@@ -37,6 +39,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [financialList, setFinancialList] = useState<Expense[]>([])
   const [categoriesList, setCategoriesList] = useState<Category[]>([])
   const [total, setTotal] = useState<number>(0)
+  const [disabledCategoriesDict, setDisabledCategoriesDict] = useState<ExpenseDisabledDictionary>({})
 
   const { language } = useTranslate()
 
@@ -92,6 +95,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setFinancialList(expensesList)
     setTotal(total)
   }
+
   const replaceTotal = (value: number) => setTotal(value)
 
   const replaceCategories = (list: CategoryResponse[]) => {
@@ -100,9 +104,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setCategoriesList(Category.Categories)
   }
 
+  const replaceDisabledCategoriesDict = (dict: ExpenseDisabledDictionary) => {
+    setDisabledCategoriesDict(dict)
+  }
+
   useEffect(() => {
     SyncExpenses(replaceFinancial)
-    SyncCategories(replaceCategories)
+    SyncCategories(replaceCategories, replaceDisabledCategoriesDict)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -126,6 +134,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       replaceCategories,
       total,
       replaceTotal,
+      disabledCategoriesDict
     }}
   >
     {children}

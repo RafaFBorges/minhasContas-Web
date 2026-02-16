@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 
 import { FaPlus as AddIcon } from 'react-icons/fa'
 
@@ -16,8 +16,7 @@ import TagList from '../../components/lists/tagList'
 import { useModal } from '../../utils/hook/modalHook'
 import { ExpenseVerifyData } from '@/app/ExpenseConfiguration'
 import { useUser } from '../../utils/hook/userHook'
-import getCookie from '@/app/actions/cookiesManager'
-import { TAG_DISABLED_KEY } from '../../utils/DataConstants'
+import { ExpenseDisabledDictionary, getExpenseDisabledCookie } from '@/app/actions/cookiesManager'
 
 
 interface ExpenseUIProps<T> {
@@ -41,7 +40,7 @@ export default function ExpenseUI({
   const [isLoaded, setIsLoaded] = useState<boolean>(false)
   const [categories, setCategories] = useState<Array<Tag>>(tagList != null ? tagList.map((tag: Tag) => tag.clone()) : [])
 
-  const { addFinancial } = useUser()
+  const { addFinancial, disabledCategoriesDict } = useUser()
   const { language } = useTranslate()
   const { setEnabledSave, setData } = useModal()
 
@@ -68,36 +67,46 @@ export default function ExpenseUI({
     }
   }
 
-  async function loadConfig() {
+  function loadConfig(disabledDict: ExpenseDisabledDictionary, tagsToUpdate: Array<Tag>): Array<Tag> {
+    let newCategories: Array<Tag> = []
+    if (disabledDict != null)
+      newCategories = tagsToUpdate.map((tag: Tag) => {
+        if (disabledDict[tag.ToString()] != null && (disabledDict[tag.ToString()] == '1' || disabledDict[tag.ToString()] == '0'))
+          tag.disabled = disabledDict[tag.ToString()] == '0'
+
+        return tag
+      })
+
+    return newCategories
+  }
+
+  async function loadFromCookie() {
     const tagsToUpdate: Array<Tag> = (setTagList == null)
       ? categories
       : tagList != null
         ? tagList
         : []
 
-    let newCategories: Array<Tag> = await Promise.all(
-      tagsToUpdate.map(async (tag: Tag) => {
-        const isDisabled: string | undefined = await getCookie(TAG_DISABLED_KEY + tag.ToString())        
-        if (isDisabled != null && isDisabled == '1' || isDisabled == '0')
-          tag.disabled = isDisabled == '1'
+    const disabledDict: ExpenseDisabledDictionary = disabledCategoriesDict != null
+      ? disabledCategoriesDict
+      : await getExpenseDisabledCookie()
 
-        return tag
-      }))
-
+    const newCategories: Array<Tag> = loadConfig(disabledDict, tagsToUpdate)
     if (setTagList != null)
       setTagList(newCategories)
     else
       setCategories(newCategories)
   }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const canLoadtagList = tagList != null && setTagList != null && 0 < tagList.length
     const canLoasCategories = (tagList == null || setTagList == null) && 0 < categories.length
     if (!isLoaded && isLoadLastEdition && (canLoasCategories || canLoadtagList)) {
-      loadConfig()
+      loadFromCookie()
 
       setIsLoaded(true)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tagList, categories])
 
   useEffect(() => {

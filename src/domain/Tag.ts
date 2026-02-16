@@ -38,6 +38,6 @@ export class Tag {
   }
 
   public ToString(): string {
-    return `${this.__id}_${this.__name}`
+    return `${this.__id}_${this.__name.normalize("NFD").replace(/[\u0300-\u036f]/g, "")}`
   }
 }
