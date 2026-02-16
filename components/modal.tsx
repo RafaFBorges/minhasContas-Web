@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import { FaTimes as CloseIcon } from 'react-icons/fa'
 
@@ -20,7 +20,7 @@ export default function Modal({ children, closeModal, title, enabledVerify = tru
   const CANCEL_KEY = 'Modal.Cancel'
 
   const { config } = useTheme()
-  const { addKey, getValue } = useTranslate()
+  const { language, addKey, getValue } = useTranslate()
 
   function translate() {
     addKey(SAVE_KEY, 'Salvar', LanguageOption.PT_BR)
@@ -29,7 +29,8 @@ export default function Modal({ children, closeModal, title, enabledVerify = tru
     addKey(CANCEL_KEY, 'Cancel', LanguageOption.EN)
   }
 
-  translate()
+  useEffect(() => translate(), [])
+  useEffect(() => translate(), [language])
 
   return <div style={styles.overlay}>
     <div style={{ ...styles.modal, backgroundColor: config.backgroundColor }}>

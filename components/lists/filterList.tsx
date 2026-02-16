@@ -8,6 +8,7 @@ import { Tag } from '@/domain/Tag'
 import { Expense } from '@/domain/Expense'
 import { Filter_SELECTION_KEY } from '../../utils/DataConstants'
 import { saveCookie } from '@/app/actions/cookiesManager'
+import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
 
 export interface FilterListProps {
   style?: React.CSSProperties | null;
@@ -26,8 +27,12 @@ export default function FilterList({
   setter = undefined,
   filterCondition = undefined,
 }: FilterListProps) {
+  const ALL_FILTER_KEY = 'FilterList.Save'
+
   const { config } = useTheme()
+  const { language, addKey, getValue } = useTranslate()
   const selected = useRef<number | null>(-1)
+  const translationName = useRef<string>('')
 
   function printTag(name: string, index: number, isDisabled: boolean) {
     return <Text
@@ -68,8 +73,13 @@ export default function FilterList({
       : tagList.map((item, index) => item != null ? printTag(item.name, index, item.disabled) : null)
   }
 
+  function translate() {
+    addKey(ALL_FILTER_KEY, 'Todas', LanguageOption.PT_BR)
+    addKey(ALL_FILTER_KEY, 'All', LanguageOption.EN)
+  }
+
   useEffect(() => {
-    if (setTagList != null && tagList != null && 0 < tagList.length && tagList[0].name != 'Todas') {
+    if (setTagList != null && tagList != null && 0 < tagList.length && tagList[0].name != getValue(ALL_FILTER_KEY)) {
       let found: boolean = false
       let selectedIndex: number = 0
       const list: Array<Tag> = tagList.map((item, index) => {
@@ -85,7 +95,7 @@ export default function FilterList({
       })
 
       selected.current = selectedIndex
-      setTagList([new Tag(-1, 'Todas', selected.current != 0), ...list])
+      setTagList([new Tag(-1, getValue(ALL_FILTER_KEY), selected.current != 0), ...list])
       if (setter != null && listToFilter != null && filterCondition != null) {
         if (selected.current == 0)
           setter(listToFilter)
@@ -108,6 +118,26 @@ export default function FilterList({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listToFilter])
+
+  useEffect(() => {
+    translate()
+    translationName.current = getValue(ALL_FILTER_KEY)
+  }, [])
+
+  useEffect(() => {
+    const list: Array<Tag> | null = (tagList == null)
+      ? null
+      : tagList.map(item => {
+        if (item.name == translationName.current)
+          return new Tag(-1, getValue(ALL_FILTER_KEY), selected.current != 0)
+
+        return item
+      })
+
+    translationName.current = getValue(ALL_FILTER_KEY)
+    if (setTagList != null && list != null)
+      setTagList(list)
+  }, [language])
 
   return <div style={{ ...styles.container, ...style }}>
     <FilterIcon
