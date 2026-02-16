@@ -1,5 +1,6 @@
-import { ExpenseDisabledDictionary, getExpenseDisabledCookie } from '@/app/actions/cookiesManager';
+import getCookie, { ExpenseDisabledDictionary, getExpenseDisabledCookie } from '@/app/actions/cookiesManager'
 import { CATEGORIES_ENDPOINT, handleGET } from './ApiResthandler'
+import { Filter_SELECTION_KEY } from '../../utils/DataConstants'
 
 export interface CategoryResponse {
   id: number;
@@ -14,14 +15,22 @@ export interface CategoryRequest {
   date?: string;
 }
 
-export async function SyncCategories(setCategories: (list: CategoryResponse[]) => void, setDisasbledCategories: (dict: ExpenseDisabledDictionary) => void) {
+export async function SyncCategories(setCategories: (list: CategoryResponse[]) => void, setDisasbledCategories: (dict: ExpenseDisabledDictionary) => void, setFilterSelection: (filter: string) => void) {
   try {
     // Cache da configuração inicial
     console.log("SyncCategories : load cached initial Categories configuration")
-    const disabledCategoriesDict: ExpenseDisabledDictionary = await getExpenseDisabledCookie()
 
-    if (setDisasbledCategories != null)
+    if (setDisasbledCategories != null) {
+      const disabledCategoriesDict: ExpenseDisabledDictionary = await getExpenseDisabledCookie()
       setDisasbledCategories(disabledCategoriesDict)
+    }
+
+    if (setFilterSelection != null) {
+      const filter: string | undefined = await getCookie(Filter_SELECTION_KEY)
+
+      if (filter != null)
+        setFilterSelection(filter)
+    }
 
     console.log("SyncCategories : [initial load] fetching categories")
 

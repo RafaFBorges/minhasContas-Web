@@ -6,6 +6,8 @@ import Text, { TextTag } from '../text'
 import { useTheme } from '../../utils/hook/themeHook'
 import { Tag } from '@/domain/Tag'
 import { Expense } from '@/domain/Expense'
+import { Filter_SELECTION_KEY } from '../../utils/DataConstants'
+import { saveCookie } from '@/app/actions/cookiesManager'
 
 export interface FilterListProps {
   style?: React.CSSProperties | null;
@@ -25,7 +27,7 @@ export default function FilterList({
   filterCondition = undefined,
 }: FilterListProps) {
   const { config } = useTheme()
-  const selected = useRef<number | null>(0)
+  const selected = useRef<number | null>(-1)
 
   function printTag(name: string, index: number, isDisabled: boolean) {
     return <Text
@@ -46,7 +48,7 @@ export default function FilterList({
 
           newList[index].disabled = false
           setTagList(newList)
-
+          saveCookie(Filter_SELECTION_KEY, newList[index].ToString())
           if (setter != null && listToFilter != null && filterCondition != null) {
             if (selected.current == 0)
               setter(listToFilter)
@@ -68,20 +70,35 @@ export default function FilterList({
 
   useEffect(() => {
     if (setTagList != null && tagList != null && 0 < tagList.length && tagList[0].name != 'Todas') {
-      selected.current = 0
-      setTagList([
-        new Tag(-1, 'Todas', false),
-        ...tagList.map(item => {
+      let found: boolean = false
+      let selectedIndex: number = 0
+      const list: Array<Tag> = tagList.map((item, index) => {
+        if (found) {
           item.disabled = true
-          return item
-        })
-      ])
+        } else {
+          found = !item.disabled
+          if (found)
+            selectedIndex = index + 1
+        }
+
+        return item
+      })
+
+      selected.current = selectedIndex
+      setTagList([new Tag(-1, 'Todas', selected.current != 0), ...list])
+      if (setter != null && listToFilter != null && filterCondition != null) {
+        if (selected.current == 0)
+          setter(listToFilter)
+        else
+          setter(listToFilter.filter(item => filterCondition(item, list[selectedIndex - 1])))
+      }
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tagList])
 
   useEffect(() => {
-    if (setter != null && listToFilter != null && filterCondition != null) {
+    if (selected.current != -1 && setter != null && listToFilter != null && filterCondition != null) {
       const index: number = selected == null || selected.current == null ? -1 : selected.current
 
       if (tagList == null || index <= 0)

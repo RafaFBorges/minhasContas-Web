@@ -23,6 +23,7 @@ interface UserContextType {
   replaceTotal: (value: number) => void
   addCategory: (category: Category) => void;
   disabledCategoriesDict: ExpenseDisabledDictionary;
+  filterSelection: string;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined)
@@ -40,6 +41,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [categoriesList, setCategoriesList] = useState<Category[]>([])
   const [total, setTotal] = useState<number>(0)
   const [disabledCategoriesDict, setDisabledCategoriesDict] = useState<ExpenseDisabledDictionary>({})
+  const [filterSelection, setFilterSelection] = useState<string>('')
 
   const { language } = useTranslate()
 
@@ -108,9 +110,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setDisabledCategoriesDict(dict)
   }
 
+  const replaceFilterSelection = (filter: string) => {
+    setFilterSelection(filter)
+  }
+
   useEffect(() => {
     SyncExpenses(replaceFinancial)
-    SyncCategories(replaceCategories, replaceDisabledCategoriesDict)
+    SyncCategories(replaceCategories, replaceDisabledCategoriesDict, replaceFilterSelection)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -134,7 +140,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
       replaceCategories,
       total,
       replaceTotal,
-      disabledCategoriesDict
+      disabledCategoriesDict,
+      filterSelection
     }}
   >
     {children}

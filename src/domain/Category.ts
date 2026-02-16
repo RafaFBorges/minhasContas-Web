@@ -18,7 +18,7 @@ export class Category {
     this.__categories.push(newCategory)
   }
 
-  static getTagList(categoryList: Array<Category> | undefined, isEnabledCategories: boolean = false): Array<Tag> {
+  static getTagList(categoryList: Array<Category> | undefined, isEnabledCategories: boolean = false, selected: string = ''): Array<Tag> {
     if (categoryList == null)
       return []
 
@@ -28,7 +28,7 @@ export class Category {
     const missingCategory: Record<number, number> = { ...this.__categoriesDict }
     const newList = categoryList.map(item => {
       delete missingCategory[item.id]
-      return new Tag(item.id, item.name, false)
+      return new Tag(item.id, item.name, !Tag.getClearName(item.id, item.name).includes(selected))
     })
     Object
       .values(missingCategory)

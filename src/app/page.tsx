@@ -39,6 +39,7 @@ export default function Home() {
     total,
     deleteFinancial,
     editFinancialResponse,
+    filterSelection
   } = useUser()
 
   function translate() {
@@ -59,7 +60,6 @@ export default function Home() {
     openModal(getValue(PROPERTIES_TITLE_KEY), () => expenseEditContent(expense), (item: unknown) => handleEditExpense(item, expense, editFinancialResponse), true)
   }
 
-
   const expenseEditContent = (expense: Expense) => {
     const tags: Array<Tag> = Category.getTagList(expense.categories, true)
     return <ExpenseConfiguration
@@ -76,7 +76,7 @@ export default function Home() {
 
   useEffect(() => {
     setTagList(Category.getTagList(categoriesList, true))
-    setFilterList(Category.getTagList(categoriesList, true))
+    setFilterList(Category.getTagList(categoriesList, true, filterSelection))
   }, [categoriesList])
 
   return <main style={styles.page}>
