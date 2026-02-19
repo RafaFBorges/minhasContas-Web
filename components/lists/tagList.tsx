@@ -2,9 +2,7 @@ import React, { useEffect } from 'react'
 
 import { FaPlus as AddIcon } from 'react-icons/fa'
 
-import Text, { TextTag } from '../text'
 import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
-import { isLight, lightenCor } from '../../utils/colors'
 import ThemeButton from '../themeButton'
 import { useTheme } from '../../utils/hook/themeHook'
 import { Tag } from '@/domain/Tag'
@@ -15,6 +13,7 @@ import { CATEGORIES_ENDPOINT, handlePOST } from '@/comunication/ApiResthandler'
 import { Category } from '@/domain/Category'
 import { useUser } from '../../utils/hook/userHook'
 import { saveExpenseDisabledCookie } from '@/app/actions/cookiesManager'
+import TagItem from '../tagItem'
 
 export interface TagListProps {
   style?: React.CSSProperties | null;
@@ -71,19 +70,12 @@ export default function TagList({
   }
 
   function printTag(name: string, index: number, isDisabled: boolean) {
-    const tagColor: string = isDisabled
-      ? config.disabledFontColor
-      : color == ''
-        ? config.tagDefaultColor
-        : color
-
-    const backColor: string = lightenCor(tagColor, 35)
-
-    return <div
+    return <TagItem
       key={index}
-      style={{ ...styles.tagContainer, borderColor: tagColor, backgroundColor: backColor }}
+      name={name}
+      isDisabled={isDisabled}
       onClick={selectable
-        ? () => {
+        ? (e: React.MouseEvent<HTMLDivElement>) => {
           if (tagList != null && 0 <= index && index < tagList.length && setTagList != null) {
             const newtag = tagList[index]
             newtag.disabled = !newtag.disabled
@@ -93,9 +85,7 @@ export default function TagList({
           }
         }
         : () => { }}
-    >
-      <Text textTag={TextTag.P} style={styles.categoryTitle} color={isLight(backColor) ? '#000' : '#FFF'} disabled noSelection>{name}</Text>
-    </div>
+    />
   }
 
   function printContainer() {
