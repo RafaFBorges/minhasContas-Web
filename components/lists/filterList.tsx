@@ -2,13 +2,13 @@ import React, { useEffect, useRef } from 'react'
 
 import { FaFilter as FilterIcon } from 'react-icons/fa'
 
-import Text, { TextTag } from '../text'
 import { useTheme } from '../../utils/hook/themeHook'
 import { Tag } from '@/domain/Tag'
 import { Expense } from '@/domain/Expense'
 import { Filter_SELECTION_KEY } from '../../utils/DataConstants'
 import { saveCookie } from '@/app/actions/cookiesManager'
 import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
+import TagItem from '../tagItem'
 
 export interface FilterListProps {
   style?: React.CSSProperties | null;
@@ -35,14 +35,13 @@ export default function FilterList({
   const translationName = useRef<string>('')
 
   function printTag(name: string, index: number, isDisabled: boolean) {
-    return <Text
+    return <TagItem
+      isOnlyText
       key={index}
-      noSelection
-      noWrap
-      textTag={TextTag.P}
+      name={name}
       style={isDisabled ? {} : styles.selected}
-      color={config.fontColor}
-      onClick={() => {
+      isDisabled={isDisabled}
+      onClick={(e: React.MouseEvent<HTMLDivElement>) => {
         if (tagList != null && 0 <= index && index < tagList.length && setTagList != null) {
           const newList: Array<Tag> = [...tagList]
 
@@ -62,9 +61,7 @@ export default function FilterList({
           }
         }
       }}
-    >
-      {name}
-    </Text>
+    />
   }
 
   function printContainer() {

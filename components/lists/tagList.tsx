@@ -23,6 +23,7 @@ export interface TagListProps {
   selectable?: boolean;
   addNewTags?: boolean;
   allowEmpty?: boolean;
+  DisabledHover?: boolean;
 }
 
 export default function TagList({
@@ -33,6 +34,7 @@ export default function TagList({
   selectable = false,
   addNewTags = false,
   allowEmpty = false,
+  DisabledHover = false
 }: TagListProps) {
   const NEW_CATEGORY_TITLE_KEY = 'TagList.PropertiesTitle'
   const UNKOWN_CATEGORY_KEY = 'unkownCategory'
@@ -71,6 +73,7 @@ export default function TagList({
 
   function printTag(name: string, index: number, isDisabled: boolean) {
     return <TagItem
+      DisabledHover={DisabledHover}
       key={index}
       name={name}
       isDisabled={isDisabled}
