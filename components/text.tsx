@@ -12,7 +12,7 @@ export enum TextTag {
   P = 'p',
 }
 
-interface TextProps {
+interface TextProps<T> {
   children: React.ReactNode;
   textTag?: TextTag;
   style?: React.CSSProperties | null;
@@ -20,10 +20,12 @@ interface TextProps {
   noWrap?: boolean;
   noSelection?: boolean;
   color?: string;
-  onClick?: (item: number) => void;
+  onClick?: (item: T) => void;
+  onMouseEnter?: (item: T) => void;
+  onMouseLeave?: (item: T) => void;
 }
 
-export default function Text({
+export default function Text<T>({
   children,
   textTag = TextTag.P,
   style = null,
@@ -31,8 +33,10 @@ export default function Text({
   noWrap = false,
   noSelection = false,
   color = '',
-  onClick = () => { }
-}: TextProps) {
+  onClick = () => { },
+  onMouseEnter = () => { },
+  onMouseLeave = () => { }
+}: TextProps<T>) {
   const { config } = useTheme()
 
   let textStyle: React.CSSProperties = (style != null)
@@ -51,7 +55,16 @@ export default function Text({
   if (noSelection)
     textStyle = { ...textStyle, ...styles.notSelectable }
 
-  return React.createElement(textTag, { style: textStyle, onClick: onClick }, children)
+  return React.createElement(
+    textTag,
+    {
+      style: textStyle,
+      onClick: onClick,
+      onMouseEnter: onMouseEnter,
+      onMouseLeave: onMouseLeave
+    },
+    children
+  )
 }
 
 const styles: { [key: string]: React.CSSProperties } = {

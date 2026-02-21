@@ -56,7 +56,7 @@ export default function Card({ title, date, categories, style = null, id = -1, e
           }
         </div>
       </div>
-      <TagList style={styles.tagList} tagList={Category.getTagList(categories)} />
+      <TagList DisabledHover style={styles.tagList} tagList={Category.getTagList(categories)} />
       <Text textTag={TextTag.P} style={styles.date} disabled>{date}</Text>
     </div>
   </div>

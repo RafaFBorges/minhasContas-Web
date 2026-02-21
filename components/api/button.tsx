@@ -1,7 +1,8 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { IconType } from 'react-icons'
+import { lightenCor } from '../../utils/colors'
 
 export interface StyledButtonProps {
   children?: React.ReactNode;
@@ -28,31 +29,40 @@ export default function StyledButton({
   borderRadius = '4px',
   color = '#0070f3'
 }: StyledButtonProps) {
+  const [isHovered, setIsHovered] = useState<boolean>(false)
+
+  const LIGHTEN_FACTOR = 15
+  const actualColor = (isHovered) ? lightenCor(color, LIGHTEN_FACTOR) : color
+
   let style = isClickableIcon
-    ? { ...styles.clickableIcon, color: color }
+    ? { ...styles.clickableIcon, color: actualColor }
     : isSecondary
-      ? { ...styles.buttonSecondary, border: 'solid ' + color + ' 2px' }
-      : { ...styles.button, backgroundColor: color }
+      ? { ...styles.buttonSecondary, border: 'solid ' + actualColor + ' 2px' }
+      : { ...styles.button, backgroundColor: actualColor }
 
   style = { ...style, borderRadius: borderRadius }
   if (width != '')
     style = { ...style, width: width }
 
   if (!enabled) {
-    if (isClickableIcon)
-      style = { ...style, color: '#696969ff' }
-    else
-      style = { ...style, backgroundColor: '#696969ff' }
+    style = (isClickableIcon)
+      ? { ...style, color: '#696969ff' }
+      : { ...style, backgroundColor: '#696969ff' }
   }
 
+  const handleMouseEnter = () => { setIsHovered(true) }
+  const handleMouseLeave = () => { setIsHovered(false) }
+
   return <button
+    onMouseEnter={handleMouseEnter}
+    onMouseLeave={handleMouseLeave}
     onClick={enabled ? clickHandle : () => { }}
     style={style}
   >
     {children}
     {Icon != null &&
       <Icon
-        color={isSecondary && !isClickableIcon ? color : undefined}
+        color={isSecondary && !isClickableIcon ? actualColor : undefined}
         size={iconSize}
       />
     }
