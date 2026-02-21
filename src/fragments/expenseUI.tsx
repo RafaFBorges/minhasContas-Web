@@ -69,7 +69,7 @@ export default function ExpenseUI({
 
   function loadConfig(disabledDict: ExpenseDisabledDictionary, tagsToUpdate: Array<Tag>): Array<Tag> {
     let newCategories: Array<Tag> = []
-    if (disabledDict != null)
+    if (disabledDict != null && tagsToUpdate != null)
       newCategories = tagsToUpdate.map((tag: Tag) => {
         if (disabledDict[tag.ToString()] != null && (disabledDict[tag.ToString()] == '1' || disabledDict[tag.ToString()] == '0'))
           tag.disabled = disabledDict[tag.ToString()] == '0'

@@ -7,7 +7,6 @@ import { useTheme } from '../utils/hook/themeHook'
 
 export interface TagItemProps {
   name: string;
-  key: number;
   isDisabled: boolean;
   color?: string;
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
@@ -15,7 +14,6 @@ export interface TagItemProps {
 
 export default function TagItem({
   name,
-  key,
   isDisabled,
   color = '',
   onClick = () => { }
@@ -39,7 +37,6 @@ export default function TagItem({
     : '#FFF'
 
   return <div
-    key={key}
     onMouseEnter={handleMouseEnter}
     onMouseLeave={handleMouseLeave}
     style={{ ...styles.tagContainer, borderColor: tagColor, backgroundColor: backColor }}
