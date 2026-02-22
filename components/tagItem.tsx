@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 
-import Text, { TextTag } from './text'
+import Text, { TextTag } from './api/text'
 import { isLight, lightenCor } from '../utils/colors'
 import { useTheme } from '../utils/hook/themeHook'
 

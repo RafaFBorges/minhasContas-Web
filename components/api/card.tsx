@@ -3,7 +3,7 @@ import React from 'react'
 import { FaTrash as DeleteIcon, FaEdit as EditIcon } from 'react-icons/fa'
 
 import ThemeButton from '../themeButton'
-import Text, { TextTag } from '../text'
+import Text, { TextTag } from './text'
 import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
 import { Category } from '@/domain/Category'
 import TagList from '../lists/tagList'

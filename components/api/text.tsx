@@ -1,5 +1,5 @@
 import React from 'react'
-import { useTheme } from '../utils/hook/themeHook'
+import { useTheme } from '../../utils/hook/themeHook'
 
 
 export enum TextTag {
