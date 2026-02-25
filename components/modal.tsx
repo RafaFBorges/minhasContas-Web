@@ -33,7 +33,7 @@ export default function Modal({ children, closeModal, title, enabledVerify = tru
   useEffect(() => translate(), [language])
 
   return <div style={styles.overlay}>
-    <div style={{ ...styles.modal, backgroundColor: config.backgroundColor }}>
+    <div style={{ ...styles.modal, backgroundColor: config.cardBackground }}>
       <div style={{ ...styles.titleRow, margin: '0 0 0.5rem 0' }}>
         <Text textTag={TextTag.H6} style={styles.title}>{title}</Text>
         <ThemeButton

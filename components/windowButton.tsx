@@ -69,7 +69,7 @@ export default function WindowButton({
           ...styles.modal,
           top: `${coords.top}px`,
           right: '0px',
-          backgroundColor: '#429116'/*config.backgroundColor*/
+          backgroundColor: config.cardBackground
         }}>
 
       </div>
