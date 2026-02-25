@@ -2,7 +2,7 @@
 
 import { createContext, useContext, ReactNode, useState } from 'react'
 import { Geist, Geist_Mono } from 'next/font/google'
-import { FaPaintBrush as ThemeIcon, FaGlobe as LanguageIcon } from 'react-icons/fa'
+import { FaPaintBrush as ThemeIcon, FaGlobe as LanguageIcon, FaUser as UserIcon } from 'react-icons/fa'
 
 import ThemeButton from '../../components/themeButton'
 import { LanguageOption, useTranslate } from './translateHook'
@@ -182,7 +182,7 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
           isSecondary
           borderRadius='8px'
           iconSize='16'
-          Icon={ThemeIcon}
+          Icon={UserIcon}
         />
       </div>
       {children}
