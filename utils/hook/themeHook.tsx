@@ -9,6 +9,7 @@ import { LanguageOption, useTranslate } from './translateHook'
 import { saveCookie } from '@/app/actions/cookiesManager'
 import { THEME_KEY } from '../DataConstants'
 import { getSideColor } from '../colors'
+import WindowButton from '../../components/windowButton'
 
 export enum ThemeOptions {
   LIGHT = 'light',
@@ -175,6 +176,12 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
             else
               await setTheme(ThemeOptions.LIGHT)
           }}
+          Icon={ThemeIcon}
+        />
+        <WindowButton
+          isSecondary
+          borderRadius='8px'
+          iconSize='16'
           Icon={ThemeIcon}
         />
       </div>

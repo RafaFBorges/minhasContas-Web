@@ -1,12 +1,12 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { forwardRef, useState } from 'react'
 import { IconType } from 'react-icons'
 import { lightenCor } from '../../utils/colors'
 
 export interface StyledButtonProps {
   children?: React.ReactNode;
-  clickHandle: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  clickHandle?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   Icon?: IconType | null;
   isClickableIcon?: boolean;
   width?: string;
@@ -17,7 +17,7 @@ export interface StyledButtonProps {
   color?: string;
 }
 
-export default function StyledButton({
+const StyledButton = forwardRef<HTMLButtonElement, StyledButtonProps>(({
   children,
   clickHandle,
   Icon = null,
@@ -28,7 +28,7 @@ export default function StyledButton({
   isSecondary = false,
   borderRadius = '4px',
   color = '#0070f3'
-}: StyledButtonProps) {
+}: StyledButtonProps, ref) => {
   const [isHovered, setIsHovered] = useState<boolean>(false)
 
   const LIGHTEN_FACTOR = 15
@@ -54,6 +54,7 @@ export default function StyledButton({
   const handleMouseLeave = () => { setIsHovered(false) }
 
   return <button
+    ref={ref}
     onMouseEnter={handleMouseEnter}
     onMouseLeave={handleMouseLeave}
     onClick={enabled ? clickHandle : () => { }}
@@ -67,7 +68,7 @@ export default function StyledButton({
       />
     }
   </button>
-}
+})
 
 const styles: { [key: string]: React.CSSProperties } = {
   button: {
@@ -97,3 +98,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: 'center',
   },
 }
+
+StyledButton.displayName = 'StyledButton'
+export default StyledButton
