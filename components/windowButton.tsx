@@ -4,6 +4,10 @@ import React, { useEffect, useRef, useState } from 'react'
 import StyledButton, { StyledButtonProps } from './api/button'
 import { useTheme } from '../utils/hook/themeHook'
 
+export interface WindowButtonProps extends StyledButtonProps {
+  Menu?: React.ElementType | null;
+}
+
 export default function WindowButton({
   children,
   Icon = null,
@@ -13,7 +17,8 @@ export default function WindowButton({
   iconSize = '16',
   isSecondary = false,
   borderRadius = '4px',
-}: StyledButtonProps) {
+  Menu = null
+}: WindowButtonProps) {
   const { config } = useTheme()
 
   const [isHovered, setIsHovered] = useState<boolean>(false)
@@ -62,7 +67,7 @@ export default function WindowButton({
     >
       {children}
     </StyledButton>
-    {isHovered &&
+    {isHovered && Menu != null &&
       <div
         ref={modalRef}
         style={{
@@ -71,7 +76,7 @@ export default function WindowButton({
           right: '0px',
           backgroundColor: config.cardBackground
         }}>
-
+        <Menu />
       </div>
     }
   </div>
@@ -86,7 +91,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    width: '300px',
     padding: '0.4em',
     backgroundColor: '#323245',
     borderRadius: '8px',
