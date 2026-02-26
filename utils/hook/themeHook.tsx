@@ -10,6 +10,7 @@ import { saveCookie } from '@/app/actions/cookiesManager'
 import { THEME_KEY } from '../DataConstants'
 import { getSideColor } from '../colors'
 import WindowButton from '../../components/windowButton'
+import Toggle from '../../components/toggle'
 
 export enum ThemeOptions {
   LIGHT = 'light',
@@ -183,6 +184,18 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
           borderRadius='8px'
           iconSize='16'
           Icon={UserIcon}
+          Menu={() => {
+            return <Toggle
+              name={'language'}
+              enabled={language == LanguageOption.PT_BR}
+              clickHandle={async () => {
+                if (language == LanguageOption.PT_BR)
+                  await setLang(LanguageOption.EN)
+                else
+                  await setLang(LanguageOption.PT_BR)
+              }}
+            />
+          }}
         />
       </div>
       {children}
