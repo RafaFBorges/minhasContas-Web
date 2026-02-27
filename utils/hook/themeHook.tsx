@@ -164,46 +164,34 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
   >
     <body className={`${geistSans.variable} ${geistMono.variable}`} style={{ ...styles.body, backgroundColor: config.backgroundColor }}>
       <div style={styles.row}>
-        <ThemeButton
-          isSecondary
-          borderRadius='8px'
-          iconSize='16'
-          clickHandle={async () => {
-            if (language == LanguageOption.PT_BR)
-              await setLang(LanguageOption.EN)
-            else
-              await setLang(LanguageOption.PT_BR)
-          }}
-          Icon={LanguageIcon}
-        />
-        <ThemeButton
-          isSecondary
-          borderRadius='8px'
-          iconSize='16'
-          clickHandle={async () => {
-            if (settedTheme == ThemeOptions.LIGHT)
-              await setTheme(ThemeOptions.DARK)
-            else
-              await setTheme(ThemeOptions.LIGHT)
-          }}
-          Icon={ThemeIcon}
-        />
         <WindowButton
           isSecondary
           borderRadius='8px'
           iconSize='16'
           Icon={UserIcon}
           Menu={() => {
-            return <ThemeToggle
-              name={'language'}
-              enabled={language == LanguageOption.PT_BR}
-              clickHandle={async () => {
-                if (language == LanguageOption.PT_BR)
-                  await setLang(LanguageOption.EN)
-                else
-                  await setLang(LanguageOption.PT_BR)
-              }}
-            />
+            return <div style={styles.menuContainer}>
+              <ThemeToggle
+                name={'language'}
+                enabled={language == LanguageOption.PT_BR}
+                clickHandle={async () => {
+                  if (language == LanguageOption.PT_BR)
+                    await setLang(LanguageOption.EN)
+                  else
+                    await setLang(LanguageOption.PT_BR)
+                }}
+              />
+              <ThemeToggle
+                name={'theme'}
+                enabled={settedTheme == ThemeOptions.LIGHT}
+                clickHandle={async () => {
+                  if (settedTheme == ThemeOptions.LIGHT)
+                    await setTheme(ThemeOptions.DARK)
+                  else
+                    await setTheme(ThemeOptions.LIGHT)
+                }}
+              />
+            </div>
           }}
         />
       </div>
