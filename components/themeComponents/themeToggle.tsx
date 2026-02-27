@@ -15,6 +15,9 @@ export default function ThemeToggle({
   color = '',
   borderColor = '',
   disabledColor = '',
+  enableImage = null,
+  disableImage = null,
+  isImagePriority = false,
 }: ToogleProps) {
   const { config } = useTheme()
 
@@ -28,5 +31,8 @@ export default function ThemeToggle({
     borderColor={borderColor != '' ? borderColor : config.borderColor}
     borderWidth={borderWidth}
     disabledColor={disabledColor ? disabledColor : config.disabledColor}
+    enableImage={enableImage}
+    disableImage={disableImage}
+    isImagePriority={isImagePriority}
   />
 }

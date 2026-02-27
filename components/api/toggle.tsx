@@ -1,9 +1,11 @@
 'use client'
 
 import React, { useState } from 'react'
+import Image, { StaticImageData } from 'next/image'
+
 import { lightenCor } from '../../utils/colors'
 import Text, { TextTag } from './text'
-import { useTheme } from '../../utils/hook/themeHook'
+
 
 export interface ToogleProps {
   clickHandle?: () => void;
@@ -16,6 +18,9 @@ export interface ToogleProps {
   borderColor?: string;
   borderWidth?: number;
   disabledColor?: string;
+  isImagePriority?: boolean;
+  enableImage?: StaticImageData | null;
+  disableImage?: StaticImageData | null;
 }
 
 export default function Toggle({
@@ -28,11 +33,12 @@ export default function Toggle({
   borderColor = '#555',
   borderWidth = 1,
   disabledColor = '#727272ff',
+  enableImage = null,
+  disableImage = null,
+  isImagePriority = false,
 }: ToogleProps) {
   const [isHovered, setIsHovered] = useState<boolean>(false)
   const [isEnabled, setIsEnabled] = useState<boolean>(enabled)
-
-  const { config } = useTheme()
 
   const handleMouseEnter = () => { setIsHovered(true) }
   const handleMouseLeave = () => { setIsHovered(false) }
@@ -55,14 +61,14 @@ export default function Toggle({
           height: `${toogleSize + 2 * padding + 2 * borderWidth}px`,
           width: `${2 * toogleSize + 2 * padding + 2 * borderWidth}px`,
           padding: `${padding}px`,
-          border: `${borderWidth}px solid ${borderColor}`,
+          border: `${borderWidth}px solid ${isHovered ? lightenCor(borderColor, 15) : borderColor}`,
         }
         : {
           ...styles.toogleContainer,
           height: `${toogleSize + 2 * padding + 2 * borderWidth}px`,
           width: `${2 * toogleSize + 2 * padding + 2 * borderWidth}px`,
           padding: `${padding}px`,
-          border: `${borderWidth}px solid ${borderColor}`,
+          border: `${borderWidth}px solid ${isHovered ? lightenCor(borderColor, 15) : borderColor}`,
           ...styles.enabled
         }
       }
@@ -76,7 +82,24 @@ export default function Toggle({
             ? isHovered ? lightenCor(color, 15) : color
             : isHovered ? lightenCor(disabledColor, 15) : disabledColor
         }}
-      />
+      >
+        {isEnabled && enableImage != null &&
+          <Image
+            src={enableImage}
+            alt="toggle enabled"
+            style={styles.image}
+            priority={isImagePriority}
+          />
+        }
+        {!isEnabled && disableImage != null &&
+          <Image
+            src={disableImage}
+            alt="toggle disabled"
+            style={styles.image}
+            priority={isImagePriority}
+          />
+        }
+      </div>
     </div>
   </div>
 }
@@ -100,8 +123,18 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   toogle: {
     borderRadius: '100%',
+    overflow: 'hidden',
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   enabled: {
     justifyContent: 'flex-start',
   },
+  image: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+  }
 }

@@ -2,9 +2,11 @@
 
 import { createContext, useContext, ReactNode, useState } from 'react'
 import { Geist, Geist_Mono } from 'next/font/google'
-import { FaPaintBrush as ThemeIcon, FaGlobe as LanguageIcon, FaUser as UserIcon } from 'react-icons/fa'
+import { FaUser as UserIcon } from 'react-icons/fa'
 
-import ThemeButton from '../../components/themeComponents/themeButton'
+import ptImage from '../../src/assets/ptBr.png'
+import engImage from '../../src/assets/en.png'
+
 import { LanguageOption, useTranslate } from './translateHook'
 import { saveCookie } from '@/app/actions/cookiesManager'
 import { THEME_KEY } from '../DataConstants'
@@ -180,6 +182,9 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
                   else
                     await setLang(LanguageOption.PT_BR)
                 }}
+                enableImage={ptImage}
+                disableImage={engImage}
+                isImagePriority
               />
               <ThemeToggle
                 name={'theme'}
@@ -216,4 +221,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: 'center',
     justifyContent: 'flex-end',
   },
+  menuContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+  }
 }
