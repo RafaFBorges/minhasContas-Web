@@ -1,8 +1,8 @@
 'use client'
 
 import React from 'react'
-import StyledButton, { StyledButtonProps } from './api/button'
-import { useTheme } from '../utils/hook/themeHook'
+import StyledButton, { StyledButtonProps } from '../api/button'
+import { useTheme } from '../../utils/hook/themeHook'
 
 export default function ThemeButton({
   children,

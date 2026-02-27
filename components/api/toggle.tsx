@@ -1,11 +1,11 @@
 'use client'
 
 import React, { useState } from 'react'
-import { lightenCor } from '../utils/colors'
-import Text, { TextTag } from './api/text'
-import { useTheme } from '../utils/hook/themeHook'
+import { lightenCor } from '../../utils/colors'
+import Text, { TextTag } from './text'
+import { useTheme } from '../../utils/hook/themeHook'
 
-export interface StyledButtonProps {
+export interface ToogleProps {
   clickHandle?: () => void;
   width?: string;
   enabled?: boolean;
@@ -15,7 +15,7 @@ export interface StyledButtonProps {
   padding?: number;
   borderColor?: string;
   borderWidth?: number;
-  disabledFontColor?: string;
+  disabledColor?: string;
 }
 
 export default function Toggle({
@@ -27,8 +27,8 @@ export default function Toggle({
   padding = 2,
   borderColor = '#555',
   borderWidth = 1,
-  disabledFontColor = '#727272ff',
-}: StyledButtonProps) {
+  disabledColor = '#727272ff',
+}: ToogleProps) {
   const [isHovered, setIsHovered] = useState<boolean>(false)
   const [isEnabled, setIsEnabled] = useState<boolean>(enabled)
 
@@ -74,7 +74,7 @@ export default function Toggle({
           width: `${toogleSize}px`,
           backgroundColor: isEnabled
             ? isHovered ? lightenCor(color, 15) : color
-            : isHovered ? lightenCor(disabledFontColor, 15) : disabledFontColor
+            : isHovered ? lightenCor(disabledColor, 15) : disabledColor
         }}
       />
     </div>

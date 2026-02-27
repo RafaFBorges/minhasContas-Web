@@ -4,13 +4,13 @@ import { createContext, useContext, ReactNode, useState } from 'react'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { FaPaintBrush as ThemeIcon, FaGlobe as LanguageIcon, FaUser as UserIcon } from 'react-icons/fa'
 
-import ThemeButton from '../../components/themeButton'
+import ThemeButton from '../../components/themeComponents/themeButton'
 import { LanguageOption, useTranslate } from './translateHook'
 import { saveCookie } from '@/app/actions/cookiesManager'
 import { THEME_KEY } from '../DataConstants'
 import { getSideColor } from '../colors'
 import WindowButton from '../../components/windowButton'
-import Toggle from '../../components/toggle'
+import ThemeToggle from '../../components/themeComponents/themeToggle'
 
 export enum ThemeOptions {
   LIGHT = 'light',
@@ -28,6 +28,9 @@ const LIGHT_CONFIG = {
   GainSideColor: '#00D84C',
   NeutralSidedColor: '#727272ff',
   LossSideColor: '#ff0839ff',
+  borderColor: '#555',
+  enabledColor: '#00D84C',
+  disabledColor: '#727272ff',
 }
 
 const DARK_CONFIG = {
@@ -41,6 +44,9 @@ const DARK_CONFIG = {
   GainSideColor: '#54f523ff',
   NeutralSidedColor: '#727272ff',
   LossSideColor: '#ff4757ff',
+  borderColor: '#808080',
+  enabledColor: '#00D84C',
+  disabledColor: '#727272ff',
 }
 
 const geistSans = Geist({
@@ -70,6 +76,9 @@ export interface ThemeStyleProps {
   LossSideColor: string;
   NeutralSidedColor: string;
   GainSideColor: string;
+  borderColor: string;
+  enabledColor: string;
+  disabledColor: string;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
@@ -185,7 +194,7 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
           iconSize='16'
           Icon={UserIcon}
           Menu={() => {
-            return <Toggle
+            return <ThemeToggle
               name={'language'}
               enabled={language == LanguageOption.PT_BR}
               clickHandle={async () => {

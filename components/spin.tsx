@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { FaChevronUp as UpIcon, FaChevronDown as DownIcon } from 'react-icons/fa'
 
 import StyledInput from './input'
-import ThemeButton from './themeButton'
+import ThemeButton from './themeComponents/themeButton'
 import { MAX_VALUE, MIN_VALUE } from '../utils/DataConstants'
 
 interface SpinProps {

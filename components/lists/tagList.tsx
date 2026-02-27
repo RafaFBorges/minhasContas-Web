@@ -3,7 +3,7 @@ import React, { useEffect } from 'react'
 import { FaPlus as AddIcon } from 'react-icons/fa'
 
 import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
-import ThemeButton from '../themeButton'
+import ThemeButton from '../themeComponents/themeButton'
 import { useTheme } from '../../utils/hook/themeHook'
 import { Tag } from '@/domain/Tag'
 import { useModal } from '../../utils/hook/modalHook'

@@ -8,7 +8,7 @@ import {
 } from '@/comunication/ApiResthandler'
 import { handleEditExpense } from '@/comunication/expense'
 import { Expense } from '@/domain/Expense'
-import ThemeCard from '../../components/themeCard'
+import ThemeCard from '../../components/themeComponents/themeCard'
 import { useModal } from '../../utils/hook/modalHook'
 import ExpenseConfiguration, { ExpenseVerifyData } from './ExpenseConfiguration'
 import Text, { TextTag } from '../../components/api/text'

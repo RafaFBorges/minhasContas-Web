@@ -3,7 +3,7 @@ import React, { useEffect } from 'react'
 import { FaTimes as CloseIcon } from 'react-icons/fa'
 
 import { ModalFormProps } from '@/app/ModalPagePropsInterface'
-import ThemeButton from './themeButton'
+import ThemeButton from './themeComponents/themeButton'
 import { useTheme } from '../utils/hook/themeHook'
 import Text, { TextTag } from './api/text'
 import { LanguageOption, useTranslate } from '../utils/hook/translateHook'
