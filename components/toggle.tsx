@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { lightenCor } from '../utils/colors'
 import Text, { TextTag } from './api/text'
-import { useTheme } from '../utils/hook/themeHook';
+import { useTheme } from '../utils/hook/themeHook'
 
 export interface StyledButtonProps {
   clickHandle?: () => void;
@@ -11,19 +11,24 @@ export interface StyledButtonProps {
   enabled?: boolean;
   color?: string;
   name?: string;
+  toogleSize?: number;
+  padding?: number;
+  borderColor?: string;
+  borderWidth?: number;
+  disabledFontColor?: string;
 }
 
 export default function Toggle({
   name,
   clickHandle,
-  width = '',
   enabled = true,
-  color = '#0070f3'
+  color = '#00D84C',
+  toogleSize = 20,
+  padding = 2,
+  borderColor = '#555',
+  borderWidth = 1,
+  disabledFontColor = '#727272ff',
 }: StyledButtonProps) {
-  const toogleSize = 20
-  const padding = 2
-  const borderColor = '#000'
-  const borderWidth = 1
   const [isHovered, setIsHovered] = useState<boolean>(false)
   const [isEnabled, setIsEnabled] = useState<boolean>(enabled)
 
@@ -39,7 +44,7 @@ export default function Toggle({
   }
 
   return <div style={styles.container}  >
-    {name != '' && <Text noWrap textTag={TextTag.P} style={styles.title}>{name}</Text>}
+    {name != '' && <Text noSelection noWrap textTag={TextTag.P} style={styles.title}>{name}</Text>}
     <div
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
@@ -69,7 +74,7 @@ export default function Toggle({
           width: `${toogleSize}px`,
           backgroundColor: isEnabled
             ? isHovered ? lightenCor(color, 15) : color
-            : config.disabledFontColor
+            : isHovered ? lightenCor(disabledFontColor, 15) : disabledFontColor
         }}
       />
     </div>
@@ -89,12 +94,11 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    borderRadius: '8px',
+    borderRadius: '12px',
     height: '20px',
     width: '50px',
   },
   toogle: {
-    backgroundColor: '#000',
     borderRadius: '100%',
   },
   enabled: {
