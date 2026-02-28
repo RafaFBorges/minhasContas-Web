@@ -114,6 +114,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: 'center',
   },
   toogleContainer: {
+    userSelect: 'none',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-end',
