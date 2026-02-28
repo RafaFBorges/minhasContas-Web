@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, ReactNode, useState } from 'react'
+import { createContext, useContext, ReactNode, useState, useEffect } from 'react'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { FaUser as UserIcon } from 'react-icons/fa'
 
@@ -94,9 +94,19 @@ export function useTheme() {
 }
 
 export function ThemeProvider({ children, theme }: { children: ReactNode, theme: string | undefined }) {
+  const TR_LANGUAGE_KEY = 'TR.ThemeProvider.Language'
+  const TR_THEME_KEY = 'TR.ThemeProvider.Theme'
+
   const [settedTheme, setSettedTheme] = useState<ThemeOptions>(() => loadTheme(theme, true))
   const [config, setConfig] = useState<ThemeStyleProps>(() => loadConfig(theme))
-  const { language, setLang } = useTranslate()
+  const { language, setLang, addKey, getValue } = useTranslate()
+
+  function translate() {
+    addKey(TR_THEME_KEY, 'tema', LanguageOption.PT_BR)
+    addKey(TR_THEME_KEY, 'theme', LanguageOption.EN)
+    addKey(TR_LANGUAGE_KEY, 'idioma', LanguageOption.PT_BR)
+    addKey(TR_LANGUAGE_KEY, 'language', LanguageOption.EN)
+  }
 
   function setLightTheme() {
     setConfig(LIGHT_CONFIG)
@@ -157,6 +167,10 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
     return getSideColor(value, config)
   }
 
+  useEffect(() => {
+    translate()
+  }, [])
+
   return <ThemeContext.Provider
     value={{
       setTheme,
@@ -174,7 +188,7 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
           Menu={() => {
             return <div style={styles.menuContainer}>
               <ThemeToggle
-                name={'language'}
+                name={getValue(TR_LANGUAGE_KEY)}
                 enabled={language == LanguageOption.PT_BR}
                 clickHandle={async () => {
                   if (language == LanguageOption.PT_BR)
@@ -187,7 +201,7 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
                 isImagePriority
               />
               <ThemeToggle
-                name={'theme'}
+                name={getValue(TR_THEME_KEY)}
                 enabled={settedTheme == ThemeOptions.LIGHT}
                 clickHandle={async () => {
                   if (settedTheme == ThemeOptions.LIGHT)
