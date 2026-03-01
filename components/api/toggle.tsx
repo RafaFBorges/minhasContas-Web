@@ -5,6 +5,7 @@ import Image, { StaticImageData } from 'next/image'
 
 import { lightenCor } from '../../utils/colors'
 import Text, { TextTag } from './text'
+import { IconType } from 'react-icons'
 
 
 export interface ToogleProps {
@@ -21,6 +22,10 @@ export interface ToogleProps {
   isImagePriority?: boolean;
   enableImage?: StaticImageData | null;
   disableImage?: StaticImageData | null;
+  EnableIcon?: IconType | null;
+  DisableIcon?: IconType | null;
+  enableIconColor?: string;
+  disableIconColor?: string;
 }
 
 export default function Toggle({
@@ -36,6 +41,10 @@ export default function Toggle({
   enableImage = null,
   disableImage = null,
   isImagePriority = false,
+  EnableIcon = null,
+  DisableIcon = null,
+  enableIconColor = '#000',
+  disableIconColor = '#000',
 }: ToogleProps) {
   const [isHovered, setIsHovered] = useState<boolean>(false)
   const [isEnabled, setIsEnabled] = useState<boolean>(enabled)
@@ -97,6 +106,16 @@ export default function Toggle({
             alt="toggle disabled"
             style={styles.image}
             priority={isImagePriority}
+          />
+        }
+        {isEnabled && EnableIcon != null &&
+          <EnableIcon
+            color={enableIconColor}
+          />
+        }
+        {!isEnabled && DisableIcon != null &&
+          <DisableIcon
+            color={disableIconColor}
           />
         }
       </div>

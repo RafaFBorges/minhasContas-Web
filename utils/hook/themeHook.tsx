@@ -3,6 +3,7 @@
 import { createContext, useContext, ReactNode, useState, useEffect } from 'react'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { FaUser as UserIcon } from 'react-icons/fa'
+import { FiMoon as DarkTheme, FiSun as LightTheme } from 'react-icons/fi'
 
 import ptImage from '../../src/assets/ptBr.png'
 import engImage from '../../src/assets/en.png'
@@ -33,6 +34,7 @@ const LIGHT_CONFIG = {
   borderColor: '#555',
   enabledColor: '#00D84C',
   disabledColor: '#727272ff',
+  iconColor: '#999999',
 }
 
 const DARK_CONFIG = {
@@ -49,6 +51,7 @@ const DARK_CONFIG = {
   borderColor: '#808080',
   enabledColor: '#00D84C',
   disabledColor: '#727272ff',
+  iconColor: '#eed7b8',
 }
 
 const geistSans = Geist({
@@ -81,6 +84,7 @@ export interface ThemeStyleProps {
   borderColor: string;
   enabledColor: string;
   disabledColor: string;
+  iconColor: string;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
@@ -209,6 +213,11 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
                   else
                     await setTheme(ThemeOptions.LIGHT)
                 }}
+                EnableIcon={LightTheme}
+                DisableIcon={DarkTheme}
+                disabledColor={'#3f3f3f'}
+                color={'#e1eb5b'}
+                enableIconColor={'#1d1d1d'}
               />
             </div>
           }}

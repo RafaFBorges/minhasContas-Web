@@ -18,6 +18,10 @@ export default function ThemeToggle({
   enableImage = null,
   disableImage = null,
   isImagePriority = false,
+  EnableIcon = null,
+  DisableIcon = null,
+  enableIconColor = '',
+  disableIconColor = '',
 }: ToogleProps) {
   const { config } = useTheme()
 
@@ -34,5 +38,9 @@ export default function ThemeToggle({
     enableImage={enableImage}
     disableImage={disableImage}
     isImagePriority={isImagePriority}
+    EnableIcon={EnableIcon}
+    DisableIcon={DisableIcon}
+    enableIconColor={enableIconColor != '' ? enableIconColor : config.iconColor}
+    disableIconColor={disableIconColor != '' ? disableIconColor : config.iconColor}
   />
 }
