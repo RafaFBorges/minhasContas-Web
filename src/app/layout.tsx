@@ -23,12 +23,12 @@ export default async function RootLayout({
   const initialLanguage = await getCookie(LANG_KEY)
 
   return <TranslateProvider lang={initialLanguage}>
-    <ThemeProvider theme={initialTheme}>
-      <UserProvider>
+    <UserProvider>
+      <ThemeProvider theme={initialTheme}>
         <ModalProvider>
           {children}
         </ModalProvider>
-      </UserProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </UserProvider>
   </TranslateProvider>
 }

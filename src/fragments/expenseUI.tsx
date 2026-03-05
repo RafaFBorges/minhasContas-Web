@@ -14,7 +14,7 @@ import Spin from '../../components/spin'
 import ThemeButton from '../../components/themeComponents/themeButton'
 import TagList from '../../components/lists/tagList'
 import { useModal } from '../../utils/hook/modalHook'
-import { ExpenseVerifyData } from '@/app/ExpenseConfiguration'
+import { ExpenseVerifyData } from '@/modalPages/ExpenseConfiguration'
 import { useUser } from '../../utils/hook/userHook'
 import { ExpenseDisabledDictionary, getExpenseDisabledCookie } from '@/app/actions/cookiesManager'
 
