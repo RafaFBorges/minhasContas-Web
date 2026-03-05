@@ -1,16 +1,69 @@
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import StyledInput from './input'
 import ThemeButton from './themeComponents/themeButton'
 import Text, { TextTag } from './api/text'
 import Link from './api/link'
+import { LanguageOption, useTranslate } from '../utils/hook/translateHook'
 
-interface LoginProps { }
+interface LoginProps {
+  registerHRef?: string;
+  passwordForgetedFRef?: string;
+}
 
-export default function Login({ }: LoginProps) {
-  const [user, setUser] = useState('')
-  const [password, setPassword] = useState('')
+interface LoginTranslations {
+  [KEY: string]: string;
+}
+
+export default function Login({
+  registerHRef = '',
+  passwordForgetedFRef = '',
+}: LoginProps) {
+  const EMAIL_PLACEHOLDER_KEY = 'Login.EmailPlaceHolder'
+  const SEND_LOGIN_KEY = 'Login.SendLoogin'
+  const FORGOT_PASSWOR_KEY = 'Login.ForgotPassWord'
+  const FIRST_TIME_KEY = 'Login.FirstTime'
+  const CREATE_ACCOUNT_KEY = 'Login.CreateAccount'
+
+  const { language, addKey, getValue } = useTranslate()
+
+  const [user, setUser] = useState<string>('')
+  const [password, setPassword] = useState<string>('')
+  const [labelText, setLabelText] = useState<LoginTranslations>(translate())
+
+
+  function translate() {
+    const translation = {} as LoginTranslations
+
+    addKey(EMAIL_PLACEHOLDER_KEY, 'Digite seu email', LanguageOption.PT_BR)
+    translation[EMAIL_PLACEHOLDER_KEY] = addKey(EMAIL_PLACEHOLDER_KEY, 'Enter your email', LanguageOption.EN)
+
+    addKey(SEND_LOGIN_KEY, 'Enviar', LanguageOption.PT_BR)
+    translation[SEND_LOGIN_KEY] = addKey(SEND_LOGIN_KEY, 'Send', LanguageOption.EN)
+
+    addKey(FORGOT_PASSWOR_KEY, 'Esqueceu a senha?', LanguageOption.PT_BR)
+    translation[FORGOT_PASSWOR_KEY] = addKey(FORGOT_PASSWOR_KEY, 'Forgot password?', LanguageOption.EN)
+
+    addKey(CREATE_ACCOUNT_KEY, 'Criar conta', LanguageOption.PT_BR)
+    translation[CREATE_ACCOUNT_KEY] = addKey(CREATE_ACCOUNT_KEY, 'Create account', LanguageOption.EN)
+
+    addKey(FIRST_TIME_KEY, 'Primeira vez?', LanguageOption.PT_BR)
+    translation[FIRST_TIME_KEY] = addKey(FIRST_TIME_KEY, 'First time?', LanguageOption.EN)
+
+    return translation
+  }
+
+  useEffect(() => {
+    setLabelText({
+      [EMAIL_PLACEHOLDER_KEY]: getValue(EMAIL_PLACEHOLDER_KEY),
+      [SEND_LOGIN_KEY]: getValue(SEND_LOGIN_KEY),
+      [FORGOT_PASSWOR_KEY]: getValue(FORGOT_PASSWOR_KEY),
+      [CREATE_ACCOUNT_KEY]: getValue(CREATE_ACCOUNT_KEY),
+      [FIRST_TIME_KEY]: getValue(FIRST_TIME_KEY),
+    })
+    console.log('Login > ' + JSON.stringify(labelText, null, 2))
+  }, [language])
 
   return <div style={styles.container}>
     <StyledInput
@@ -18,7 +71,7 @@ export default function Login({ }: LoginProps) {
       name={'user'}
       value={user}
       changeHandle={(e: React.ChangeEvent<HTMLInputElement>) => setUser(e.target.value)}
-      placeholder={'Digite seu email'}
+      placeholder={labelText[EMAIL_PLACEHOLDER_KEY]}
       style={styles.field}
     />
     <div style={styles.passwordContainer}>
@@ -29,13 +82,13 @@ export default function Login({ }: LoginProps) {
         changeHandle={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
         style={styles.field}
       />
-      <Link href=''>Esqueceu a senha?</Link>
+      <Link href={passwordForgetedFRef}>{labelText[FORGOT_PASSWOR_KEY]}</Link>
     </div>
-    <ThemeButton>Enviar</ThemeButton>
+    <ThemeButton>{labelText[SEND_LOGIN_KEY]}</ThemeButton>
 
     <div style={styles.creationContainer}>
-      <Text textTag={TextTag.P}>Primeira vez?</Text>
-      <Link href=''>Criar conta</Link>
+      <Text textTag={TextTag.P}>{labelText[FIRST_TIME_KEY]}</Text>
+      <Link href={registerHRef}>{labelText[CREATE_ACCOUNT_KEY]}</Link>
     </div>
   </div>
 }

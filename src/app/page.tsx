@@ -7,7 +7,10 @@ import Login from '../../components/login'
 
 export default function Home() {
   return <main style={styles.page}>
-    <Login />
+    <Login
+      registerHRef={''}
+      passwordForgetedFRef={''}
+    />
   </main>
 }
 
