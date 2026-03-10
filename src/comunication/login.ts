@@ -17,7 +17,7 @@ export const RequestLogin = async (user: string, password: string): Promise<Logi
 
     return {
       token: '',
-      expireTime: expiredTime//response.expireTime
+      expireTime: expiredTime
     }
   }
 
@@ -32,6 +32,6 @@ export const RequestLogin = async (user: string, password: string): Promise<Logi
 
   return {
     token: response.token,
-    expireTime: expireTime//response.expireTime
+    expireTime: response.expireTime
   }
 }
