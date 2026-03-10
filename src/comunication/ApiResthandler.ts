@@ -2,6 +2,7 @@ const SERVER_PATH = 'https://minhascontas-server.onrender.com/'
 
 export const EXPENSES_ENDPOINT = 'expense'
 export const CATEGORIES_ENDPOINT = 'category'
+export const LOGIN_ENDPOINT = 'login'
 
 export async function handleGET(endpoint: string) {
   try {

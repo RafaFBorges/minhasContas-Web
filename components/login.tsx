@@ -1,15 +1,20 @@
 
 import React, { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 import StyledInput from './input'
 import ThemeButton from './themeComponents/themeButton'
 import Text, { TextTag } from './api/text'
 import Link from './api/link'
 import { LanguageOption, useTranslate } from '../utils/hook/translateHook'
+import { saveCookie } from '@/app/actions/cookiesManager'
+import { LoginResponse } from '@/comunication/login'
+import { LOGIN_COOKIE_KEY } from '../utils/DataConstants'
 
 interface LoginProps {
   registerHRef?: string;
   passwordForgetedFRef?: string;
+  onSend: (user: string, password: string) => Promise<LoginResponse>
 }
 
 interface LoginTranslations {
@@ -19,6 +24,7 @@ interface LoginTranslations {
 export default function Login({
   registerHRef = '',
   passwordForgetedFRef = '',
+  onSend
 }: LoginProps) {
   const EMAIL_PLACEHOLDER_KEY = 'Login.EmailPlaceHolder'
   const SEND_LOGIN_KEY = 'Login.SendLoogin'
@@ -28,6 +34,7 @@ export default function Login({
 
   const { language, addKey, getValue } = useTranslate()
 
+  const router = useRouter()
   const [user, setUser] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [labelText, setLabelText] = useState<LoginTranslations>(translate())
@@ -84,7 +91,16 @@ export default function Login({
       />
       <Link href={passwordForgetedFRef}>{labelText[FORGOT_PASSWOR_KEY]}</Link>
     </div>
-    <ThemeButton>{labelText[SEND_LOGIN_KEY]}</ThemeButton>
+    <ThemeButton clickHandle={async () => {
+      const token: LoginResponse = await onSend(user, password)
+      if (token.token != '') {
+        saveCookie(LOGIN_COOKIE_KEY, token.token + '_' + token.expireTime.toString())
+        router.push('/home')
+      }
+    }}
+    >
+      {labelText[SEND_LOGIN_KEY]}
+    </ThemeButton>
 
     <div style={styles.creationContainer}>
       <Text textTag={TextTag.P}>{labelText[FIRST_TIME_KEY]}</Text>

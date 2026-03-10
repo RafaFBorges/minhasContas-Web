@@ -3,6 +3,7 @@
 import React from 'react'
 
 import Login from '../../components/login'
+import { RequestLogin } from '@/comunication/login'
 
 
 export default function Home() {
@@ -10,6 +11,7 @@ export default function Home() {
     <Login
       registerHRef={''}
       passwordForgetedFRef={''}
+      onSend={RequestLogin}
     />
   </main>
 }
