@@ -93,10 +93,11 @@ export default function Login({
     </div>
     <ThemeButton clickHandle={async () => {
       const token: LoginResponse = await onSend(user, password)
-      if (token.token != '') {
+
+      if (token != null && token.token && token.expireTime) {
         saveCookie(LOGIN_COOKIE_KEY, token.token + '_' + token.expireTime.toString())
         router.push('/home')
-      }
+      } // TO-DO : fazer um popup de erro de login
     }}
     >
       {labelText[SEND_LOGIN_KEY]}
