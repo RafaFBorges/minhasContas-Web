@@ -8,6 +8,7 @@ import { Category } from '@/domain/Category'
 import { CategoryResponse, SyncCategories } from '@/comunication/category'
 import { ExpenseResponse, SyncExpenses } from '@/comunication/expense'
 import { ExpenseDisabledDictionary } from '@/app/actions/cookiesManager'
+import { User } from '@/domain/User'
 
 
 interface UserContextType {
@@ -24,6 +25,8 @@ interface UserContextType {
   addCategory: (category: Category) => void;
   disabledCategoriesDict: ExpenseDisabledDictionary;
   filterSelection: string;
+  userInfo: User;
+  setPlataformUser: (id: number, name: string, user: string) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined)
@@ -37,6 +40,7 @@ export function useUser() {
 }
 
 export function UserProvider({ children }: { children: ReactNode }) {
+  const [userInfo, setUserInfo] = useState<User>(new User())
   const [financialList, setFinancialList] = useState<Expense[]>([])
   const [categoriesList, setCategoriesList] = useState<Category[]>([])
   const [total, setTotal] = useState<number>(0)
@@ -114,6 +118,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setFilterSelection(filter)
   }
 
+  const setPlataformUser = (id: number = -1, name: string = '', user: string = '') => {
+    setUserInfo(new User(id, name, user))
+  }
+
   useEffect(() => {
     SyncExpenses(replaceFinancial)
     SyncCategories(replaceCategories, replaceDisabledCategoriesDict, replaceFilterSelection)
@@ -141,7 +149,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
       total,
       replaceTotal,
       disabledCategoriesDict,
-      filterSelection
+      filterSelection,
+      userInfo,
+      setPlataformUser
     }}
   >
     {children}

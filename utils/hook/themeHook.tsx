@@ -14,6 +14,8 @@ import { THEME_KEY } from '../DataConstants'
 import { getSideColor } from '../colors'
 import WindowButton from '../../components/windowButton'
 import ThemeToggle from '../../components/themeComponents/themeToggle'
+import Text from '../../components/api/text'
+import { useUser } from './userHook'
 
 export enum ThemeOptions {
   LIGHT = 'light',
@@ -104,6 +106,7 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
   const [settedTheme, setSettedTheme] = useState<ThemeOptions>(() => loadTheme(theme, true))
   const [config, setConfig] = useState<ThemeStyleProps>(() => loadConfig(theme))
   const { language, setLang, addKey, getValue } = useTranslate()
+  const { userInfo } = useUser()
 
   function translate() {
     addKey(TR_THEME_KEY, 'tema', LanguageOption.PT_BR)
@@ -191,6 +194,7 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
           Icon={UserIcon}
           Menu={() => {
             return <div style={styles.menuContainer}>
+              {userInfo.user && <Text>{userInfo.user}</Text>}
               <ThemeToggle
                 name={getValue(TR_LANGUAGE_KEY)}
                 enabled={language == LanguageOption.PT_BR}

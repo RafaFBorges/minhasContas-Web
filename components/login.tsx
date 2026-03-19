@@ -10,6 +10,7 @@ import { LanguageOption, useTranslate } from '../utils/hook/translateHook'
 import { saveCookie } from '@/app/actions/cookiesManager'
 import { LoginResponse } from '@/comunication/login'
 import { LOGIN_COOKIE_KEY } from '../utils/DataConstants'
+import { useUser } from '../utils/hook/userHook'
 
 interface LoginProps {
   registerHRef?: string;
@@ -33,7 +34,7 @@ export default function Login({
   const CREATE_ACCOUNT_KEY = 'Login.CreateAccount'
 
   const { language, addKey, getValue } = useTranslate()
-
+  const { setPlataformUser } = useUser()
   const router = useRouter()
   const [user, setUser] = useState<string>('')
   const [password, setPassword] = useState<string>('')
@@ -96,6 +97,10 @@ export default function Login({
 
       if (token != null && token.token && token.expireTime) {
         saveCookie(LOGIN_COOKIE_KEY, token.token + '_' + token.expireTime.toString())
+
+        if (token.id && token.name && token.user)
+          setPlataformUser(token.id, token.name, token.user)
+
         router.push('/home')
       } // TO-DO : fazer um popup de erro de login
     }}

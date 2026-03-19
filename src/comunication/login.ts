@@ -8,6 +8,9 @@ export interface LoginRequest {
 export interface LoginResponse {
   token: string;
   expireTime: Date;
+  user?: string;
+  id?: number;
+  name?: string;
 }
 
 export const RequestLogin = async (user: string, password: string): Promise<LoginResponse> => {
@@ -32,6 +35,9 @@ export const RequestLogin = async (user: string, password: string): Promise<Logi
 
   return {
     token: response.token,
-    expireTime: response.expireTime
+    expireTime: response.expireTime,
+    user: response.user,
+    id: response.id,
+    name: response.name
   }
 }
