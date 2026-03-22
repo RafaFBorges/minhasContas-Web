@@ -1,22 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useTheme } from '../../utils/hook/themeHook'
-import Text, { TextTag } from '../api/text'
-import { isLight, lightenCor } from '../../utils/colors';
+import Text, { TextProps, TextTag } from '../api/text'
 
-
-export interface ThemeTextProps<T> {
-  children: React.ReactNode;
-  textTag?: TextTag;
-  style?: React.CSSProperties | null;
-  disabled?: boolean;
-  noWrap?: boolean;
-  noSelection?: boolean;
-  showHoover?: boolean;
-  color?: string;
-  onClick?: (item: T) => void;
-  onMouseEnter?: (item: T | null) => void;
-  onMouseLeave?: (item: T | null) => void;
-}
 
 export default function ThemeText<T>({
   children,
@@ -30,48 +15,22 @@ export default function ThemeText<T>({
   onClick = () => { },
   onMouseEnter = () => { },
   onMouseLeave = () => { }
-}: ThemeTextProps<T>) {
+}: TextProps<T>) {
   const { config } = useTheme()
-
-  const [isHovered, setIsHovered] = useState<boolean>(false)
-  const [isEnabled, setIsEnabled] = useState<boolean>(!disabled)
-
-  let textStyle: React.CSSProperties = (style != null) ? style : {}
-
-  textStyle = (isHovered)
-    ? { ...textStyle, color: lightenCor('#000', 60) }
-    : (color != '')
-      ? { ...textStyle, color: color }
-      : { ...textStyle, color: (!isEnabled) ? config.disabledFontColor : config.fontColor }
-
-  if (noWrap)
-    textStyle = { ...textStyle, whiteSpace: 'nowrap' }
-
-  if (noSelection)
-    textStyle = { ...textStyle, ...styles.notSelectable }
-
-  function onTextMouseEnter() {
-    if (showHoover)
-      setIsHovered(true)
-
-    if (onMouseEnter != null)
-      onMouseEnter(null)
-  }
-
-  function onTextMouseLeave() {
-    if (isHovered)
-      setIsHovered(false)
-
-    if (onMouseLeave != null)
-      onMouseLeave(null)
-  }
 
   return <Text
     textTag={textTag}
-    style={textStyle}
+    style={style}
     onClick={disabled ? () => { } : onClick}
-    onMouseEnter={onTextMouseEnter}
-    onMouseLeave={onTextMouseLeave}
+    onMouseEnter={onMouseEnter}
+    onMouseLeave={onMouseLeave}
+    disabled={disabled}
+    noWrap={noWrap}
+    noSelection={noSelection}
+    showHoover={showHoover}
+    color={color}
+    fontColor={config.fontColor}
+    disabledFontColor={config.disabledFontColor}
   >
     {children}
   </Text>
