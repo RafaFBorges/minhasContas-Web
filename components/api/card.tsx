@@ -3,7 +3,8 @@ import React from 'react'
 import { FaTrash as DeleteIcon, FaEdit as EditIcon } from 'react-icons/fa'
 
 import ThemeButton from '../themeComponents/themeButton'
-import Text, { TextTag } from './text'
+import { TextTag } from './text'
+import ThemeText from '../themeText'
 import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
 import { Category } from '@/domain/Category'
 import TagList from '../lists/tagList'
@@ -38,7 +39,7 @@ export default function Card({ title, date, categories, style = null, id = -1, e
   return <div style={cardStyle}>
     <div style={styles.content}>
       <div style={styles.flexRow}>
-        <Text textTag={TextTag.H6} style={styles.title} noWrap>{title}</Text>
+        <ThemeText textTag={TextTag.H6} style={styles.title} noWrap>{title}</ThemeText>
         <div style={styles.buttonsArea}>
           {editClickHandle != null &&
             <ThemeButton
@@ -57,7 +58,7 @@ export default function Card({ title, date, categories, style = null, id = -1, e
         </div>
       </div>
       <TagList DisabledHover style={styles.tagList} tagList={Category.getTagList(categories)} />
-      <Text textTag={TextTag.P} style={styles.date} disabled>{date}</Text>
+      <ThemeText textTag={TextTag.P} style={styles.date} disabled>{date}</ThemeText>
     </div>
   </div>
 }

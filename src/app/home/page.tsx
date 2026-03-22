@@ -11,7 +11,8 @@ import { Expense } from '@/domain/Expense'
 import ThemeCard from '../../../components/themeComponents/themeCard'
 import { useModal } from '../../../utils/hook/modalHook'
 import ExpenseConfiguration, { ExpenseVerifyData } from '../../modalPages/ExpenseConfiguration'
-import Text, { TextTag } from '../../../components/api/text'
+import { TextTag } from '../../../components/api/text'
+import ThemeText from '../../../components/themeText'
 import { LanguageOption, useTranslate } from '../../../utils/hook/translateHook'
 import { Category } from '@/domain/Category'
 import { Tag } from '@/domain/Tag'
@@ -85,8 +86,8 @@ export default function Home() {
   }, [categoriesList])
 
   return <main style={styles.page}>
-    <Text noWrap textTag={TextTag.H1} color={sideColor(total)}>{getRealString(total, language)}</Text>
-    <Text noWrap textTag={TextTag.H3}>{expensesText}</Text>
+    <ThemeText noWrap textTag={TextTag.H1} color={sideColor(total)}>{getRealString(total, language)}</ThemeText>
+    <ThemeText noWrap textTag={TextTag.H3}>{expensesText}</ThemeText>
 
     <ExpenseUI
       isLoadLastEdition

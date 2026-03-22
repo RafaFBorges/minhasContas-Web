@@ -4,14 +4,14 @@ import { useRouter } from 'next/navigation'
 
 import StyledInput from './input'
 import ThemeButton from './themeComponents/themeButton'
-import Text, { TextTag } from './api/text'
+import { TextTag } from './api/text'
 import Link from './api/link'
 import { LanguageOption, useTranslate } from '../utils/hook/translateHook'
 import { saveObjectCookie } from '@/app/actions/cookiesManager'
 import { LoginResponse } from '@/comunication/login'
 import { USER_COOKIE_KEY } from '../utils/DataConstants'
-import { useUser } from '../utils/hook/userHook'
 import { User } from '@/domain/User'
+import ThemeText from './themeText'
 
 interface LoginProps {
   registerHRef?: string;
@@ -35,7 +35,7 @@ export default function Login({
   const CREATE_ACCOUNT_KEY = 'Login.CreateAccount'
 
   const { language, addKey, getValue } = useTranslate()
-  const { setPlataformUser } = useUser()
+
   const router = useRouter()
   const [user, setUser] = useState<string>('')
   const [password, setPassword] = useState<string>('')
@@ -109,7 +109,7 @@ export default function Login({
     </ThemeButton>
 
     <div style={styles.creationContainer}>
-      <Text textTag={TextTag.P}>{labelText[FIRST_TIME_KEY]}</Text>
+      <ThemeText textTag={TextTag.P}>{labelText[FIRST_TIME_KEY]}</ThemeText>
       <Link href={registerHRef}>{labelText[CREATE_ACCOUNT_KEY]}</Link>
     </div>
   </div>

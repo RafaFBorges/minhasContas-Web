@@ -14,7 +14,7 @@ import { THEME_KEY } from '../DataConstants'
 import { getSideColor } from '../colors'
 import WindowButton from '../../components/windowButton'
 import ThemeToggle from '../../components/themeComponents/themeToggle'
-import Text from '../../components/api/text'
+import ThemeText from '../../components/themeText'
 import { useUser } from './userHook'
 
 export enum ThemeOptions {
@@ -194,7 +194,7 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
           Icon={UserIcon}
           Menu={() => {
             return <div style={styles.menuContainer}>
-              {userInfo.user && <Text>{userInfo.user}</Text>}
+              {userInfo.user && <ThemeText>{userInfo.user}</ThemeText>}
               <ThemeToggle
                 name={getValue(TR_LANGUAGE_KEY)}
                 enabled={language == LanguageOption.PT_BR}

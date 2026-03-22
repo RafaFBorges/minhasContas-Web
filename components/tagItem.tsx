@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 
 
-import Text, { TextTag } from './api/text'
+import { TextTag } from './api/text'
+import ThemeText from './themeText'
 import { isLight, lightenCor } from '../utils/colors'
 import { useTheme } from '../utils/hook/themeHook'
 
@@ -46,7 +47,7 @@ export default function TagItem({
     textColor = lightenCor(textColor, 60)
 
   return isOnlyText
-    ? <Text
+    ? <ThemeText
       noSelection
       noWrap
       textTag={TextTag.P}
@@ -57,14 +58,14 @@ export default function TagItem({
       onMouseLeave={handleMouseLeave}
     >
       {name}
-    </Text>
+    </ThemeText>
     : <div
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       style={{ ...styles.tagContainer, borderColor: tagColor, backgroundColor: backColor }}
       onClick={onClick}
     >
-      <Text
+      <ThemeText
         textTag={TextTag.P}
         style={styles.categoryTitle}
         color={textColor}
@@ -72,7 +73,7 @@ export default function TagItem({
         noSelection
       >
         {name}
-      </Text>
+      </ThemeText>
     </div>
 }
 

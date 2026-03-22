@@ -4,7 +4,8 @@ import React, { useState } from 'react'
 import Image, { StaticImageData } from 'next/image'
 
 import { lightenCor } from '../../utils/colors'
-import Text, { TextTag } from './text'
+import { TextTag } from './text'
+import ThemeText from '../themeText'
 import { IconType } from 'react-icons'
 
 
@@ -59,7 +60,7 @@ export default function Toggle({
   }
 
   return <div style={styles.container}  >
-    {name != '' && <Text noSelection noWrap textTag={TextTag.P} style={styles.title}>{name}</Text>}
+    {name != '' && <ThemeText noSelection noWrap textTag={TextTag.P} style={styles.title}>{name}</ThemeText>}
     <div
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
