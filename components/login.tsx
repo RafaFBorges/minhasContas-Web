@@ -7,10 +7,11 @@ import ThemeButton from './themeComponents/themeButton'
 import Text, { TextTag } from './api/text'
 import Link from './api/link'
 import { LanguageOption, useTranslate } from '../utils/hook/translateHook'
-import { saveCookie } from '@/app/actions/cookiesManager'
+import { saveObjectCookie } from '@/app/actions/cookiesManager'
 import { LoginResponse } from '@/comunication/login'
-import { LOGIN_COOKIE_KEY } from '../utils/DataConstants'
+import { USER_COOKIE_KEY } from '../utils/DataConstants'
 import { useUser } from '../utils/hook/userHook'
+import { User } from '@/domain/User'
 
 interface LoginProps {
   registerHRef?: string;
@@ -96,10 +97,13 @@ export default function Login({
       const token: LoginResponse = await onSend(user, password)
 
       if (token != null && token.token && token.expireTime) {
-        saveCookie(LOGIN_COOKIE_KEY, token.token + '_' + token.expireTime.toString())
+        const user = new User(token.id, token.name, token.user, token.token, token.expireTime.toString())
+        console.log('Login > [sucesses] user=' + JSON.stringify(user, null, 2))
+        await saveObjectCookie(USER_COOKIE_KEY, user.object)
 
+        console.log('Login > token=' + JSON.stringify(token, null, 2) + ' user=' + JSON.stringify(user, null, 2))
         if (token.id && token.name && token.user)
-          setPlataformUser(token.id, token.name, token.user)
+          setPlataformUser(token.id, token.name, token.user) // Salvar user commo cookie
 
         router.push('/home')
       } // TO-DO : fazer um popup de erro de login

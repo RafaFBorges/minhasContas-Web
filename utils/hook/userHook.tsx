@@ -7,8 +7,9 @@ import { useTranslate } from './translateHook'
 import { Category } from '@/domain/Category'
 import { CategoryResponse, SyncCategories } from '@/comunication/category'
 import { ExpenseResponse, SyncExpenses } from '@/comunication/expense'
-import { ExpenseDisabledDictionary } from '@/app/actions/cookiesManager'
+import { ExpenseDisabledDictionary, getObjectCookie } from '@/app/actions/cookiesManager'
 import { User } from '@/domain/User'
+import { USER_COOKIE_KEY } from '../DataConstants'
 
 
 interface UserContextType {
@@ -48,6 +49,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [filterSelection, setFilterSelection] = useState<string>('')
 
   const { language } = useTranslate()
+
+  async function loadSavedUser() {
+    const savedUser: User | null = User.fromIUser(await getObjectCookie(USER_COOKIE_KEY))
+
+    if (savedUser != null && new Date() <= savedUser.expirationTime) {
+      setUserInfo(savedUser)
+      console.log('UserProvider.loadSavedUser > user=' + savedUser.id)
+    }
+  }
 
   const deleteFinancial = (index: number) => {
     setFinancialList(financialList.filter(expense => {
@@ -125,6 +135,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     SyncExpenses(replaceFinancial)
     SyncCategories(replaceCategories, replaceDisabledCategoriesDict, replaceFilterSelection)
+    loadSavedUser()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
