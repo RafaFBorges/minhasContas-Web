@@ -98,12 +98,8 @@ export default function Login({
 
       if (token != null && token.token && token.expireTime) {
         const user = new User(token.id, token.name, token.user, token.token, token.expireTime.toString())
-        console.log('Login > [sucesses] user=' + JSON.stringify(user, null, 2))
         await saveObjectCookie(USER_COOKIE_KEY, user.object)
-
-        console.log('Login > token=' + JSON.stringify(token, null, 2) + ' user=' + JSON.stringify(user, null, 2))
-        if (token.id && token.name && token.user)
-          setPlataformUser(token.id, token.name, token.user) // Salvar user commo cookie
+        console.log('Login > [sucesses] user=' + user.id)
 
         router.push('/home')
       } // TO-DO : fazer um popup de erro de login
