@@ -11,7 +11,7 @@ import { saveObjectCookie } from '@/app/actions/cookiesManager'
 import { LoginResponse } from '@/comunication/login'
 import { USER_COOKIE_KEY } from '../utils/DataConstants'
 import { User } from '@/domain/User'
-import ThemeText from './themeText'
+import ThemeText from './themeComponents/themeText'
 
 interface LoginProps {
   registerHRef?: string;

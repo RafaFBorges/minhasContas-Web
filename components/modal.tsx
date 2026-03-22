@@ -7,7 +7,7 @@ import ThemeButton from './themeComponents/themeButton'
 import { useTheme } from '../utils/hook/themeHook'
 import { TextTag } from './api/text'
 import { LanguageOption, useTranslate } from '../utils/hook/translateHook'
-import ThemeText from './themeText'
+import ThemeText from './themeComponents/themeText'
 
 
 interface ModalProps extends ModalFormProps {

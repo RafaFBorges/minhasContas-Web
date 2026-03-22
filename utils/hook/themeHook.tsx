@@ -9,13 +9,14 @@ import ptImage from '../../src/assets/ptBr.png'
 import engImage from '../../src/assets/en.png'
 
 import { LanguageOption, useTranslate } from './translateHook'
-import { saveCookie } from '@/app/actions/cookiesManager'
-import { THEME_KEY } from '../DataConstants'
+import { saveCookie, saveObjectCookie } from '@/app/actions/cookiesManager'
+import { THEME_KEY, USER_COOKIE_KEY } from '../DataConstants'
 import { getSideColor } from '../colors'
 import WindowButton from '../../components/windowButton'
 import ThemeToggle from '../../components/themeComponents/themeToggle'
-import ThemeText from '../../components/themeText'
+import ThemeText from '../../components/themeComponents/themeText'
 import { useUser } from './userHook'
+import { useRouter } from 'next/navigation'
 
 export enum ThemeOptions {
   LIGHT = 'light',
@@ -102,17 +103,21 @@ export function useTheme() {
 export function ThemeProvider({ children, theme }: { children: ReactNode, theme: string | undefined }) {
   const TR_LANGUAGE_KEY = 'TR.ThemeProvider.Language'
   const TR_THEME_KEY = 'TR.ThemeProvider.Theme'
+  const TR_LOGOUT_KEY = 'TR.ThemeProvider.Logout'
 
   const [settedTheme, setSettedTheme] = useState<ThemeOptions>(() => loadTheme(theme, true))
   const [config, setConfig] = useState<ThemeStyleProps>(() => loadConfig(theme))
   const { language, setLang, addKey, getValue } = useTranslate()
   const { userInfo } = useUser()
+  const router = useRouter()
 
   function translate() {
     addKey(TR_THEME_KEY, 'tema', LanguageOption.PT_BR)
     addKey(TR_THEME_KEY, 'theme', LanguageOption.EN)
     addKey(TR_LANGUAGE_KEY, 'idioma', LanguageOption.PT_BR)
     addKey(TR_LANGUAGE_KEY, 'language', LanguageOption.EN)
+    addKey(TR_LOGOUT_KEY, 'Logout', LanguageOption.PT_BR)
+    addKey(TR_LOGOUT_KEY, 'Logout', LanguageOption.EN)
   }
 
   function setLightTheme() {
@@ -174,6 +179,13 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
     return getSideColor(value, config)
   }
 
+  async function logout() {
+    await saveObjectCookie(USER_COOKIE_KEY, null)
+    console.log('Logout')
+
+    router.push('/home')
+  }
+
   useEffect(() => {
     translate()
   }, [])
@@ -223,6 +235,7 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
                 color={'#e1eb5b'}
                 enableIconColor={'#1d1d1d'}
               />
+              {userInfo.user && <ThemeText showHoover noWrap onClick={logout}>{getValue(TR_LOGOUT_KEY)}</ThemeText>}
             </div>
           }}
         />

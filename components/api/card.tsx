@@ -4,7 +4,7 @@ import { FaTrash as DeleteIcon, FaEdit as EditIcon } from 'react-icons/fa'
 
 import ThemeButton from '../themeComponents/themeButton'
 import { TextTag } from './text'
-import ThemeText from '../themeText'
+import ThemeText from '../themeComponents/themeText'
 import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
 import { Category } from '@/domain/Category'
 import TagList from '../lists/tagList'

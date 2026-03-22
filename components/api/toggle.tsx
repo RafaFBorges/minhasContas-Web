@@ -5,7 +5,7 @@ import Image, { StaticImageData } from 'next/image'
 
 import { lightenCor } from '../../utils/colors'
 import { TextTag } from './text'
-import ThemeText from '../themeText'
+import ThemeText from '../themeComponents/themeText'
 import { IconType } from 'react-icons'
 
 

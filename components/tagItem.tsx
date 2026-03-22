@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 
 import { TextTag } from './api/text'
-import ThemeText from './themeText'
+import ThemeText from './themeComponents/themeText'
 import { isLight, lightenCor } from '../utils/colors'
 import { useTheme } from '../utils/hook/themeHook'
 
@@ -39,20 +39,14 @@ export default function TagItem({
       : color
 
   const backColor: string = isHovered ? lightenCor(tagColor, 23) : lightenCor(tagColor, 35)
-  let textColor: string = isLight(backColor)
-    ? '#000'
-    : '#FFF'
-
-  if (isOnlyText && isHovered)
-    textColor = lightenCor(textColor, 60)
 
   return isOnlyText
     ? <ThemeText
+      showHoover
       noSelection
       noWrap
       textTag={TextTag.P}
       style={style}
-      color={isHovered ? textColor : config.fontColor}
       onClick={onClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -68,7 +62,7 @@ export default function TagItem({
       <ThemeText
         textTag={TextTag.P}
         style={styles.categoryTitle}
-        color={textColor}
+        color={isLight(backColor) ? '#000' : '#FFF'}
         disabled
         noSelection
       >

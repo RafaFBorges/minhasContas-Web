@@ -1,6 +1,7 @@
-import React from 'react'
-import { useTheme } from '../utils/hook/themeHook'
-import Text, { TextTag } from './api/text'
+import React, { useState } from 'react'
+import { useTheme } from '../../utils/hook/themeHook'
+import Text, { TextTag } from '../api/text'
+import { isLight, lightenCor } from '../../utils/colors';
 
 
 export interface ThemeTextProps<T> {
@@ -25,22 +26,23 @@ export default function ThemeText<T>({
   noWrap = false,
   noSelection = false,
   color = '',
-  showHoover= false,
+  showHoover = false,
   onClick = () => { },
   onMouseEnter = () => { },
   onMouseLeave = () => { }
 }: ThemeTextProps<T>) {
   const { config } = useTheme()
 
-  let textStyle: React.CSSProperties = (style != null)
-    ? style
-    : {}
+  const [isHovered, setIsHovered] = useState<boolean>(false)
+  const [isEnabled, setIsEnabled] = useState<boolean>(!disabled)
 
-  textStyle = (color != '')
-    ? { ...textStyle, color: color }
-    : (disabled)
-      ? { ...textStyle, color: config.disabledFontColor }
-      : { ...textStyle, color: config.fontColor }
+  let textStyle: React.CSSProperties = (style != null) ? style : {}
+
+  textStyle = (isHovered)
+    ? { ...textStyle, color: lightenCor('#000', 60) }
+    : (color != '')
+      ? { ...textStyle, color: color }
+      : { ...textStyle, color: (!isEnabled) ? config.disabledFontColor : config.fontColor }
 
   if (noWrap)
     textStyle = { ...textStyle, whiteSpace: 'nowrap' }
@@ -49,13 +51,16 @@ export default function ThemeText<T>({
     textStyle = { ...textStyle, ...styles.notSelectable }
 
   function onTextMouseEnter() {
-    showHoover;
+    if (showHoover)
+      setIsHovered(true)
 
     if (onMouseEnter != null)
       onMouseEnter(null)
   }
 
   function onTextMouseLeave() {
+    if (isHovered)
+      setIsHovered(false)
 
     if (onMouseLeave != null)
       onMouseLeave(null)
