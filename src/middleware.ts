@@ -9,7 +9,7 @@ export default function middleware(request: NextRequest) {
   if (isPrivatePage) {
     const savedCookie = request.cookies.get(USER_COOKIE_KEY)?.value
     const user = savedCookie != null ? User.fromIUser(JSON.parse(decodeURIComponent(savedCookie))) : null
-    const validToken = user != null ? new Date() < user.expirationTime : false
+    const validToken = user != null ? user.isValidToken : false
 
     if (!validToken) {
       console.log('middleware > Redirect to /')

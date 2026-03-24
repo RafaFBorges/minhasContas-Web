@@ -21,7 +21,7 @@ export class User {
     return null
   }
 
-  constructor(id: number = -1, name: string = '', user: string = '', token: string = '', expirationTime = '') {
+  constructor(id: number = -1, name: string = '', user: string = '', token: string = '', expirationTime: string = '') {
     this.__id = id
     this.__name = name
     this.__user = user
@@ -73,5 +73,9 @@ export class User {
       token: this.__token,
       expirationTime: this.__expirationTime
     }
+  }
+
+  get isValidToken(): boolean {
+    return new Date() < this.expirationTime
   }
 }

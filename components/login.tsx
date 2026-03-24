@@ -7,11 +7,9 @@ import ThemeButton from './themeComponents/themeButton'
 import { TextTag } from './api/text'
 import Link from './api/link'
 import { LanguageOption, useTranslate } from '../utils/hook/translateHook'
-import { saveObjectCookie } from '@/app/actions/cookiesManager'
 import { LoginResponse } from '@/comunication/login'
-import { USER_COOKIE_KEY } from '../utils/DataConstants'
-import { User } from '@/domain/User'
 import ThemeText from './themeComponents/themeText'
+import { useUser } from '../utils/hook/userHook'
 
 interface LoginProps {
   registerHRef?: string;
@@ -35,8 +33,9 @@ export default function Login({
   const CREATE_ACCOUNT_KEY = 'Login.CreateAccount'
 
   const { language, addKey, getValue } = useTranslate()
-
+  const { setPlataformUser } = useUser()
   const router = useRouter()
+
   const [user, setUser] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [labelText, setLabelText] = useState<LoginTranslations>(translate())
@@ -96,11 +95,10 @@ export default function Login({
     <ThemeButton clickHandle={async () => {
       const token: LoginResponse = await onSend(user, password)
 
-      if (token != null && token.token && token.expireTime) {
-        const user = new User(token.id, token.name, token.user, token.token, token.expireTime.toString())
-        await saveObjectCookie(USER_COOKIE_KEY, user.object)
-        console.log('Login > [sucesses] user=' + user.id)
+      if (token != null && token.id && token.name && token.user && token.token && token.expireTime) {
+        await setPlataformUser(token.id, token.name, token.user, token.token, token.expireTime.toString())
 
+        console.log('Login > [sucesses] user=' + token.id)
         router.push('/home')
       } // TO-DO : fazer um popup de erro de login
     }}

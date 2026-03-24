@@ -105,11 +105,13 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
   const TR_THEME_KEY = 'TR.ThemeProvider.Theme'
   const TR_LOGOUT_KEY = 'TR.ThemeProvider.Logout'
 
+
+  const { language, setLang, addKey, getValue } = useTranslate()
+  const { userInfo, logout } = useUser()
+  const router = useRouter()
+
   const [settedTheme, setSettedTheme] = useState<ThemeOptions>(() => loadTheme(theme, true))
   const [config, setConfig] = useState<ThemeStyleProps>(() => loadConfig(theme))
-  const { language, setLang, addKey, getValue } = useTranslate()
-  const { userInfo } = useUser()
-  const router = useRouter()
 
   function translate() {
     addKey(TR_THEME_KEY, 'tema', LanguageOption.PT_BR)
@@ -179,9 +181,9 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
     return getSideColor(value, config)
   }
 
-  async function logout() {
-    await saveObjectCookie(USER_COOKIE_KEY, null)
-    console.log('Logout')
+  async function doLogout() {
+    await logout()
+    console.log('Logout > [sucesses]')
 
     router.push('/home')
   }
@@ -235,7 +237,7 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
                 color={'#e1eb5b'}
                 enableIconColor={'#1d1d1d'}
               />
-              {userInfo.user && <ThemeText showHoover noWrap onClick={logout}>{getValue(TR_LOGOUT_KEY)}</ThemeText>}
+              {userInfo.user && <ThemeText showHoover noWrap onClick={doLogout}>{getValue(TR_LOGOUT_KEY)}</ThemeText>}
             </div>
           }}
         />

@@ -7,7 +7,7 @@ import { useTranslate } from './translateHook'
 import { Category } from '@/domain/Category'
 import { CategoryResponse, SyncCategories } from '@/comunication/category'
 import { ExpenseResponse, SyncExpenses } from '@/comunication/expense'
-import { ExpenseDisabledDictionary, getObjectCookie } from '@/app/actions/cookiesManager'
+import { ExpenseDisabledDictionary, getObjectCookie, saveObjectCookie } from '@/app/actions/cookiesManager'
 import { User } from '@/domain/User'
 import { USER_COOKIE_KEY } from '../DataConstants'
 
@@ -27,7 +27,8 @@ interface UserContextType {
   disabledCategoriesDict: ExpenseDisabledDictionary;
   filterSelection: string;
   userInfo: User;
-  setPlataformUser: (id: number, name: string, user: string) => void;
+  setPlataformUser: (id: number, name: string, user: string, token: string, expirationTime: string) => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined)
@@ -53,7 +54,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   async function loadSavedUser() {
     const savedUser: User | null = User.fromIUser(await getObjectCookie(USER_COOKIE_KEY))
 
-    if (savedUser != null && new Date() <= savedUser.expirationTime) {
+    if (savedUser != null && savedUser.isValidToken) {
       setUserInfo(savedUser)
       console.log('UserProvider.loadSavedUser > user=' + savedUser.id)
     }
@@ -128,16 +129,35 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setFilterSelection(filter)
   }
 
-  const setPlataformUser = (id: number = -1, name: string = '', user: string = '') => {
-    setUserInfo(new User(id, name, user))
+  const setPlataformUser = async (id: number = -1, name: string = '', user: string = '', token: string = '', expirationTime: string = '') => {
+    const newUser: User = new User(id, name, user, token, expirationTime)
+
+    if (newUser != null && newUser.isValidToken) {
+      setUserInfo(newUser)
+      await saveObjectCookie(USER_COOKIE_KEY, newUser.object)
+    }
+  }
+
+  const logout = async () => {
+    setUserInfo(new User())
+    await saveObjectCookie(USER_COOKIE_KEY, null)
   }
 
   useEffect(() => {
-    SyncExpenses(replaceFinancial)
-    SyncCategories(replaceCategories, replaceDisabledCategoriesDict, replaceFilterSelection)
     loadSavedUser()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  useEffect(() => {
+    console.log('UserProvider.useEffect[userInfo] > isValidToken=' + userInfo.isValidToken + ' user=' + JSON.stringify(userInfo, null, 2))
+
+    if (userInfo && userInfo.isValidToken) {
+      SyncExpenses(replaceFinancial)
+      SyncCategories(replaceCategories, replaceDisabledCategoriesDict, replaceFilterSelection)
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userInfo])
 
   useEffect(() => {
     const expensesList: Expense[] = []
@@ -162,7 +182,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
       disabledCategoriesDict,
       filterSelection,
       userInfo,
-      setPlataformUser
+      setPlataformUser,
+      logout
     }}
   >
     {children}
