@@ -59,6 +59,9 @@ export async function getExpenseDisabledCookie(): Promise<ExpenseDisabledDiction
 
 export async function saveObjectCookie<T>(key: string, value: T) {
   try {
+    if (value == null)
+      return
+
     const data = JSON.stringify(value)
     await saveCookie(key, encodeURIComponent(data))
 
@@ -73,7 +76,7 @@ export async function getObjectCookie<T>(key: string): Promise<T | null> {
     const cookie = await getCookie(key)
 
     console.log('cookiesManager.getObjectCookie > key=' + key + ' hasCookie=' + (cookie != null && cookie != undefined))
-    if (cookie != null && cookie != undefined && cookie != '')
+    if (cookie != null && cookie != undefined && cookie != '' && cookie != 'null' && cookie != 'undefined')
       return JSON.parse(decodeURIComponent(cookie)) as T
   } catch (error) {
     console.error("cookiesManager.getObjectCookie > [Couldnt convert string to Object] error=", error)

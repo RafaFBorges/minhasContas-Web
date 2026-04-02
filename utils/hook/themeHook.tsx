@@ -9,8 +9,8 @@ import ptImage from '../../src/assets/ptBr.png'
 import engImage from '../../src/assets/en.png'
 
 import { LanguageOption, useTranslate } from './translateHook'
-import { saveCookie, saveObjectCookie } from '@/app/actions/cookiesManager'
-import { THEME_KEY, USER_COOKIE_KEY } from '../DataConstants'
+import { saveCookie } from '@/app/actions/cookiesManager'
+import { THEME_KEY } from '../DataConstants'
 import { getSideColor } from '../colors'
 import WindowButton from '../../components/windowButton'
 import ThemeToggle from '../../components/themeComponents/themeToggle'
@@ -183,9 +183,9 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
 
   async function doLogout() {
     await logout()
-    console.log('Logout > [sucesses]')
+    console.log('Logout > [success]')
 
-    router.push('/home')
+    router.push('/')
   }
 
   useEffect(() => {

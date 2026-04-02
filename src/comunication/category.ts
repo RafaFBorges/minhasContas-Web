@@ -36,7 +36,7 @@ export async function SyncCategories(setCategories: (list: CategoryResponse[]) =
 
     const serverCategoriesList: Promise<CategoryResponse[]> = await handleGET(CATEGORIES_ENDPOINT)
 
-    if (!(serverCategoriesList != null) || !Array.isArray(serverCategoriesList))
+    if ((serverCategoriesList == null) || !Array.isArray(serverCategoriesList))
       throw Error('Invalid Category response')
 
     if (setCategories != null)
