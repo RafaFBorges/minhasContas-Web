@@ -2,6 +2,7 @@ const SERVER_PATH = 'https://minhascontas-server.onrender.com/'
 
 export const EXPENSES_ENDPOINT = 'expense'
 export const CATEGORIES_ENDPOINT = 'category'
+export const USER_ENDPOINT = 'user'
 export const LOGIN_ENDPOINT = 'login'
 
 export async function handleGET(endpoint: string) {
@@ -15,8 +16,17 @@ export async function handleGET(endpoint: string) {
       }
     })
 
-    if (!response.ok)
-      throw new Error("Erro HTTP: " + response.status)
+    if (!response.ok) {
+      let errorDetail = ""
+      try {
+        const errBody = await response.json()
+        errorDetail = errBody?.message ?? JSON.stringify(errBody)
+      } catch {
+        errorDetail = await response.text()
+      }
+
+      throw new Error(`Erro HTTP ${response.status}: ${errorDetail}`)
+    }
 
     const data = await response.json()
 
@@ -32,8 +42,9 @@ export async function handleGET(endpoint: string) {
     console.log(logMessage)
 
     return data
-  } catch {
-    return Response.json({ error: "Falha ao buscar dados" }, { status: 500 })
+  } catch (err) {
+    console.error("handleGET : [Error]", err)
+    throw err
   }
 }
 
@@ -49,8 +60,17 @@ export async function handlePOST(endpoint: string, body: object) {
       body: JSON.stringify(body)
     })
 
-    if (!response.ok)
-      throw new Error("Erro HTTP: " + response.status)
+    if (!response.ok) {
+      let errorDetail = ""
+      try {
+        const errBody = await response.json()
+        errorDetail = errBody?.message ?? JSON.stringify(errBody)
+      } catch {
+        errorDetail = await response.text()
+      }
+
+      throw new Error(`Erro HTTP ${response.status}: ${errorDetail}`)
+    }
 
     const data = await response.json()
 
@@ -66,8 +86,9 @@ export async function handlePOST(endpoint: string, body: object) {
     console.log(logMessage)
 
     return data
-  } catch {
-    return Response.json({ error: "Erro ao processar" }, { status: 400 });
+  } catch (err) {
+    console.error("handlePOST : [Error]", err)
+    throw err
   }
 }
 
@@ -84,11 +105,21 @@ export async function handleDELETE(endpoint: string) {
 
     console.log('handleDELETE : status=' + response.status)
 
-    if (!response.ok)
-      throw new Error("Erro HTTP: " + response.status)
+    if (!response.ok) {
+      let errorDetail = ""
+      try {
+        const errBody = await response.json()
+        errorDetail = errBody?.message ?? JSON.stringify(errBody)
+      } catch {
+        errorDetail = await response.text()
+      }
+
+      throw new Error(`Erro HTTP ${response.status}: ${errorDetail}`)
+    }
 
     return response.status == 204
-  } catch {
+  } catch (err) {
+    console.error("handleDELETE : [Error]", err)
     return false
   }
 }
@@ -105,8 +136,17 @@ export async function handlePUT(endpoint: string, body: object) {
       body: JSON.stringify(body)
     })
 
-    if (!response.ok)
-      throw new Error("Erro HTTP: " + response.status)
+    if (!response.ok) {
+      let errorDetail = ""
+      try {
+        const errBody = await response.json()
+        errorDetail = errBody?.message ?? JSON.stringify(errBody)
+      } catch {
+        errorDetail = await response.text()
+      }
+
+      throw new Error(`Erro HTTP ${response.status}: ${errorDetail}`)
+    }
 
     const data = await response.json()
 
@@ -122,7 +162,8 @@ export async function handlePUT(endpoint: string, body: object) {
     console.log(logMessage)
 
     return data
-  } catch {
-    return Response.json({ error: "Erro ao processar" }, { status: 400 });
+  } catch (err) {
+    console.error("handlePUT : [Error]", err)
+    throw err
   }
 }
