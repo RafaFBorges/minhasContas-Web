@@ -59,7 +59,7 @@ export default function ExpenseUI({
     request.date = new Date().toISOString()
     const response = await handlePOST(EXPENSES_ENDPOINT, request)
 
-    if (response != null) {
+    if (response != null && response.categories != null) {
       const categoryList: Category[] = []
       response.categories.forEach((category: CategoryResponse) => categoryList.push(new Category(category.id, category.owner, category.name)))
 
