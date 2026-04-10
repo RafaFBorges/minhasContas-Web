@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { FaTimes as CloseIcon } from 'react-icons/fa'
 
@@ -24,15 +24,23 @@ export default function Modal({ children, closeModal, title, enabledVerify = tru
   const { config } = useTheme()
   const { language, addKey, getValue } = useTranslate()
 
-  function translate() {
+  const [saveButton, setSaveButton] = useState<string>(translateSaveKey())
+  const [cancelButton, setCancelButton] = useState<string>(translateCancelKey())
+
+  function translateSaveKey(): string {
     addKey(SAVE_KEY, 'Salvar', LanguageOption.PT_BR)
-    addKey(SAVE_KEY, 'Save', LanguageOption.EN)
-    addKey(CANCEL_KEY, 'Cancelar', LanguageOption.PT_BR)
-    addKey(CANCEL_KEY, 'Cancel', LanguageOption.EN)
+    return addKey(SAVE_KEY, 'Save', LanguageOption.EN)
   }
 
-  useEffect(() => translate(), [])
-  useEffect(() => translate(), [language])
+  function translateCancelKey(): string {
+    addKey(CANCEL_KEY, 'Cancelar', LanguageOption.PT_BR)
+    return addKey(CANCEL_KEY, 'Cancel', LanguageOption.EN)
+  }
+
+  useEffect(() => {
+    setSaveButton(getValue(SAVE_KEY))
+    setCancelButton(getValue(CANCEL_KEY))
+  }, [language])
 
   return <div style={styles.overlay}>
     <div style={{ ...styles.modal, backgroundColor: config.cardBackground }}>
@@ -52,7 +60,7 @@ export default function Modal({ children, closeModal, title, enabledVerify = tru
           clickHandle={() => closeModal()}
           width='40%'
         >
-          {getValue(CANCEL_KEY)}
+          {cancelButton}
         </ThemeButton>
         <ThemeButton
           clickHandle={() => {
@@ -64,7 +72,7 @@ export default function Modal({ children, closeModal, title, enabledVerify = tru
           width='40%'
           enabled={enabledVerify}
         >
-          {getValue(SAVE_KEY)}
+          {saveButton}
         </ThemeButton>
       </div>
     </div>
