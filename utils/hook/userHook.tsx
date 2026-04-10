@@ -84,9 +84,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }
 
   const editFinancialResponse = (response: ExpenseResponse) => {
-    const categoryList: Category[] = []
-    response.categories.forEach((category: CategoryResponse) => categoryList.push(new Category(category.id, category.owner, category.name)))
-    editFinancial(response.id, new Expense(response.id, response.value, response.dates, categoryList, language))
+    let categoryList: Category[] = []
+    if (response.categoryIds)
+      categoryList = categoriesList.filter(c => response.categoryIds.includes(c.id))
+
+    editFinancial(response.id, new Expense(response.id, response.value, [response.date], categoryList, language))
   }
 
   const addFinancial = (item: Expense) => {
@@ -97,16 +99,31 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const addCategory = (category: Category) => {
     Category.addCategory(category)
     setCategoriesList(Category.Categories)
+
+    if (Expense.CategoryAdded(category))
+      setFinancialList([...financialList])
   }
 
   const replaceFinancial = (list: ExpenseResponse[]) => {
     let total: number = 0
     const expensesList: Expense[] = []
     list.forEach(expense => {
-      const categoryList: Category[] = []
-      expense.categories.forEach((category: CategoryResponse) => categoryList.push(new Category(category.id, category.owner, category.name)))
-      expensesList.push(new Expense(expense.id, expense.value, expense.dates, categoryList, language))
+      let categoryList: Category[] = []
+      let laterReplace: number[] = []
+      if (expense.categoryIds)
+        expense.categoryIds.forEach(id => {
+          const found = categoriesList.find(c => c.id === id)
+          if (found)
+            categoryList.push(found)
+          else
+            laterReplace.push(id)
+        })
+
+      expensesList.push(new Expense(expense.id, expense.value, [expense.date], categoryList, language))
       total += expense.value
+
+      if (laterReplace)
+        Expense.addToLater(expense.id, laterReplace)
     })
 
     setFinancialList(expensesList)
@@ -117,7 +134,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const replaceCategories = (list: CategoryResponse[]) => {
     Category.clearCategories()
-    list.forEach(category => Category.addCategory(new Category(category.id, category.owner, category.name, category.date)))
+
+    list.forEach(category => {
+      const newCategory: Category = new Category(category.id, category.owner, category.name, category.date)
+      Category.addCategory(newCategory)
+      Expense.CategoryAdded(newCategory)
+    })
+
     setCategoriesList(Category.Categories)
   }
 
@@ -152,8 +175,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
     console.log('UserProvider.useEffect[userInfo] > isValidToken=' + userInfo.isValidToken + ' user=' + JSON.stringify(userInfo, null, 2))
 
     if (userInfo && userInfo.isValidToken) {
-      SyncExpenses(replaceFinancial)
-      SyncCategories(replaceCategories, replaceDisabledCategoriesDict, replaceFilterSelection)
+      SyncCategories(replaceCategories, replaceDisabledCategoriesDict, replaceFilterSelection, userInfo.id)
+      SyncExpenses(replaceFinancial, userInfo.id)
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -1,5 +1,5 @@
 import getCookie, { ExpenseDisabledDictionary, getExpenseDisabledCookie } from '@/app/actions/cookiesManager'
-import { CATEGORIES_ENDPOINT, handleGET } from './ApiResthandler'
+import { CATEGORIES_ENDPOINT, USER_ENDPOINT, handleGET } from './ApiResthandler'
 import { Filter_SELECTION_KEY } from '../../utils/DataConstants'
 
 export interface CategoryResponse {
@@ -15,7 +15,7 @@ export interface CategoryRequest {
   date?: string;
 }
 
-export async function SyncCategories(setCategories: (list: CategoryResponse[]) => void, setDisasbledCategories: (dict: ExpenseDisabledDictionary) => void, setFilterSelection: (filter: string) => void) {
+export async function SyncCategories(setCategories: (list: CategoryResponse[]) => void, setDisasbledCategories: (dict: ExpenseDisabledDictionary) => void, setFilterSelection: (filter: string) => void, userId: number) {
   try {
     // Cache da configuração inicial
     console.log("SyncCategories : load cached initial Categories configuration")
@@ -34,7 +34,7 @@ export async function SyncCategories(setCategories: (list: CategoryResponse[]) =
 
     console.log("SyncCategories : [initial load] fetching categories")
 
-    const serverCategoriesList: Promise<CategoryResponse[]> = await handleGET(CATEGORIES_ENDPOINT)
+    const serverCategoriesList: CategoryResponse[] = await handleGET(CATEGORIES_ENDPOINT + '/' + USER_ENDPOINT + '/' + userId)
 
     if ((serverCategoriesList == null) || !Array.isArray(serverCategoriesList))
       throw Error('Invalid Category response')

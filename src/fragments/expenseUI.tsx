@@ -40,7 +40,7 @@ export default function ExpenseUI({
   const [isLoaded, setIsLoaded] = useState<boolean>(false)
   const [categories, setCategories] = useState<Array<Tag>>(tagList != null ? tagList.map((tag: Tag) => tag.clone()) : [])
 
-  const { addFinancial, disabledCategoriesDict } = useUser()
+  const { addFinancial, disabledCategoriesDict, userInfo } = useUser()
   const { language } = useTranslate()
   const { setEnabledSave, setData } = useModal()
 
@@ -57,6 +57,7 @@ export default function ExpenseUI({
     request.value = value
     request.categoryIds = list.filter(item => !item.disabled).map(item => item.id)
     request.date = new Date().toISOString()
+    request.owner = userInfo.id
     const response = await handlePOST(EXPENSES_ENDPOINT, request)
 
     if (response != null && response.categories != null) {
