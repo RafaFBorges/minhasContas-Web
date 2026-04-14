@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, ReactNode, useState, useEffect } from 'react'
+import { createContext, useContext, ReactNode, useState, useEffect, useRef } from 'react'
 
 import { Expense } from '@/domain/Expense'
 import { useTranslate } from './translateHook'
@@ -48,6 +48,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [total, setTotal] = useState<number>(0)
   const [disabledCategoriesDict, setDisabledCategoriesDict] = useState<ExpenseDisabledDictionary>({})
   const [filterSelection, setFilterSelection] = useState<string>('')
+
+  const hasSyncedCategoriesRef = useRef(false)
+  const hasSyncedExpensesRef = useRef(false)
 
   const { language } = useTranslate()
 
@@ -172,15 +175,22 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, [])
 
   useEffect(() => {
-    console.log('UserProvider.useEffect[userInfo] > isValidToken=' + userInfo.isValidToken + ' user=' + JSON.stringify(userInfo, null, 2))
-
-    if (userInfo && userInfo.isValidToken) {
+    if (userInfo.isValidToken && !hasSyncedCategoriesRef.current) {
+      console.log('UserProvider.useEffect[userInfo] > SyncCategories')
       SyncCategories(replaceCategories, replaceDisabledCategoriesDict, replaceFilterSelection, userInfo.id)
-      SyncExpenses(replaceFinancial, userInfo.id)
+      hasSyncedCategoriesRef.current = true
     }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userInfo])
+
+  useEffect(() => {
+    if (userInfo.isValidToken && !hasSyncedExpensesRef.current) {
+      console.log('UserProvider.useEffect[categoriesList] > SyncExpenses')
+      SyncExpenses(replaceFinancial, userInfo.id)
+      hasSyncedExpensesRef.current = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoriesList])
 
   useEffect(() => {
     const expensesList: Expense[] = []

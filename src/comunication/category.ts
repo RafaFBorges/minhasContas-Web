@@ -17,21 +17,6 @@ export interface CategoryRequest {
 
 export async function SyncCategories(setCategories: (list: CategoryResponse[]) => void, setDisasbledCategories: (dict: ExpenseDisabledDictionary) => void, setFilterSelection: (filter: string) => void, userId: number) {
   try {
-    // Cache da configuração inicial
-    console.log("SyncCategories : load cached initial Categories configuration")
-
-    if (setDisasbledCategories != null) {
-      const disabledCategoriesDict: ExpenseDisabledDictionary = await getExpenseDisabledCookie()
-      setDisasbledCategories(disabledCategoriesDict)
-    }
-
-    if (setFilterSelection != null) {
-      const filter: string | undefined = await getCookie(Filter_SELECTION_KEY)
-
-      if (filter != null)
-        setFilterSelection(filter)
-    }
-
     console.log("SyncCategories : [initial load] fetching categories")
 
     const serverCategoriesList: CategoryResponse[] = await handleGET(CATEGORIES_ENDPOINT + '/' + USER_ENDPOINT + '/' + userId)
@@ -41,6 +26,26 @@ export async function SyncCategories(setCategories: (list: CategoryResponse[]) =
 
     if (setCategories != null)
       setCategories(serverCategoriesList)
+
+    console.log("SyncCategories : [complete]")
+
+    setTimeout(async () => {
+      console.log("SyncCategories : [async] loading disabled categories cookie")
+      if (setDisasbledCategories != null) {
+        const disabledCategoriesDict: ExpenseDisabledDictionary = await getExpenseDisabledCookie()
+        setDisasbledCategories(disabledCategoriesDict)
+      }
+    }, 0)
+
+    setTimeout(async () => {
+      console.log("SyncCategories : [async] loading filter selection cookie")
+      if (setFilterSelection != null) {
+        const filter: string | undefined = await getCookie(Filter_SELECTION_KEY)
+
+        if (filter != null)
+          setFilterSelection(filter)
+      }
+    }, 0)
   } catch (err) {
     console.error("SyncCategories : [Error] erro=", err)
   }
