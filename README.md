@@ -1,7 +1,7 @@
 <!-- Título -->
 <h1 align="center"> Minhas Contas Web </h1>
 
-<h6 align="right">editado pela última vez: 15/04/2026</h6>
+<h6 align="right">editado pela última vez: 17/04/2026</h6>
 
 *******
 ### Índice 
@@ -73,33 +73,86 @@ npm install
 
   1. Dev: inicia o servidor de desenvolvimento com atualização automática.
 
+    ```bash
+    npm run dev
+    ```
+
+  2. Build: gera o build de produção.
+
+    ```bash
+    npm run build
+    ```
+
+  3. Start: inicia a aplicação em modo de produção após o build.
+
+    ```bash
+    npm run start
+    ```
+
+  4. Lint: valida o código com ESLint.
+
+    ```bash
+    npm run lint
+    ```
+
+- A aplicação será acessível em:
+
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+<!-- Tecnologias -->
+<div id="tecnologias-utilizadas"/>
+<h2> Stack de tecnologias: </h2>
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Next.js
+- React
+- TypeScript
+- ESLint
+- react-icons
+- tinycolor2
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+<!-- Arquitetura -->
+<div id="arquitetura"/>
+<h2> Arquitetura: </h2>
 
-## Learn More
+<div id="arquitetura-servicos"/>
+<h3> Estrutura de Serviços </h3>
 
-To learn more about Next.js, take a look at the following resources:
+  - Front-end Next.js: UI da aplicação financeira.
+  - Back-end REST API: comunicação via `ApiResthandler` para login, despesas, categorias e tags.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+<div id="arquitetura-pastas"/>
+<h3> Arquitetura</h3>
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+  - root
+    - `components` : componentes visuais reutilizáveis.
+    - `src/app` : páginas e layout do Next.js.
+    - `src/comunication` : camadas de requisição à API.
+    - `src/domain` : classes de domínio como `Expense`, `Category` e `Tag`.
+    - `src/fragments` : fragmentos de UI específicos.
+    - `src/modalPages` : configurações e validações de modais.
+    - `utils` : utilitários de cores, hooks e constantes.
+    - `public` : ativos públicos.
 
-## Deploy on Vercel
+<div id="arquitetura-variaveis"/>
+<h3> Variáveis de ambiente </h3>
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+  As variáveis de ambiente são configuradas no arquivo `.env.local`. Um arquivo `.env.example` está disponível como referência.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+<h5> Como configurar: </h5>
+
+1. Copie o arquivo `.env.example` para `.env.local`:
+   ```bash
+   cp .env.example .env.local
+   ```
+
+2. Edite o arquivo `.env.local` com seus valores:
+   ```bash
+   NEXT_PUBLIC_API_URL=http://seu-backend:8080/
+   ```
+
+<h5> Variáveis disponíveis: </h5>
+
+- `NEXT_PUBLIC_API_URL`: URL da API REST do servidor back-end (padrão: `http://localhost:8080/`)
+  - Nota: O prefixo `NEXT_PUBLIC_` torna a variável acessível no cliente Next.js.

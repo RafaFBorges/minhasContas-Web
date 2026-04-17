@@ -1,4 +1,4 @@
-const SERVER_PATH = 'https://minhascontas-server.onrender.com/'
+const SERVER_PATH = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/'
 
 export const EXPENSES_ENDPOINT = 'expense'
 export const CATEGORIES_ENDPOINT = 'category'
