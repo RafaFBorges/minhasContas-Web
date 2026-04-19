@@ -98,7 +98,7 @@ export function TranslateProvider({ children, lang }: { children: ReactNode, lan
       setLang,
     }}
   >
-    <html lang={language}>
+    <html lang={language} data-scroll-behavior={'smooth'}>
       {children}
     </html>
   </TranslateContext.Provider>
