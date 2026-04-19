@@ -5,15 +5,24 @@ export const CATEGORIES_ENDPOINT = 'category'
 export const USER_ENDPOINT = 'user'
 export const LOGIN_ENDPOINT = 'login'
 
-export async function handleGET(endpoint: string) {
+function getHeaders(token?: string): Record<string, string> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  }
+
+  if (token)
+    headers["token"] = token
+
+  return headers
+}
+
+export async function handleGET(endpoint: string, token?: string) {
   try {
     console.log("handleGET : [start] endpoint=" + SERVER_PATH + endpoint)
 
     const response = await fetch(SERVER_PATH + endpoint, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
+      headers: getHeaders(token),
     })
 
     if (!response.ok) {
@@ -48,15 +57,13 @@ export async function handleGET(endpoint: string) {
   }
 }
 
-export async function handlePOST(endpoint: string, body: object) {
+export async function handlePOST(endpoint: string, body: object, token?: string) {
   try {
     console.log("handlePOST : [start] endpoint=" + SERVER_PATH + endpoint)
 
     const response = await fetch(SERVER_PATH + endpoint, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: getHeaders(token),
       body: JSON.stringify(body)
     })
 
@@ -92,15 +99,13 @@ export async function handlePOST(endpoint: string, body: object) {
   }
 }
 
-export async function handleDELETE(endpoint: string) {
+export async function handleDELETE(endpoint: string, token?: string) {
   try {
     console.log("handleDELETE : [start] endpoint=" + SERVER_PATH + endpoint)
 
     const response = await fetch(SERVER_PATH + endpoint, {
       method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      }
+      headers: getHeaders(token),
     })
 
     console.log('handleDELETE : status=' + response.status)
@@ -124,15 +129,13 @@ export async function handleDELETE(endpoint: string) {
   }
 }
 
-export async function handlePUT(endpoint: string, body: object) {
+export async function handlePUT(endpoint: string, body: object, token?: string) {
   try {
     console.log("handlePUT : [start] endpoint=" + SERVER_PATH + endpoint)
 
     const response = await fetch(SERVER_PATH + endpoint, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: getHeaders(token),
       body: JSON.stringify(body)
     })
 

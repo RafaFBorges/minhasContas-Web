@@ -36,7 +36,8 @@ export default function Home() {
     total,
     deleteFinancial,
     editFinancialResponse,
-    filterSelection
+    filterSelection,
+    userInfo
   } = useUser()
 
   const [filteredexpenses, setFilteredexpenses] = useState<Expense[]>([])
@@ -52,14 +53,14 @@ export default function Home() {
   }
 
   const handleDeleteClick = async (index: number) => {
-    const wasDeleted: boolean = await handleDELETE(EXPENSES_ENDPOINT + '/' + index)
+    const wasDeleted: boolean = await handleDELETE(EXPENSES_ENDPOINT + '/' + index, userInfo.token)
 
     if (wasDeleted)
       deleteFinancial(index)
   }
 
   const handleEditClick = (expense: Expense) => {
-    openModal(getValue(PROPERTIES_TITLE_KEY), () => expenseEditContent(expense), (item: unknown) => handleEditExpense(item, expense, editFinancialResponse), true)
+    openModal(getValue(PROPERTIES_TITLE_KEY), () => expenseEditContent(expense), (item: unknown) => handleEditExpense(item, expense, editFinancialResponse, userInfo.token), true)
   }
 
   const expenseEditContent = (expense: Expense) => {

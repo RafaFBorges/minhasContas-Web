@@ -177,7 +177,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (userInfo.isValidToken && !hasSyncedCategoriesRef.current) {
       console.log('UserProvider.useEffect[userInfo] > SyncCategories')
-      SyncCategories(replaceCategories, replaceDisabledCategoriesDict, replaceFilterSelection, userInfo.id)
+      SyncCategories(replaceCategories, replaceDisabledCategoriesDict, replaceFilterSelection, userInfo.id, userInfo.token)
       hasSyncedCategoriesRef.current = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -186,7 +186,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (userInfo.isValidToken && !hasSyncedExpensesRef.current) {
       console.log('UserProvider.useEffect[categoriesList] > SyncExpenses')
-      SyncExpenses(replaceFinancial, userInfo.id)
+      SyncExpenses(replaceFinancial, userInfo.id, userInfo.token)
       hasSyncedExpensesRef.current = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

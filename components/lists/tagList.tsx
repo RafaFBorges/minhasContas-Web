@@ -39,17 +39,16 @@ export default function TagList({
   const NEW_CATEGORY_TITLE_KEY = 'TagList.PropertiesTitle'
   const UNKOWN_CATEGORY_KEY = 'unkownCategory'
 
-  const { addCategory } = useUser()
+  const { addCategory, userInfo } = useUser()
   const { getValue, addKey } = useTranslate()
-  const { config } = useTheme()
   const { openModal } = useModal()
 
   const handleCreateCategory = async (item: CategoryVerifyData) => {
     const request: CategoryRequest = {} as CategoryRequest
     request.name = item.name
-    request.owner = 1
+    request.owner = userInfo.id
     request.date = new Date().toISOString()
-    const response = await handlePOST(CATEGORIES_ENDPOINT, request)
+    const response = await handlePOST(CATEGORIES_ENDPOINT, request, userInfo.token)
 
     if (response != null)
       addCategory(new Category(response.id, response.owner, response.name, response.date))

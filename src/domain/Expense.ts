@@ -32,7 +32,7 @@ export class Expense {
 
     let updated = false
     for (const expenseId of list) {
-      let expenseIndex: number = this.__expensesDict[expenseId]
+      const expenseIndex: number = this.__expensesDict[expenseId]
       if (expenseIndex != null && 0 <= expenseIndex && expenseIndex < this.__expenses.length && this.__expenses[expenseIndex] != null) {
         this.__expenses[expenseIndex].addCategory(category)
         updated = true

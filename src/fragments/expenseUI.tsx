@@ -58,7 +58,7 @@ export default function ExpenseUI({
     request.categoryIds = list.filter(item => !item.disabled).map(item => item.id)
     request.date = new Date().toISOString()
     request.owner = userInfo.id
-    const response = await handlePOST(EXPENSES_ENDPOINT, request)
+    const response = await handlePOST(EXPENSES_ENDPOINT, request, userInfo.token)
 
     if (response != null && response.categories != null) {
       const categoryList: Category[] = []
