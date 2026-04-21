@@ -16,6 +16,20 @@ function getHeaders(token?: string): Record<string, string> {
   return headers
 }
 
+function logSendMessage(sender: string, data: any) {
+  let logMessage = `${sender} : [request send]`
+  if (!data)
+    logMessage += 'empty data'
+  else if (Array.isArray(data))
+    logMessage += 'Count=' + data.length
+  else if (typeof data === "object")
+    logMessage += 'ObjectKeysCount=' + Object.keys(data).length
+  else
+    logMessage += 'Unexpected response type'
+
+  console.log(logMessage)
+}
+
 export async function handleGET(endpoint: string, token?: string) {
   try {
     console.log("handleGET : [start] endpoint=" + SERVER_PATH + endpoint)
@@ -39,16 +53,7 @@ export async function handleGET(endpoint: string, token?: string) {
 
     const data = await response.json()
 
-    let logMessage = "handleGET : [request send]"
-    if (!data)
-      logMessage += 'empty data'
-    else if (Array.isArray(data))
-      logMessage += 'Count=' + data.length
-    else if (typeof data === "object")
-      logMessage += 'ObjectKeysCount=' + Object.keys(data).length
-    else
-      logMessage += 'Unexpected response type'
-    console.log(logMessage)
+    logSendMessage("handleGET", data)
 
     return data
   } catch (err) {
@@ -81,16 +86,7 @@ export async function handlePOST(endpoint: string, body: object, token?: string)
 
     const data = await response.json()
 
-    let logMessage = "handlePOST : [request send]"
-    if (!data)
-      logMessage += 'empty data'
-    else if (Array.isArray(data))
-      logMessage += 'Count=' + data.length
-    else if (typeof data === "object")
-      logMessage += 'ObjectKeysCount=' + Object.keys(data).length
-    else
-      logMessage += 'Unexpected response type'
-    console.log(logMessage)
+    logSendMessage("handlePOST", data)
 
     return data
   } catch (err) {
@@ -153,16 +149,7 @@ export async function handlePUT(endpoint: string, body: object, token?: string) 
 
     const data = await response.json()
 
-    let logMessage = "handlePUT : [request send]"
-    if (!data)
-      logMessage += 'empty data'
-    else if (Array.isArray(data))
-      logMessage += 'Count=' + data.length
-    else if (typeof data === "object")
-      logMessage += 'ObjectKeysCount=' + Object.keys(data).length
-    else
-      logMessage += 'Unexpected response type'
-    console.log(logMessage)
+    logSendMessage("handlePUT", data)
 
     return data
   } catch (err) {
