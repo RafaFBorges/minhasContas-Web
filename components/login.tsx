@@ -70,7 +70,6 @@ export default function Login({
       [CREATE_ACCOUNT_KEY]: getValue(CREATE_ACCOUNT_KEY),
       [FIRST_TIME_KEY]: getValue(FIRST_TIME_KEY),
     })
-    console.log('Login > ' + JSON.stringify(labelText, null, 2))
   }, [language])
 
   return <div style={styles.container}>
