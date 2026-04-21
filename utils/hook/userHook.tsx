@@ -165,8 +165,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }
 
   const logout = async () => {
+    console.log('UserProvider.logout > Logging out user id=' + userInfo.id)
     setUserInfo(new User())
-    await saveObjectCookie(USER_COOKIE_KEY, null)
+    await saveObjectCookie(USER_COOKIE_KEY, null, true)
   }
 
   useEffect(() => {

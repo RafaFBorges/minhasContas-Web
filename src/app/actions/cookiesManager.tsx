@@ -57,10 +57,12 @@ export async function getExpenseDisabledCookie(): Promise<ExpenseDisabledDiction
   return {} as ExpenseDisabledDictionary
 }
 
-export async function saveObjectCookie<T>(key: string, value: T) {
+export async function saveObjectCookie<T>(key: string, value: T, saveEmpty: boolean = false) {
   try {
-    if (value == null)
+    if (value == null && !saveEmpty) {
+      console.log('cookiesManager.saveObjectCookie >  [Empty value] key=' + key)
       return
+    }
 
     const data = JSON.stringify(value)
     await saveCookie(key, encodeURIComponent(data))
