@@ -1,3 +1,5 @@
+import { encrypt, decrypt } from '../../utils/crypto'
+
 const SERVER_PATH = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/'
 
 export const EXPENSES_ENDPOINT = 'expense'
@@ -5,11 +7,13 @@ export const CATEGORIES_ENDPOINT = 'category'
 export const USER_ENDPOINT = 'user'
 export const LOGIN_ENDPOINT = 'login'
 
-function getHeaders(token?: string): Record<string, string> {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  }
+interface ErrorResponse {
+  status: number;
+  data: unknown;
+}
 
+function getHeaders(token?: string): Record<string, string> {
+  const headers: Record<string, string> = {}
   if (token)
     headers["token"] = token
 
@@ -30,28 +34,50 @@ function logSendMessage(sender: string, data: any) {
   console.log(logMessage)
 }
 
+const request = async<T>(
+  endpoint: string,
+  method: string,
+  headers: Record<string, string> = {},
+  body: any | string | null | undefined,
+): Promise<T> => {
+  let processedBody: string | undefined = undefined;
+
+  if (body !== undefined && body !== null) {
+    const plainText = typeof body === "string"
+      ? body
+      : JSON.stringify(body)
+
+    processedBody = await encrypt(plainText)
+  }
+
+  const response: Response = await fetch(SERVER_PATH + endpoint, {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+      ...headers,
+    },
+    body: processedBody,
+  })
+
+  const responseText = await response.text()
+
+  let responseData: T | null = null
+  if (responseText) {
+    const decrypted = await decrypt(responseText)
+    responseData = JSON.parse(decrypted) as T
+  }
+
+  if (!response.ok)
+    throw { status: response.status, data: responseData } as ErrorResponse
+
+  return responseData as T
+}
+
 export async function handleGET(endpoint: string, token?: string) {
   try {
     console.log("handleGET : [start] endpoint=" + SERVER_PATH + endpoint)
 
-    const response = await fetch(SERVER_PATH + endpoint, {
-      method: "GET",
-      headers: getHeaders(token),
-    })
-
-    if (!response.ok) {
-      let errorDetail = ""
-      try {
-        const errBody = await response.json()
-        errorDetail = errBody?.message ?? JSON.stringify(errBody)
-      } catch {
-        errorDetail = await response.text()
-      }
-
-      throw new Error(`Erro HTTP ${response.status}: ${errorDetail}`)
-    }
-
-    const data = await response.json()
+    const data: any = await request(endpoint, 'GET', getHeaders(token), null)
 
     logSendMessage("handleGET", data)
 
@@ -66,25 +92,7 @@ export async function handlePOST(endpoint: string, body: object, token?: string)
   try {
     console.log("handlePOST : [start] endpoint=" + SERVER_PATH + endpoint)
 
-    const response = await fetch(SERVER_PATH + endpoint, {
-      method: "POST",
-      headers: getHeaders(token),
-      body: JSON.stringify(body)
-    })
-
-    if (!response.ok) {
-      let errorDetail = ""
-      try {
-        const errBody = await response.json()
-        errorDetail = errBody?.message ?? JSON.stringify(errBody)
-      } catch {
-        errorDetail = await response.text()
-      }
-
-      throw new Error(`Erro HTTP ${response.status}: ${errorDetail}`)
-    }
-
-    const data = await response.json()
+    const data: any = await request(endpoint, 'POST', getHeaders(token), body)
 
     logSendMessage("handlePOST", data)
 
@@ -95,32 +103,17 @@ export async function handlePOST(endpoint: string, body: object, token?: string)
   }
 }
 
-export async function handleDELETE(endpoint: string, token?: string) {
+export async function handleDELETE(endpoint: string, token?: string): Promise<boolean> {
   try {
-    console.log("handleDELETE : [start] endpoint=" + SERVER_PATH + endpoint)
+    await request<void>(endpoint, 'DELETE', getHeaders(token), null)
 
-    const response = await fetch(SERVER_PATH + endpoint, {
-      method: "DELETE",
-      headers: getHeaders(token),
-    })
-
-    console.log('handleDELETE : status=' + response.status)
-
-    if (!response.ok) {
-      let errorDetail = ""
-      try {
-        const errBody = await response.json()
-        errorDetail = errBody?.message ?? JSON.stringify(errBody)
-      } catch {
-        errorDetail = await response.text()
-      }
-
-      throw new Error(`Erro HTTP ${response.status}: ${errorDetail}`)
-    }
-
-    return response.status == 204
+    return true
   } catch (err) {
-    console.error("handleDELETE : [Error]", err)
+    const error = err as ErrorResponse
+    if (error.status === 204)
+      return true
+
+    console.error("handleDELETE : [Error]", error)
     return false
   }
 }
@@ -129,25 +122,7 @@ export async function handlePUT(endpoint: string, body: object, token?: string) 
   try {
     console.log("handlePUT : [start] endpoint=" + SERVER_PATH + endpoint)
 
-    const response = await fetch(SERVER_PATH + endpoint, {
-      method: "PUT",
-      headers: getHeaders(token),
-      body: JSON.stringify(body)
-    })
-
-    if (!response.ok) {
-      let errorDetail = ""
-      try {
-        const errBody = await response.json()
-        errorDetail = errBody?.message ?? JSON.stringify(errBody)
-      } catch {
-        errorDetail = await response.text()
-      }
-
-      throw new Error(`Erro HTTP ${response.status}: ${errorDetail}`)
-    }
-
-    const data = await response.json()
+    const data: any = await request(endpoint, 'PUT', getHeaders(token), body)
 
     logSendMessage("handlePUT", data)
 
