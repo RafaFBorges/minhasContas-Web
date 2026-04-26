@@ -8,6 +8,7 @@ import { ThemeProvider } from '../../utils/hook/themeHook'
 import { TranslateProvider } from '../../utils/hook/translateHook'
 import { LANG_KEY, THEME_KEY } from '../../utils/DataConstants'
 import { UserProvider } from '../../utils/hook/userHook'
+import { PopupProvider } from '../../utils/hook/usePopup'
 
 export const metadata: Metadata = {
   title: { default: 'Minhas Contas', template: '%s | Minhas Contas' },
@@ -25,9 +26,11 @@ export default async function RootLayout({
   return <TranslateProvider lang={initialLanguage}>
     <UserProvider>
       <ThemeProvider theme={initialTheme}>
-        <ModalProvider>
-          {children}
-        </ModalProvider>
+        <PopupProvider>
+          <ModalProvider>
+            {children}
+          </ModalProvider>
+        </PopupProvider>
       </ThemeProvider>
     </UserProvider>
   </TranslateProvider>

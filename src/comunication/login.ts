@@ -13,7 +13,7 @@ export interface LoginResponse {
   name?: string;
 }
 
-export const RequestLogin = async (user: string, password: string): Promise<LoginResponse> => {
+export const RequestLogin = async (user: string, password: string, onError: () => void = () => { }): Promise<LoginResponse> => {
   if (user == '' || password == '') {
     const expiredTime = new Date()
     expiredTime.setMinutes(expiredTime.getMinutes() - 1)
@@ -29,15 +29,34 @@ export const RequestLogin = async (user: string, password: string): Promise<Logi
     password: password
   }
 
-  const response = await handlePOST(LOGIN_ENDPOINT, request)
-  const expireTime = new Date()
-  expireTime.setMinutes(expireTime.getMinutes() + 1)
+  let token: LoginResponse
+  try {
+    const response = await handlePOST(LOGIN_ENDPOINT, request)
 
-  return {
-    token: response.token,
-    expireTime: response.expireTime,
-    user: response.user,
-    id: response.id,
-    name: response.name
+    const expireTime = new Date()
+    expireTime.setMinutes(expireTime.getMinutes() + 1)
+
+    token = {
+      token: response.token,
+      expireTime: response.expireTime,
+      user: response.user,
+      id: response.id,
+      name: response.name
+    }
+  } catch (error) {
+    console.log('RequestLogin > error=' + error)
+
+    if (onError != null)
+      onError()
+
+    token = {
+      token: '',
+      expireTime: new Date(NaN),
+      user: '',
+      id: -1,
+      name: ''
+    }
   }
+
+  return token
 }

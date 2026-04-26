@@ -10,11 +10,13 @@ import { LanguageOption, useTranslate } from '../utils/hook/translateHook'
 import { LoginResponse } from '@/comunication/login'
 import ThemeText from './themeComponents/themeText'
 import { useUser } from '../utils/hook/userHook'
+import { usePopup } from '../utils/hook/usePopup'
+import { PopupType } from '@/types/popupTypes'
 
 interface LoginProps {
   registerHRef?: string;
   passwordForgetedFRef?: string;
-  onSend: (user: string, password: string) => Promise<LoginResponse>
+  onSend: (user: string, password: string, onError?: () => void) => Promise<LoginResponse>
 }
 
 interface LoginTranslations {
@@ -34,12 +36,17 @@ export default function Login({
 
   const { language, addKey, getValue } = useTranslate()
   const { setPlataformUser } = useUser()
+  const { addPopup } = usePopup()
   const router = useRouter()
 
   const [user, setUser] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [labelText, setLabelText] = useState<LoginTranslations>(translate())
 
+  function onLoginError() {
+    console.log('Login Error 1 > ')
+    addPopup('Login Error', 'Invalid username or password. Please try again.', PopupType.ERROR)
+  }
 
   function translate() {
     const translation = {} as LoginTranslations
@@ -92,7 +99,7 @@ export default function Login({
       <Link href={passwordForgetedFRef}>{labelText[FORGOT_PASSWOR_KEY]}</Link>
     </div>
     <ThemeButton clickHandle={async () => {
-      const token: LoginResponse = await onSend(user, password)
+      const token: LoginResponse = await onSend(user, password, onLoginError)
 
       if (token != null && token.id && token.name && token.user && token.token && token.expireTime) {
         await setPlataformUser(token.id, token.name, token.user, token.token, token.expireTime.toString())
