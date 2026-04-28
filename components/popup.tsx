@@ -13,47 +13,45 @@ interface PopupProps {
   message: string;
   type: PopupType;
   onClose: () => void;
+  exiting: boolean;
 }
 
-export default function Popup({ title, message, type, onClose }: PopupProps) {
+export default function Popup({ title, message, type, onClose, exiting }: PopupProps) {
   const [visible, setVisible] = useState(false)
+  let style: React.CSSProperties = exiting
+    ? { ...styles.popupContainer, ...styles.exiting }
+    : {
+      ...styles.popupContainer,
+      ...styles[type],
+      pointerEvents: 'all',
+      animation: exiting
+        ? 'slideOut 0.3s ease forwards'
+        : visible
+          ? 'slideIn 0.3s ease forwards'
+          : 'none',
+    }
 
   useEffect(() => {
     const t = setTimeout(() => setVisible(true), 10)
     return () => clearTimeout(t)
   }, [])
 
-  const handleClose = () => {
-    setVisible(false)
-    setTimeout(onClose, 300)
-  }
-
-  return (
-    <>
-      <div style={{
-        ...styles.popupContainer,
-        ...styles[type],
-        animation: visible ? 'slideIn 0.3s ease forwards' : 'slideOut 0.3s ease forwards',
-        pointerEvents: 'all',
-      }}>
-
-        <div style={styles.header}>
-          <div style={styles.headerTitleSpan}>
-            <span style={{ ...styles.icon, color: styles[type].color }}>{popupIcon[type]}</span>
-            <ThemeText textTag={TextTag.H6} color={styles[type].color} style={styles.title}>{title}</ThemeText>
-          </div>
-          <StyledButton
-            color={styles[type].color}
-            clickHandle={handleClose}
-            Icon={CloseIcon}
-            isClickableIcon
-          />
-        </div>
-
-        <ThemeText textTag={TextTag.P} color={styles[type].color} style={styles.message}>{message}</ThemeText>
+  return <div style={style}>
+    <div style={styles.header}>
+      <div style={styles.headerTitleSpan}>
+        <span style={{ ...styles.icon, color: styles[type].color }}>{popupIcon[type]}</span>
+        <ThemeText textTag={TextTag.H6} color={styles[type].color} style={styles.title}>{title}</ThemeText>
       </div>
-    </>
-  )
+      <StyledButton
+        color={styles[type].color}
+        clickHandle={onClose}
+        Icon={CloseIcon}
+        isClickableIcon
+      />
+    </div>
+
+    <ThemeText textTag={TextTag.P} color={styles[type].color} style={styles.message}>{message}</ThemeText>
+  </div>
 }
 
 export const popupIcon: Record<PopupType, string> = {
@@ -92,6 +90,9 @@ const styles: Record<string, React.CSSProperties> = {
   },
   message: {
     color: '#444',
+  },
+  exiting: {
+    visibility: 'hidden'
   },
   closeBtn: {
     background: 'none',
