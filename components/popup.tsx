@@ -8,6 +8,13 @@ import ThemeText from './themeComponents/themeText'
 import { TextTag } from './api/text'
 import StyledButton from './api/button'
 
+
+export const popupIcon: Record<PopupType, string> = {
+  [PopupType.SUCCESS]: '✓',
+  [PopupType.ERROR]: '✕',
+  [PopupType.WARNING]: '⚠',
+}
+
 interface PopupProps {
   title: string;
   message: string;
@@ -18,46 +25,53 @@ interface PopupProps {
 
 export default function Popup({ title, message, type, onClose, exiting }: PopupProps) {
   const [visible, setVisible] = useState(false)
-  let style: React.CSSProperties = exiting
-    ? { ...styles.popupContainer, ...styles.exiting }
-    : {
-      ...styles.popupContainer,
-      ...styles[type],
-      pointerEvents: 'all',
-      animation: exiting
-        ? 'slideOut 0.3s ease forwards'
-        : visible
-          ? 'slideIn 0.3s ease forwards'
-          : 'none',
-    }
+  let style: React.CSSProperties = {
+    ...styles.popupContainer,
+    ...styles[type],
+    pointerEvents: exiting ? 'none' : 'all',
+    opacity: visible || exiting ? undefined : 0,
+    transform: visible || exiting ? undefined : 'translateY(100%)',
+    animation: exiting
+      ? 'slideOut 0.5s ease forwards'
+      : visible
+        ? 'slideIn 0.5s ease forwards'
+        : 'none',
+  }
 
   useEffect(() => {
     const t = setTimeout(() => setVisible(true), 10)
     return () => clearTimeout(t)
   }, [])
 
-  return <div style={style}>
-    <div style={styles.header}>
-      <div style={styles.headerTitleSpan}>
-        <span style={{ ...styles.icon, color: styles[type].color }}>{popupIcon[type]}</span>
-        <ThemeText textTag={TextTag.H6} color={styles[type].color} style={styles.title}>{title}</ThemeText>
+  return <>
+    <style>{`
+      @keyframes slideIn {
+        from { transform: translateY(100%); opacity: 0; }
+        to   { transform: translateY(0);    opacity: 1; }
+      }
+      @keyframes slideOut {
+        from { transform: translateX(0);   opacity: 1; }
+        to   { transform: translateX(110%); opacity: 0; }
+      }
+    `}</style>
+
+    <div style={style}>
+      <div style={styles.header}>
+        <div style={styles.headerTitleSpan}>
+          <span style={{ ...styles.icon, color: styles[type].color }}>{popupIcon[type]}</span>
+          <ThemeText textTag={TextTag.H6} color={styles[type].color} style={styles.title}>{title}</ThemeText>
+        </div>
+        <StyledButton
+          color={styles[type].color}
+          clickHandle={onClose}
+          Icon={CloseIcon}
+          isClickableIcon
+        />
       </div>
-      <StyledButton
-        color={styles[type].color}
-        clickHandle={onClose}
-        Icon={CloseIcon}
-        isClickableIcon
-      />
+
+      <ThemeText textTag={TextTag.P} color={styles[type].color} style={styles.message}>{message}</ThemeText>
     </div>
-
-    <ThemeText textTag={TextTag.P} color={styles[type].color} style={styles.message}>{message}</ThemeText>
-  </div>
-}
-
-export const popupIcon: Record<PopupType, string> = {
-  [PopupType.SUCCESS]: '✓',
-  [PopupType.ERROR]: '✕',
-  [PopupType.WARNING]: '⚠',
+  </>
 }
 
 const styles: Record<string, React.CSSProperties> = {
