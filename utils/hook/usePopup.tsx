@@ -46,19 +46,23 @@ export function PopupProvider({ children }: { children: ReactNode }) {
 
           removeQueue.current.push(id)
           timerRef.current = setTimeout(() => {
+            const allExiting = popupList.current.every(p => removeQueue.current.includes(p.id))
+            if (!allExiting)
+              return
+
             popupList.current = popupList.current.filter(popup => {
               const position = removeQueue.current.indexOf(popup.id)
-              const result = position === -1 && 0 < position && position < removeQueue.current.length && removeQueue.current[position] === id
-              if (!result) {
+              const shouldRemove = position !== -1
+              if (shouldRemove) {
                 nextPopupQueue.current?.push(popup.positionIndex)
                 removeQueue.current.splice(position, 1)
               }
 
-              return result
+              return !shouldRemove
             })
 
             setUpdate(prev => !prev)
-          }, 3000)
+          }, 500)
         }
 
         break
