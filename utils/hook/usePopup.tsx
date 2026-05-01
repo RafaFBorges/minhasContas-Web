@@ -24,6 +24,11 @@ export function PopupProvider({ children }: { children: ReactNode }) {
   const nextPopupQueue = useRef<number[]>(Array.from({ length: getMaxPopups() }, (_, i) => i))
   const timerRef = useRef<ReturnType<typeof setTimeout>>(null)
   const removeQueue = useRef<number[]>([])
+  const activePopups = useRef<Map<string, number>>(new Map())
+
+  function getActivePopupKey(title: string, message: string, type: PopupType): string {
+    return `${type}:${title}:${message}`
+  }
 
   function getMaxPopups(): number {
     const popupHeight = 90
@@ -35,6 +40,12 @@ export function PopupProvider({ children }: { children: ReactNode }) {
   }
 
   function removePopup(id: number) {
+    for (const [key, activeId] of activePopups.current.entries())
+      if (activeId === id) {
+        activePopups.current.delete(key)
+        break
+      }
+
     for (const popup of popupList.current)
       if (popup.id === id) {
         if (!popup.exiting) {
@@ -73,6 +84,13 @@ export function PopupProvider({ children }: { children: ReactNode }) {
     if (nextPopupQueue == undefined || nextPopupQueue.current == undefined)
       return
 
+    const key = getActivePopupKey(title, message, type)
+    if (activePopups.current.has(key)) {
+      const existingId = activePopups.current.get(key)!
+      setTimeout(() => removePopup(existingId), duration)
+      return
+    }
+
     const id = nextId++
 
     const exitingPopup = [...popupList.current].reverse().find(p => p.exiting)
@@ -99,6 +117,7 @@ export function PopupProvider({ children }: { children: ReactNode }) {
     const newPopup = new PopupInfo(id, title + ` ${id}`, message, type, duration, index)
 
     popupPosition.current[index] = newPopup
+    activePopups.current.set(key, id)
 
     if (exitingPopup)
       popupList.current = popupList.current.map(p => p.id === exitingPopup.id ? newPopup : p)
