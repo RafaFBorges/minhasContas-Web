@@ -70,18 +70,41 @@ export function PopupProvider({ children }: { children: ReactNode }) {
   }
 
   function addPopup(title: string, message: string, type: PopupType = PopupType.ERROR, duration: number = 4000) {
-    if (getMaxPopups() <= popupList.current.length || nextPopupQueue == undefined || nextPopupQueue.current == undefined || nextPopupQueue.current.length === 0)
-      return
-
-    const index = nextPopupQueue.current.shift()
-    if (index == null)
+    if (nextPopupQueue == undefined || nextPopupQueue.current == undefined)
       return
 
     const id = nextId++
-    const newPopup: PopupInfo = new PopupInfo(id, title, message, type, duration, index)
+
+    const exitingPopup = [...popupList.current].reverse().find(p => p.exiting)
+
+    let index: number | undefined
+
+    if (exitingPopup) {
+      if (timerRef.current != null)
+        clearTimeout(timerRef.current)
+
+      index = exitingPopup.positionIndex
+      const position = removeQueue.current.indexOf(exitingPopup.id)
+      if (position !== -1)
+        removeQueue.current.splice(position, 1)
+    } else {
+      if (getMaxPopups() <= popupList.current.length || nextPopupQueue.current.length === 0)
+        return
+
+      index = nextPopupQueue.current.shift()
+      if (index == null)
+        return
+    }
+
+    const newPopup = new PopupInfo(id, title + ` ${id}`, message, type, duration, index)
 
     popupPosition.current[index] = newPopup
-    popupList.current = [newPopup, ...popupList.current]
+
+    if (exitingPopup)
+      popupList.current = popupList.current.map(p => p.id === exitingPopup.id ? newPopup : p)
+    else
+      popupList.current = [newPopup, ...popupList.current]
+
     setUpdate(prev => !prev)
     setTimeout(() => removePopup(id), duration)
   }
