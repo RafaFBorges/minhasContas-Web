@@ -25,6 +25,7 @@ export function PopupProvider({ children }: { children: ReactNode }) {
   const timerRef = useRef<ReturnType<typeof setTimeout>>(null)
   const removeQueue = useRef<number[]>([])
   const activePopups = useRef<Map<string, number>>(new Map())
+  const durationTimers = useRef<Record<number, ReturnType<typeof setTimeout>>>({})
 
   function getActivePopupKey(title: string, message: string, type: PopupType): string {
     return `${type}:${title}:${message}`
@@ -40,6 +41,9 @@ export function PopupProvider({ children }: { children: ReactNode }) {
   }
 
   function removePopup(id: number) {
+    clearTimeout(durationTimers.current[id])
+    delete durationTimers.current[id]
+
     for (const [key, activeId] of activePopups.current.entries())
       if (activeId === id) {
         activePopups.current.delete(key)
@@ -87,7 +91,8 @@ export function PopupProvider({ children }: { children: ReactNode }) {
     const key = getActivePopupKey(title, message, type)
     if (activePopups.current.has(key)) {
       const existingId = activePopups.current.get(key)!
-      setTimeout(() => removePopup(existingId), duration)
+      clearTimeout(durationTimers.current[existingId])
+      durationTimers.current[existingId] = setTimeout(() => removePopup(existingId), duration)  // ✅ novo timer
       return
     }
 
@@ -125,7 +130,7 @@ export function PopupProvider({ children }: { children: ReactNode }) {
       popupList.current = [newPopup, ...popupList.current]
 
     setUpdate(prev => !prev)
-    setTimeout(() => removePopup(id), duration)
+    durationTimers.current[id] = setTimeout(() => removePopup(id), duration)
   }
 
   return (
