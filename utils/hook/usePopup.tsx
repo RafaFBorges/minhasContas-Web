@@ -26,12 +26,17 @@ export function PopupProvider({ children }: { children: ReactNode }) {
   const removeQueue = useRef<number[]>([])
   const activePopups = useRef<Map<string, number>>(new Map())
   const durationTimers = useRef<Record<number, ReturnType<typeof setTimeout>>>({})
+  const pausedAt = useRef<Record<number, number>>({})
+  const remainingTime = useRef<Record<number, number>>({})
 
   function getActivePopupKey(title: string, message: string, type: PopupType): string {
     return `${type}:${title}:${message}`
   }
 
   function getMaxPopups(): number {
+    if (typeof window === 'undefined')
+      return 0
+
     const popupHeight = 90
     const gap = 12
     const margin = 24
@@ -40,6 +45,23 @@ export function PopupProvider({ children }: { children: ReactNode }) {
     return Math.floor(availableHeight / (popupHeight + gap))
   }
 
+  function pausePopup(id: number) {
+    if (durationTimers.current[id]) {
+      clearTimeout(durationTimers.current[id])
+      pausedAt.current[id] = Date.now()
+      remainingTime.current[id] = remainingTime.current[id] - (Date.now() - (pausedAt.current[id] ?? Date.now()))
+    }
+  }
+
+  function resumePopup(id: number) {
+    if (pausedAt.current[id]) {
+      const elapsed = Date.now() - pausedAt.current[id]
+      const remaining = (remainingTime.current[id] ?? 4000) - elapsed
+
+      durationTimers.current[id] = setTimeout(() => removePopup(id), Math.max(remaining, 0))
+      delete pausedAt.current[id]
+    }
+  }
   function removePopup(id: number) {
     clearTimeout(durationTimers.current[id])
     delete durationTimers.current[id]
@@ -130,7 +152,8 @@ export function PopupProvider({ children }: { children: ReactNode }) {
       popupList.current = [newPopup, ...popupList.current]
 
     setUpdate(prev => !prev)
-    durationTimers.current[id] = setTimeout(() => removePopup(id), duration)
+    remainingTime.current[id] = duration
+    durationTimers.current[id] = setTimeout(() => removePopup(id), remainingTime.current[id])
   }
 
   return (
@@ -144,6 +167,8 @@ export function PopupProvider({ children }: { children: ReactNode }) {
           type={popup.type}
           onClose={() => removePopup(popup.id)}
           exiting={popup.exiting}
+          onPause={() => pausePopup(popup.id)}
+          onResume={() => resumePopup(popup.id)}
         />
         )}
       </div>

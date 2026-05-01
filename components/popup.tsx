@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react'
 import ThemeText from './themeComponents/themeText'
 import { TextTag } from './api/text'
 import StyledButton from './api/button'
+import { lightenCor } from '../utils/colors'
 
 
 export const popupIcon: Record<PopupType, string> = {
@@ -21,13 +22,20 @@ interface PopupProps {
   type: PopupType;
   onClose: () => void;
   exiting: boolean;
+  onPause: () => void;
+  onResume: () => void;
 }
 
-export default function Popup({ title, message, type, onClose, exiting }: PopupProps) {
+export default function Popup({ title, message, type, onClose, exiting, onPause, onResume }: PopupProps) {
   const [visible, setVisible] = useState(false)
+  const [hovered, setHovered] = useState(false)
+  const LIGHTEN_FACTOR = 15
+
   let style: React.CSSProperties = {
     ...styles.popupContainer,
-    ...styles[type],
+    background: styles[type] != null
+      ? hovered && styles[type].background != null ? lightenCor(styles[type].background, LIGHTEN_FACTOR) : styles[type].background
+      : undefined,
     pointerEvents: exiting ? 'none' : 'all',
     opacity: visible || exiting ? undefined : 0,
     transform: visible || exiting ? undefined : 'translateY(100%)',
@@ -36,6 +44,16 @@ export default function Popup({ title, message, type, onClose, exiting }: PopupP
       : visible
         ? 'slideIn 0.5s ease forwards'
         : 'none',
+  }
+
+  const handleMouseEnter = () => {
+    setHovered(true)
+    onPause()
+  }
+
+  const handleMouseLeave = () => {
+    setHovered(false)
+    onResume()
   }
 
   useEffect(() => {
@@ -55,7 +73,11 @@ export default function Popup({ title, message, type, onClose, exiting }: PopupP
       }
     `}</style>
 
-    <div style={style}>
+    <div
+      style={style}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <div style={styles.header}>
         <div style={styles.headerTitleSpan}>
           <span style={{ ...styles.icon, color: styles[type].color }}>{popupIcon[type]}</span>
