@@ -20,22 +20,26 @@ interface PopupProps {
   title: string;
   message: string;
   type: PopupType;
+  height: number
   onClose: () => void;
   exiting: boolean;
+  invisible: boolean;
   onPause: () => void;
   onResume: () => void;
 }
 
-export default function Popup({ title, message, type, onClose, exiting, onPause, onResume }: PopupProps) {
+export default function Popup({ title, message, type, height, onClose, exiting, invisible, onPause, onResume }: PopupProps) {
   const [visible, setVisible] = useState(false)
   const [hovered, setHovered] = useState(false)
   const LIGHTEN_FACTOR = 15
 
   let style: React.CSSProperties = {
     ...styles.popupContainer,
+    height: height,
     background: styles[type] != null
       ? hovered && styles[type].background != null ? lightenCor(styles[type].background, LIGHTEN_FACTOR) : styles[type].background
       : undefined,
+    ...invisible ? styles.invisible : undefined,
     pointerEvents: exiting ? 'none' : 'all',
     opacity: visible || exiting ? undefined : 0,
     transform: visible || exiting ? undefined : 'translateY(100%)',
@@ -127,7 +131,7 @@ const styles: Record<string, React.CSSProperties> = {
   message: {
     color: '#444',
   },
-  exiting: {
+  invisible: {
     visibility: 'hidden'
   },
   closeBtn: {

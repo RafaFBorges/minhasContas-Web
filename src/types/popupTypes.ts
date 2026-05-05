@@ -16,8 +16,9 @@ export class PopupInfo {
   private __duration: number
   private __positionIndex: number
   private __exiting: boolean
+  private __invisible: boolean
 
-  constructor(id: number, title: string, message: string, type: PopupType, duration: number, positionIndex: number) {
+  constructor(id: number, title: string, message: string, type: PopupType, duration: number, positionIndex: number, invisible: boolean = false) {
     this.__id = id
     this.__title = title
     this.__message = message
@@ -25,6 +26,7 @@ export class PopupInfo {
     this.__duration = duration
     this.__positionIndex = positionIndex
     this.__exiting = false
+    this.__invisible = invisible
   }
 
   get id() {
@@ -49,6 +51,10 @@ export class PopupInfo {
 
   get exiting() {
     return this.__exiting
+  }
+
+  get invisible() {
+    return this.__invisible
   }
 
   get positionIndex() {
