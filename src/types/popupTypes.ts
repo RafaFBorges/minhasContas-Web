@@ -1,3 +1,5 @@
+import { PopupPositionType } from "../../utils/hook/usePopup"
+
 export enum PopupType {
   SUCCESS = 'success',
   ERROR = 'error',
@@ -17,8 +19,9 @@ export class PopupInfo {
   private __positionIndex: number
   private __exiting: boolean
   private __invisible: boolean
+  private __position: PopupPositionType
 
-  constructor(id: number, title: string, message: string, type: PopupType, duration: number, positionIndex: number, invisible: boolean = false) {
+  constructor(id: number, title: string, message: string, type: PopupType, duration: number, positionIndex: number, position: PopupPositionType, invisible: boolean = false) {
     this.__id = id
     this.__title = title
     this.__message = message
@@ -27,6 +30,7 @@ export class PopupInfo {
     this.__positionIndex = positionIndex
     this.__exiting = false
     this.__invisible = invisible
+    this.__position = position
   }
 
   get id() {
@@ -51,6 +55,18 @@ export class PopupInfo {
 
   get exiting() {
     return this.__exiting
+  }
+
+  get position() {
+    return this.__position
+  }
+
+  get isTop() {
+    return this.__position === PopupPositionType.TOP_RIGHT || this.__position === PopupPositionType.TOP_LEFT
+  }
+
+  get isBottom() {
+    return this.__position === PopupPositionType.BOTTOM_RIGHT || this.__position === PopupPositionType.BOTTOM_LEFT
   }
 
   get invisible() {

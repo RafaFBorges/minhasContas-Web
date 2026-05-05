@@ -36,7 +36,8 @@ export function usePopup() {
 
 export function PopupProvider({ children }: { children: ReactNode }) {
   const [update, setUpdate] = useState<boolean>(false)
-  const popupList = useRef<PopupInfo[]>([])
+  const popupRightList = useRef<PopupInfo[]>([])
+  const popupLeftList = useRef<PopupInfo[]>([])
   const popupPosition = useRef<Record<number, PopupInfo>>({})
   const nextPopupQueue = useRef<number[]>(Array.from({ length: getMaxPopups() }, (_, i) => i))
   const timerRef = useRef<ReturnType<typeof setTimeout>>(null)
@@ -64,13 +65,6 @@ export function PopupProvider({ children }: { children: ReactNode }) {
 
   function processWaitingQueue() {
     if (waitingQueue.current.length === 0)
-      return
-
-    const activeCount: number = popupList.current.filter(p => !p.exiting).length
-    const hasExitingSlot: boolean = popupList.current.some(p => p.exiting)
-    const hasEmptySlot: boolean = 0 < nextPopupQueue.current.length && activeCount < getMaxPopups()
-
-    if (!hasExitingSlot && !hasEmptySlot)
       return
 
     const next: WaitingPopup = waitingQueue.current.shift()!
@@ -107,6 +101,49 @@ export function PopupProvider({ children }: { children: ReactNode }) {
     return false
   }
 
+  function removePopupFromList(popup: PopupInfo): boolean {
+    const position = removeQueue.current.indexOf(popup.id)
+    const shouldRemove = position !== -1
+    if (shouldRemove) {
+      nextPopupQueue.current?.push(popup.positionIndex)
+      removeQueue.current.splice(position, 1)
+    }
+
+    return !shouldRemove
+  }
+
+  function markPopupForRemoval(popup: PopupInfo, id: number): boolean {
+    const wasRemoved = popup.id === id && !popup.exiting
+    if (wasRemoved) {
+      popup.exit()
+      setUpdate(prev => !prev)
+
+      if (timerRef.current != null)
+        clearTimeout(timerRef.current)
+
+      removeQueue.current.push(id)
+      timerRef.current = setTimeout(() => {
+        const allExiting = popup.isTop
+          ? popupRightList.current.every(p => removeQueue.current.includes(p.id))
+          : popupLeftList.current.every(p => removeQueue.current.includes(p.id))
+
+        if (!allExiting)
+          return
+
+        if (popup.isTop)
+          popupRightList.current = popupRightList.current.filter(popup => removePopupFromList(popup))
+        else
+          popupLeftList.current = popupLeftList.current.filter(popup => removePopupFromList(popup))
+
+        setUpdate(prev => !prev)
+      }, 500)
+
+      setTimeout(() => processWaitingQueue(), 500)
+    }
+
+    return wasRemoved
+  }
+
   function removePopup(id: number) {
     clearTimeout(durationTimers.current[id])
     delete durationTimers.current[id]
@@ -117,39 +154,18 @@ export function PopupProvider({ children }: { children: ReactNode }) {
         break
       }
 
-    for (const popup of popupList.current)
-      if (popup.id === id) {
-        if (!popup.exiting) {
-          popup.exit()
-          setUpdate(prev => !prev)
-
-          if (timerRef.current != null)
-            clearTimeout(timerRef.current)
-
-          removeQueue.current.push(id)
-          timerRef.current = setTimeout(() => {
-            const allExiting = popupList.current.every(p => removeQueue.current.includes(p.id))
-            if (!allExiting)
-              return
-
-            popupList.current = popupList.current.filter(popup => {
-              const position = removeQueue.current.indexOf(popup.id)
-              const shouldRemove = position !== -1
-              if (shouldRemove) {
-                nextPopupQueue.current?.push(popup.positionIndex)
-                removeQueue.current.splice(position, 1)
-              }
-
-              return !shouldRemove
-            })
-
-            setUpdate(prev => !prev)
-          }, 500)
-
-          setTimeout(() => processWaitingQueue(), 500)
-        }
-
+    let wasFound = false
+    for (const popup of popupRightList.current) {
+      wasFound = markPopupForRemoval(popup, id)
+      if (wasFound)
         break
+    }
+
+    if (!wasFound)
+      for (const popup of popupLeftList.current) {
+        wasFound = markPopupForRemoval(popup, id)
+        if (wasFound)
+          break
       }
   }
 
@@ -177,8 +193,8 @@ export function PopupProvider({ children }: { children: ReactNode }) {
 
     let index: number | undefined
     const exitingPopup: PopupInfo | undefined = position === PopupPositionType.TOP_RIGHT || position === PopupPositionType.TOP_LEFT
-      ? popupList.current.find(p => p.exiting)
-      : [...popupList.current].reverse().find(p => p.exiting)
+      ? (position === PopupPositionType.TOP_RIGHT) ? popupRightList.current.find(p => p.exiting) : popupLeftList.current.find(p => p.exiting)
+      : (position === PopupPositionType.BOTTOM_RIGHT) ? [...popupRightList.current].reverse().find(p => p.exiting) : [...popupLeftList.current].reverse().find(p => p.exiting)
 
     if (exitingPopup) {
       if (timerRef.current != null)
@@ -189,7 +205,10 @@ export function PopupProvider({ children }: { children: ReactNode }) {
       if (positionIndex !== -1)
         removeQueue.current.splice(positionIndex, 1)
     } else {
-      const activeCount: number = popupList.current.filter(p => !p.exiting).length
+      const activeCount: number = (position === PopupPositionType.BOTTOM_RIGHT || position === PopupPositionType.TOP_RIGHT)
+        ? popupRightList.current.filter(p => !p.exiting).length
+        : popupLeftList.current.filter(p => !p.exiting).length
+
       if (getMaxPopups() <= activeCount || nextPopupQueue.current.length === 0) {
         waitingQueue.current.push({
           title: title,
@@ -207,8 +226,10 @@ export function PopupProvider({ children }: { children: ReactNode }) {
       if (index == null)
         return
 
-      if (position === PopupPositionType.TOP_RIGHT) {
-        const activeCount = popupList.current.filter(p => !p.exiting).length
+      if (position === PopupPositionType.TOP_RIGHT || position === PopupPositionType.TOP_LEFT) {
+        const activeCount = position === PopupPositionType.TOP_RIGHT
+          ? popupRightList.current.filter(p => !p.exiting).length
+          : popupLeftList.current.filter(p => !p.exiting).length
 
         for (let i = 0; i < getMaxPopups() - activeCount - 1; i++) {
           const slotIndex = nextPopupQueue.current.shift()
@@ -216,24 +237,28 @@ export function PopupProvider({ children }: { children: ReactNode }) {
             break
 
           const placeholderId = nextId++
-          const placeholder = new PopupInfo(placeholderId, '', '', type, duration, slotIndex, true)
+          const placeholder = new PopupInfo(placeholderId, '', '', type, duration, slotIndex, position, true)
 
-          popupList.current = [placeholder, ...popupList.current]
+          if (position === PopupPositionType.TOP_RIGHT)
+            popupRightList.current = [placeholder, ...popupRightList.current]
+          else
+            popupLeftList.current = [placeholder, ...popupLeftList.current]
+
           remainingTime.current[placeholderId] = duration
           setTimeout(() => removePopup(placeholderId), 1)
         }
       }
     }
 
-    const newPopup: PopupInfo = new PopupInfo(popupId, title + ` ${popupId}`, message, type, duration, index)
+    const newPopup: PopupInfo = new PopupInfo(popupId, title + ` ${popupId}`, message, type, duration, index, position)
 
     popupPosition.current[index] = newPopup
     activePopups.current.set(key, popupId)
 
-    if (exitingPopup)
-      popupList.current = popupList.current.map(p => p.id === exitingPopup.id ? newPopup : p)
+    if (position === PopupPositionType.TOP_RIGHT || position === PopupPositionType.BOTTOM_RIGHT)
+      popupRightList.current = exitingPopup ? popupRightList.current.map(p => p.id === exitingPopup.id ? newPopup : p) : [newPopup, ...popupRightList.current]
     else
-      popupList.current = [newPopup, ...popupList.current]
+      popupLeftList.current = exitingPopup ? popupLeftList.current.map(p => p.id === exitingPopup.id ? newPopup : p) : [newPopup, ...popupLeftList.current]
 
     setUpdate(prev => !prev)
     remainingTime.current[popupId] = duration
@@ -243,8 +268,24 @@ export function PopupProvider({ children }: { children: ReactNode }) {
   return (
     <PopupContext.Provider value={{ addPopup }}>
       {children}
-      <div style={styles.container}>
-        {(update || true) && popupList.current.map(popup => <Popup
+      <div style={{ ...styles.container, ...styles.rightContainer }}>
+        {(update || true) && popupRightList.current.map(popup => <Popup
+          key={popup.id}
+          title={popup.title}
+          message={popup.message}
+          type={popup.type}
+          height={POP_HEIGHT}
+          onClose={() => removePopup(popup.id)}
+          exiting={popup.exiting}
+          invisible={popup.invisible}
+          onPause={() => pausePopup(popup.id)}
+          onResume={() => resumePopup(popup.id)}
+        />
+        )}
+      </div>
+
+      <div style={{ ...styles.container, ...styles.leftContainer }}>
+        {(update || true) && popupLeftList.current.map(popup => <Popup
           key={popup.id}
           title={popup.title}
           message={popup.message}
@@ -266,7 +307,6 @@ const styles: { [key: string]: React.CSSProperties } = {
   container: {
     position: 'fixed',
     bottom: '1.5rem',
-    right: '1.5rem',
     zIndex: 9999,
     display: 'flex',
     flexDirection: 'column',
@@ -274,4 +314,10 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: 'flex-end',
     pointerEvents: 'none',
   },
+  rightContainer: {
+    right: '1.5rem',
+  },
+  leftContainer: {
+    left: '1.5rem',
+  }
 }
