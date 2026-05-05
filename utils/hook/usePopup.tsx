@@ -12,9 +12,9 @@ interface WaitingPopup {
   title: string;
   message: string;
   type: PopupType;
-  duration: number,
-  position: PopupPositionType,
-  id: number
+  duration: number;
+  position: PopupPositionType;
+  id: number;
 }
 
 export enum PopupPositionType {
@@ -274,6 +274,7 @@ export function PopupProvider({ children }: { children: ReactNode }) {
           title={popup.title}
           message={popup.message}
           type={popup.type}
+          position={popup.position}
           height={POP_HEIGHT}
           onClose={() => removePopup(popup.id)}
           exiting={popup.exiting}
@@ -290,6 +291,7 @@ export function PopupProvider({ children }: { children: ReactNode }) {
           title={popup.title}
           message={popup.message}
           type={popup.type}
+          position={popup.position}
           height={POP_HEIGHT}
           onClose={() => removePopup(popup.id)}
           exiting={popup.exiting}
