@@ -4,12 +4,13 @@ import React from 'react'
 
 import Login from '../../components/login'
 import { RequestLogin } from '@/comunication/login'
+import { REGISTRATION_PATH } from '../../utils/DataConstants'
 
 
 export default function Home() {
   return <main style={styles.page}>
     <Login
-      registerHRef={''}
+      registerHRef={REGISTRATION_PATH}
       passwordForgetedFRef={''}
       onSend={RequestLogin}
     />

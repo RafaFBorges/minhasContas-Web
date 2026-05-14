@@ -12,6 +12,7 @@ export default function ThemeText<T>({
   noSelection = false,
   color = '',
   showHoover = false,
+  fontSize = '',
   onClick = () => { },
   onMouseEnter = () => { },
   onMouseLeave = () => { }
@@ -31,6 +32,7 @@ export default function ThemeText<T>({
     color={color}
     fontColor={config.fontColor}
     disabledFontColor={config.disabledFontColor}
+    fontSize={fontSize}
   >
     {children}
   </Text>

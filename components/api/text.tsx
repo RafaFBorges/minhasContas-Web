@@ -23,6 +23,7 @@ export interface TextProps<T> {
   color?: string;
   fontColor?: string;
   disabledFontColor?: string;
+  fontSize?: string | number;
   onClick?: (item: T) => void;
   onMouseEnter?: (item: T | null) => void;
   onMouseLeave?: (item: T | null) => void;
@@ -39,19 +40,22 @@ export default function Text<T>({
   disabledFontColor = '',
   fontColor = '',
   showHoover = false,
+  fontSize = '',
   onClick = () => { },
   onMouseEnter = () => { },
   onMouseLeave = () => { }
 }: TextProps<T>) {
   const [isHovered, setIsHovered] = useState<boolean>(false)
-  const [isEnabled, setIsEnabled] = useState<boolean>(!disabled)
 
   let textStyle: React.CSSProperties = (style != null) ? style : {}
   textStyle = (isHovered)
     ? { ...textStyle, color: lightenCor('#000', 60) }
     : (color != '')
       ? { ...textStyle, color: color }
-      : { ...textStyle, color: (!isEnabled) ? disabledFontColor : fontColor }
+      : { ...textStyle, color: (disabled) ? disabledFontColor : fontColor }
+
+  if (fontSize)
+    textStyle = { ...textStyle, fontSize: typeof fontSize === 'number' ? `${fontSize}px` : fontSize, }
 
   if (noWrap)
     textStyle = { ...textStyle, whiteSpace: 'nowrap' }

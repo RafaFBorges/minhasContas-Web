@@ -2,7 +2,7 @@
 
 import { createContext, useContext, ReactNode, useState, useEffect } from 'react'
 import { Geist, Geist_Mono } from 'next/font/google'
-import { FaUser as UserIcon } from 'react-icons/fa'
+import { FaUser as UserIcon, FaHome as HomeIcon } from 'react-icons/fa'
 import { FiMoon as DarkTheme, FiSun as LightTheme } from 'react-icons/fi'
 
 import ptImage from '../../src/assets/ptBr.png'
@@ -16,7 +16,7 @@ import WindowButton from '../../components/windowButton'
 import ThemeToggle from '../../components/themeComponents/themeToggle'
 import ThemeText from '../../components/themeComponents/themeText'
 import { useUser } from './userHook'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 
 export enum ThemeOptions {
   LIGHT = 'light',
@@ -105,10 +105,10 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
   const TR_THEME_KEY = 'TR.ThemeProvider.Theme'
   const TR_LOGOUT_KEY = 'TR.ThemeProvider.Logout'
 
-
   const { language, setLang, addKey, getValue } = useTranslate()
   const { userInfo, logout } = useUser()
   const router = useRouter()
+  const pathname = usePathname()
 
   const [settedTheme, setSettedTheme] = useState<ThemeOptions>(() => loadTheme(theme, true))
   const [config, setConfig] = useState<ThemeStyleProps>(() => loadConfig(theme))
@@ -201,6 +201,14 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
   >
     <body className={`${geistSans.variable} ${geistMono.variable}`} style={{ ...styles.body, backgroundColor: config.backgroundColor }}>
       <div style={styles.row}>
+        {pathname !== '/' && !userInfo.user &&
+          <HomeIcon
+            color={config.color}
+            size={24}
+            style={styles.homeIcon}
+            onClick={() => router.push('/')}
+          />
+        }
         <WindowButton
           isSecondary
           borderRadius='8px'
@@ -262,6 +270,11 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: '0.4em 1em',
     alignItems: 'center',
     justifyContent: 'flex-end',
+  },
+  homeIcon: {
+    cursor: 'pointer',
+    marginRight: 'auto',
+    flexShrink: 0,
   },
   menuContainer: {
     display: 'flex',

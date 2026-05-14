@@ -1,6 +1,6 @@
 import getCookie, { ExpenseDisabledDictionary, getExpenseDisabledCookie } from '@/app/actions/cookiesManager'
 import { CATEGORIES_ENDPOINT, USER_ENDPOINT, handleGET } from './ApiResthandler'
-import { Filter_SELECTION_KEY } from '../../utils/DataConstants'
+import { FILTER_SELECTION_KEY } from '../../utils/DataConstants'
 
 export interface CategoryResponse {
   id: number;
@@ -40,7 +40,7 @@ export async function SyncCategories(setCategories: (list: CategoryResponse[]) =
     setTimeout(async () => {
       console.log("SyncCategories : [async] loading filter selection cookie")
       if (setFilterSelection != null) {
-        const filter: string | undefined = await getCookie(Filter_SELECTION_KEY)
+        const filter: string | undefined = await getCookie(FILTER_SELECTION_KEY)
 
         if (filter != null)
           setFilterSelection(filter)

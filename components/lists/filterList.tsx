@@ -5,7 +5,7 @@ import { FaFilter as FilterIcon } from 'react-icons/fa'
 import { useTheme } from '../../utils/hook/themeHook'
 import { Tag } from '@/domain/Tag'
 import { Expense } from '@/domain/Expense'
-import { Filter_SELECTION_KEY } from '../../utils/DataConstants'
+import { FILTER_SELECTION_KEY } from '../../utils/DataConstants'
 import { saveCookie } from '@/app/actions/cookiesManager'
 import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
 import TagItem from '../tagItem'
@@ -52,7 +52,7 @@ export default function FilterList({
 
           newList[index].disabled = false
           setTagList(newList)
-          saveCookie(Filter_SELECTION_KEY, newList[index].ToString())
+          saveCookie(FILTER_SELECTION_KEY, newList[index].ToString())
           if (setter != null && listToFilter != null && filterCondition != null) {
             if (selected.current == 0)
               setter(listToFilter)

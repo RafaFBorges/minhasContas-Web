@@ -1,9 +1,14 @@
 import React from 'react'
-import { MAX_VALUE, MIN_VALUE } from '../utils/DataConstants'
+import { MAX_VALUE, MIN_VALUE } from '../../utils/DataConstants'
+import StyledInput from '../input'
+import ThemeText from '../themeComponents/themeText'
+import { TextTag } from '../api/text'
+import { useTheme } from '../../utils/hook/themeHook'
 
-interface StyledInputProps {
+interface FrameworkInputProps {
   type: string;
   name: string;
+  label: string;
   value: number | string;
   placeholder?: string;
   changeHandle?: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -14,9 +19,10 @@ interface StyledInputProps {
   height?: number;
 }
 
-export default function StyledInput({
+export default function FrameworkInput({
   type,
   name,
+  label,
   value,
   placeholder,
   changeHandle,
@@ -25,43 +31,34 @@ export default function StyledInput({
   max = MAX_VALUE,
   min = MIN_VALUE,
   height = 36
-}: StyledInputProps) {
-  let inputStyle: React.CSSProperties = { ...styles.input, height: height }
-  if (style != null)
-    inputStyle = { ...inputStyle, ...style }
+}: FrameworkInputProps) {
+  const { config } = useTheme()
 
-  if (type == 'number') {
-    return <input
+  return <div style={styles.container}>
+    <ThemeText noSelection noWrap fontSize={14} style={styles.title} textTag={TextTag.P} color={config.disabledFontColor}>{label}</ThemeText>
+
+    <StyledInput
       type={type}
       name={name}
       step={step != null ? step : 1}
       value={value}
       max={max}
       min={min = Number.MAX_VALUE ? MIN_VALUE : min}
-      onChange={changeHandle}
+      changeHandle={changeHandle}
       placeholder={placeholder}
-      style={inputStyle}
+      style={style}
+      height={height}
     />
-  }
-
-  return <input
-    type={type}
-    name={name}
-    value={value}
-    onChange={changeHandle}
-    placeholder={placeholder}
-    style={inputStyle}
-  />
+  </div>
 }
 
 const styles: { [key: string]: React.CSSProperties } = {
-  input: {
+  container: {
     width: '100%',
     outline: 'none',
-    padding: '0.5rem',
-    fontSize: '1rem',
+    gap: '0.1rem',
     borderRadius: '8px',
-    border: '1.5px solid #d1d5db',
+    border: 'none',
     boxSizing: 'border-box',
   },
 }
