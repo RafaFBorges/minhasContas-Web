@@ -20,7 +20,11 @@ export default function FrameworkInput({
   step = null,
   max = MAX_VALUE,
   min = MIN_VALUE,
-  height = 36
+  height = 36,
+  borderErrorColor = undefined,
+  borderSuccessColor = undefined,
+  borderNormalColor = undefined,
+  validate = undefined,
 }: FrameworkInputProps) {
   const { config } = useTheme()
 
@@ -38,6 +42,10 @@ export default function FrameworkInput({
       placeholder={placeholder}
       style={style}
       height={height}
+      validate={validate}
+      borderErrorColor={borderErrorColor ? borderErrorColor : config.borderErrorColor}
+      borderSuccessColor={borderSuccessColor ? borderSuccessColor : config.borderSuccessColor}
+      borderNormalColor={borderNormalColor ? borderNormalColor : config.borderColor}
     />
   </div>
 }

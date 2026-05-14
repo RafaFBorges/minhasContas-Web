@@ -35,6 +35,8 @@ const LIGHT_CONFIG = {
   NeutralSidedColor: '#727272ff',
   LossSideColor: '#ff0839ff',
   borderColor: '#555',
+  borderSuccessColor: '#639922',
+  borderErrorColor: '#e24b4a',
   enabledColor: '#00D84C',
   disabledColor: '#727272ff',
   iconColor: '#999999',
@@ -51,7 +53,9 @@ const DARK_CONFIG = {
   GainSideColor: '#54f523ff',
   NeutralSidedColor: '#727272ff',
   LossSideColor: '#ff4757ff',
-  borderColor: '#808080',
+  borderColor: '#d1d5db',
+  borderSuccessColor: '#639922',
+  borderErrorColor: '#e24b4a',
   enabledColor: '#00D84C',
   disabledColor: '#727272ff',
   iconColor: '#eed7b8',
@@ -85,6 +89,8 @@ export interface ThemeStyleProps {
   NeutralSidedColor: string;
   GainSideColor: string;
   borderColor: string;
+  borderSuccessColor: string;
+  borderErrorColor: string;
   enabledColor: string;
   disabledColor: string;
   iconColor: string;
