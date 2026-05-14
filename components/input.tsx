@@ -15,6 +15,8 @@ interface StyledInputProps {
   height?: number;
 }
 
+type SpecificInputProps = Pick<React.InputHTMLAttributes<HTMLInputElement>, 'step' | 'max' | 'min'>;
+
 export default function StyledInput({
   type,
   name,
@@ -30,22 +32,13 @@ export default function StyledInput({
 }: StyledInputProps) {
   let inputStyle: React.CSSProperties = { ...styles.input, height: height }
   if (style != null)
-    inputStyle = { ...inputStyle, ...style }
+    inputStyle = { ...inputStyle, height, ...style }
 
-  if (type == 'number') {
-    return <input
-      autoComplete={hasAutocomplete ? 'on' : 'one-time-code'}
-      type={type}
-      name={name}
-      step={step != null ? step : 1}
-      value={value}
-      max={max}
-      min={min = Number.MAX_VALUE ? MIN_VALUE : min}
-      onChange={changeHandle}
-      placeholder={placeholder}
-      style={inputStyle}
-    />
-  }
+  const specificInputProps: SpecificInputProps = type === 'number' ? {
+    step: step != null ? step : 1,
+    max: max,
+    min: min === Number.MAX_VALUE ? MIN_VALUE : min
+  } : {};
 
   return <input
     autoComplete={hasAutocomplete ? 'on' : 'one-time-code'}
@@ -55,6 +48,8 @@ export default function StyledInput({
     onChange={changeHandle}
     placeholder={placeholder}
     style={inputStyle}
+
+    {...specificInputProps}
   />
 }
 
