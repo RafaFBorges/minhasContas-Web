@@ -9,6 +9,7 @@ interface StyledInputProps {
   changeHandle?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   style?: React.CSSProperties | null;
   step?: number | null;
+  hasAutocomplete?: boolean;
   max?: number;
   min?: number;
   height?: number;
@@ -22,6 +23,7 @@ export default function StyledInput({
   changeHandle,
   style = null,
   step = null,
+  hasAutocomplete = false,
   max = MAX_VALUE,
   min = MIN_VALUE,
   height = 36
@@ -32,6 +34,7 @@ export default function StyledInput({
 
   if (type == 'number') {
     return <input
+      autoComplete={hasAutocomplete ? 'on' : 'one-time-code'}
       type={type}
       name={name}
       step={step != null ? step : 1}
@@ -45,6 +48,7 @@ export default function StyledInput({
   }
 
   return <input
+    autoComplete={hasAutocomplete ? 'on' : 'one-time-code'}
     type={type}
     name={name}
     value={value}
