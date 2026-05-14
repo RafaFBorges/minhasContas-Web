@@ -1,22 +1,12 @@
 import React from 'react'
 import { MAX_VALUE, MIN_VALUE } from '../../utils/DataConstants'
-import StyledInput from '../input'
+import StyledInput, { StyledInputProps } from '../input'
 import ThemeText from '../themeComponents/themeText'
 import { TextTag } from '../api/text'
 import { useTheme } from '../../utils/hook/themeHook'
 
-interface FrameworkInputProps {
-  type: string;
-  name: string;
+interface FrameworkInputProps extends StyledInputProps {
   label: string;
-  value: number | string;
-  placeholder?: string;
-  changeHandle?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  style?: React.CSSProperties | null;
-  step?: number | null;
-  max?: number;
-  min?: number;
-  height?: number;
 }
 
 export default function FrameworkInput({

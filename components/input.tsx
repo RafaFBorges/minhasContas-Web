@@ -15,7 +15,7 @@ interface StyledInputProps {
   height?: number;
 }
 
-type SpecificInputProps = Pick<React.InputHTMLAttributes<HTMLInputElement>, 'step' | 'max' | 'min'>;
+type SpecificInputProps = Pick<React.InputHTMLAttributes<HTMLInputElement>, 'step' | 'max' | 'min'>
 
 export default function StyledInput({
   type,
