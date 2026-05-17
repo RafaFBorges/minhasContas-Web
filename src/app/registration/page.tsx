@@ -7,6 +7,7 @@ import { TextTag } from '../../../components/api/text'
 import FrameworkInput from '../../../components/framework/frameworkInput'
 import { LanguageOption, useTranslate } from '../../../utils/hook/translateHook'
 
+
 interface RegistrationTranslations {
   [KEY: string]: string;
 }

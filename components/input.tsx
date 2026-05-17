@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { forwardRef, useState } from 'react'
 import { MAX_VALUE, MIN_VALUE } from '../utils/DataConstants'
 
 export interface StyledInputProps {
@@ -17,11 +17,12 @@ export interface StyledInputProps {
   borderSuccessColor?: string;
   borderNormalColor?: string;
   validate?: ((value: string) => boolean) | undefined;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 type SpecificInputProps = Pick<React.InputHTMLAttributes<HTMLInputElement>, 'step' | 'max' | 'min'>
 
-export default function StyledInput({
+const StyledInput = forwardRef<HTMLInputElement, StyledInputProps>(({
   type,
   name,
   value,
@@ -37,7 +38,8 @@ export default function StyledInput({
   borderSuccessColor = '#639922',
   borderNormalColor = '#d1d5db',
   validate = undefined,
-}: StyledInputProps) {
+  onKeyDown = undefined,
+}: StyledInputProps, ref) => {
   const [isValid, setIsValid] = useState<boolean | null>(null)
 
   const handleBlur = () => {
@@ -73,6 +75,7 @@ export default function StyledInput({
     : {}
 
   return <input
+    ref={ref}
     autoComplete={hasAutocomplete ? 'on' : 'one-time-code'}
     type={type}
     name={name}
@@ -81,10 +84,11 @@ export default function StyledInput({
     onBlur={handleBlur}
     placeholder={placeholder}
     style={inputStyle}
+    onKeyDown={onKeyDown}
 
     {...specificInputProps}
   />
-}
+})
 
 const styles: { [key: string]: React.CSSProperties } = {
   input: {
@@ -96,3 +100,5 @@ const styles: { [key: string]: React.CSSProperties } = {
     boxSizing: 'border-box',
   },
 }
+
+export default StyledInput

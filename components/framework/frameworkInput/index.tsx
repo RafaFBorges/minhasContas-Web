@@ -1,9 +1,12 @@
 import React from 'react'
-import { MAX_VALUE, MIN_VALUE } from '../../utils/DataConstants'
-import StyledInput, { StyledInputProps } from '../input'
-import ThemeText from '../themeComponents/themeText'
-import { TextTag } from '../api/text'
-import { useTheme } from '../../utils/hook/themeHook'
+
+import { MAX_VALUE, MIN_VALUE } from '../../../utils/DataConstants'
+import { StyledInputProps } from '../../input'
+import ThemeText from '../../themeComponents/themeText'
+import { TextTag } from '../../api/text'
+import { useTheme } from '../../../utils/hook/themeHook'
+import { resolveInput } from './inputRegiostry'
+
 
 interface FrameworkInputProps extends StyledInputProps {
   label: string;
@@ -27,11 +30,12 @@ export default function FrameworkInput({
   validate = undefined,
 }: FrameworkInputProps) {
   const { config } = useTheme()
+  const InputComponent = resolveInput(type)
 
   return <div style={styles.container}>
     <ThemeText noSelection noWrap fontSize={14} style={styles.title} textTag={TextTag.P} color={config.disabledFontColor}>{label}</ThemeText>
 
-    <StyledInput
+    <InputComponent
       type={type}
       name={name}
       step={step != null ? step : 1}
