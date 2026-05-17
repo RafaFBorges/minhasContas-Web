@@ -6,6 +6,7 @@ import ThemeText from '../../../components/themeComponents/themeText'
 import { TextTag } from '../../../components/api/text'
 import FrameworkInput from '../../../components/framework/frameworkInput'
 import { LanguageOption, useTranslate } from '../../../utils/hook/translateHook'
+import { validateEmail } from '../../../utils/validations'
 
 
 interface RegistrationTranslations {
@@ -213,6 +214,7 @@ export default function Registration() {
           changeHandle={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('email', e.target.value)}
           placeholder={translation[PH_EMAIL_KEY]}
           style={styles.field}
+          validate={validateEmail}
         />
 
         <div style={styles.row}>
