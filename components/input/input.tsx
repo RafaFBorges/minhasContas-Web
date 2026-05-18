@@ -1,5 +1,6 @@
 import React, { forwardRef, useState } from 'react'
-import { MAX_VALUE, MIN_VALUE } from '../utils/DataConstants'
+import { MAX_VALUE, MIN_VALUE } from '../../utils/DataConstants'
+
 
 export interface StyledInputProps {
   type: string;

@@ -1,11 +1,10 @@
 import React, { useRef } from 'react'
-import { MAX_VALUE, MIN_VALUE } from '../utils/DataConstants'
+import { MAX_VALUE, MIN_VALUE } from '../../utils/DataConstants'
 import StyledInput, { StyledInputProps } from './input'
 
 interface PhoneInputProps extends StyledInputProps { }
 
 export default function PhoneInput({
-  type,
   name,
   value,
   placeholder,

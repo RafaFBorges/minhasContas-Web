@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { MAX_VALUE, MIN_VALUE } from '../../../utils/DataConstants'
-import { StyledInputProps } from '../../input'
+import { StyledInputProps } from '../../input/input'
 import ThemeText from '../../themeComponents/themeText'
 import { TextTag } from '../../api/text'
 import { useTheme } from '../../../utils/hook/themeHook'

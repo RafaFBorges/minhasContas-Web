@@ -3,23 +3,16 @@ import React, { useState } from 'react'
 
 import { FaChevronUp as UpIcon, FaChevronDown as DownIcon } from 'react-icons/fa'
 
-import StyledInput from './input'
-import ThemeButton from './themeComponents/themeButton'
-import { MAX_VALUE, MIN_VALUE } from '../utils/DataConstants'
+import StyledInput, { StyledInputProps } from './input'
+import ThemeButton from '../themeComponents/themeButton'
+import { MAX_VALUE, MIN_VALUE } from '../../utils/DataConstants'
 
-interface SpinProps {
-  name: string;
-  value: number | string;
-  placeholder?: string;
-  changeHandle: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  style?: React.CSSProperties | null;
-  max?: number;
-  min?: number;
+
+interface SpinProps extends StyledInputProps {
   setValueHandle?: (newValue: number) => void;
-  height?: number;
 }
 
-export default function Spin({
+export default function SpinInput({
   name,
   value,
   placeholder,

@@ -10,7 +10,7 @@ import { Expense } from '@/domain/Expense'
 import { Tag } from '@/domain/Tag'
 import { Category } from '@/domain/Category'
 import { useTranslate } from '../../utils/hook/translateHook'
-import Spin from '../../components/spin'
+import SpinInput from '../../components/input/spinInput'
 import ThemeButton from '../../components/themeComponents/themeButton'
 import TagList from '../../components/lists/tagList'
 import { useModal } from '../../utils/hook/modalHook'
@@ -126,7 +126,7 @@ export default function ExpenseUI({
 
   return <div>
     <div style={{ ...styles.flexRow, gap: '1rem' }}>
-      <Spin
+      <SpinInput
         name={'expenseValue'}
         value={value}
         changeHandle={handleChange}

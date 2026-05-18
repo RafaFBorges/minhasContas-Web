@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-import StyledInput from './input'
+import StyledInput from './input/input'
 import ThemeButton from './themeComponents/themeButton'
 import { TextTag } from './api/text'
 import Link from './api/link'
