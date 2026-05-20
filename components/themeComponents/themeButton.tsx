@@ -30,6 +30,7 @@ export default function ThemeButton({
     isSecondary={isSecondary}
     borderRadius={borderRadius}
     color={config.color}
+    style={style}
   >
     {children}
   </StyledButton>
