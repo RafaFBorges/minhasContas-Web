@@ -155,7 +155,7 @@ export default function Registration() {
     setForm({ ...form, [field]: value })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     setError('')
 
@@ -177,11 +177,16 @@ export default function Registration() {
     setSuccess(true)
   }
 
+  const handleDisabledSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+
+  }
+
   return <main style={styles.container}>
     <div style={styles.card}>
       <ThemeText noSelection noWrap style={styles.title} textTag={TextTag.H1} color={'#000'}>{translation[TITLE_KEY]}</ThemeText>
       <ThemeText noSelection noWrap style={styles.subtitle} textTag={TextTag.P} color={'#000'}>{translation[SUBTITLE_KEY]}</ThemeText>
-      <form onSubmit={handleSubmit} noValidate>
+      <form noValidate>
 
         <ThemeText noSelection noWrap style={styles.sectionLabel} textTag={TextTag.P} color={'#000'}>{translation[PERSONAL_DATA_KEY]}</ThemeText>
 
@@ -264,7 +269,9 @@ export default function Registration() {
         {error && <ThemeText noSelection noWrap style={styles.error} textTag={TextTag.P} color={'#000'}>{error}</ThemeText>}
         {success && <ThemeText noSelection noWrap style={styles.success} textTag={TextTag.P} color={'#000'}>{translation[SUCCESS_KEY]}</ThemeText>}
 
-        <ThemeButton clickHandle={handleSubmit}>{translation[SUBMIT_KEY]}</ThemeButton>
+        <div style={styles.buttonsContainer}>
+          <ThemeButton clickHandle={handleSubmit} clickHandleDisabled={handleDisabledSubmit}>{translation[SUBMIT_KEY]}</ThemeButton>
+        </div>
       </form>
     </div>
   </main>
@@ -333,5 +340,10 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: 13,
     color: '#27ae60',
     marginBottom: '0.5rem',
+  },
+  buttonsContainer: {
+    display: 'flex',
+    width: '100%',
+    justifyContent: 'flex-end',
   },
 }
