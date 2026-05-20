@@ -7,6 +7,7 @@ import { useTheme } from '../../utils/hook/themeHook'
 export default function ThemeButton({
   children,
   clickHandle,
+  clickHandleDisabled,
   Icon = null,
   isClickableIcon = false,
   width = '',
@@ -14,11 +15,13 @@ export default function ThemeButton({
   iconSize = '16',
   isSecondary = false,
   borderRadius = '4px',
+  style = undefined,
 }: StyledButtonProps) {
   const { config } = useTheme()
 
   return <StyledButton
     clickHandle={clickHandle}
+    clickHandleDisabled={clickHandleDisabled}
     Icon={Icon}
     isClickableIcon={isClickableIcon}
     width={width}
