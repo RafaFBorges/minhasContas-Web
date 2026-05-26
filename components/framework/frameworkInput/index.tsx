@@ -13,7 +13,7 @@ interface FrameworkInputProps extends StyledInputProps {
 }
 
 export default function FrameworkInput({
-  type,
+  type = 'text',
   name,
   label,
   value,
@@ -27,6 +27,7 @@ export default function FrameworkInput({
   borderErrorColor = undefined,
   borderSuccessColor = undefined,
   borderNormalColor = undefined,
+  isValid = null,
   validate = undefined,
 }: FrameworkInputProps) {
   const { config } = useTheme()
@@ -47,6 +48,7 @@ export default function FrameworkInput({
       style={style}
       height={height}
       validate={validate}
+      isValid={isValid}
       borderErrorColor={borderErrorColor ? borderErrorColor : config.borderErrorColor}
       borderSuccessColor={borderSuccessColor ? borderSuccessColor : config.borderSuccessColor}
       borderNormalColor={borderNormalColor ? borderNormalColor : config.borderColor}

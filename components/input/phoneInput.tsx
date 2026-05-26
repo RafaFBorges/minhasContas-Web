@@ -18,6 +18,7 @@ export default function PhoneInput({
   borderErrorColor = '#e24b4a',
   borderSuccessColor = '#639922',
   borderNormalColor = '#d1d5db',
+  isValid = null,
   validate = undefined,
 }: PhoneInputProps) {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -131,5 +132,6 @@ export default function PhoneInput({
     borderNormalColor={borderNormalColor}
     validate={validate}
     onKeyDown={handleKeyDown}
+    isValid={isValid}
   />
 }

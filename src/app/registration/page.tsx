@@ -6,11 +6,26 @@ import ThemeText from '../../../components/themeComponents/themeText'
 import { TextTag } from '../../../components/api/text'
 import FrameworkInput from '../../../components/framework/frameworkInput'
 import { LanguageOption, useTranslate } from '../../../utils/hook/translateHook'
-import { validateEmail } from '../../../utils/validations'
+import { notEmpty, validateDate, validateEmail, validateStrongPassword } from '../../../utils/validations'
 
 
 interface RegistrationTranslations {
   [KEY: string]: string;
+}
+
+interface FormInputField {
+  value: string
+  isValid: boolean | null
+  type: React.HTMLInputTypeAttribute
+  name: string
+  label: string
+  placeholder?: string
+  style?: React.CSSProperties
+  validate?: (value: string) => boolean
+}
+
+interface RegistrationForm {
+  [key: string]: FormInputField
 }
 
 export default function Registration() {
@@ -39,18 +54,97 @@ export default function Registration() {
 
   const { language, addKey, getValue } = useTranslate()
 
-  const [form, setForm] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    birthdate: '',
-    password: '',
-    confirmPassword: '',
-  })
+  const [form, setForm] = useState<RegistrationForm>(initialFormState())
   const [success, setSuccess] = useState(false)
-  const [error, setError] = useState('')
+  const [enabled, setEnabled] = useState(false)
   const [translation, setTranslation] = useState<RegistrationTranslations>(translate())
+
+  function initialFormState(): RegistrationForm {
+    addKey(FIRST_NAME_KEY, 'Nome', LanguageOption.PT_BR)
+    addKey(PH_FIRST_NAME_KEY, 'João', LanguageOption.PT_BR)
+    addKey(LAST_NAME_KEY, 'Sobrenome', LanguageOption.PT_BR)
+    addKey(PH_LAST_NAME_KEY, 'Silva', LanguageOption.PT_BR)
+    addKey(EMAIL_KEY, 'Email', LanguageOption.PT_BR)
+    addKey(PH_EMAIL_KEY, 'joao@email.com', LanguageOption.PT_BR)
+    addKey(PHONE_KEY, 'Telefone', LanguageOption.PT_BR)
+    addKey(PH_PHONE_KEY, '(51) 99999-0000', LanguageOption.PT_BR)
+    addKey(BIRTHDATE_KEY, 'Data de nascimento', LanguageOption.PT_BR)
+    addKey(PASSWORD_KEY, 'Senha', LanguageOption.PT_BR)
+    addKey(PH_PASSWORD_KEY, 'Mínimo 8 caracteres', LanguageOption.PT_BR)
+    addKey(CONFIRM_PASSWORD_KEY, 'Confirmar senha', LanguageOption.PT_BR)
+    addKey(PH_CONFIRM_PASSWORD_KEY, 'Repita a senha', LanguageOption.PT_BR)
+
+    return {
+      firstName: {
+        value: '',
+        isValid: false,
+        type: 'text',
+        name: 'firstName',
+        label: addKey(FIRST_NAME_KEY, 'First name', LanguageOption.EN),
+        placeholder: addKey(PH_FIRST_NAME_KEY, 'John', LanguageOption.EN),
+        style: styles.field,
+        validate: notEmpty,
+      },
+      lastName: {
+        value: '',
+        isValid: false,
+        type: 'text',
+        name: 'lastName',
+        label: addKey(LAST_NAME_KEY, 'Last name', LanguageOption.EN),
+        placeholder: addKey(PH_LAST_NAME_KEY, 'Smith', LanguageOption.EN),
+        style: styles.field,
+        validate: notEmpty,
+      },
+      email: {
+        value: '',
+        isValid: false,
+        type: 'email',
+        name: 'email',
+        label: addKey(EMAIL_KEY, 'Email', LanguageOption.EN),
+        placeholder: addKey(PH_EMAIL_KEY, 'john@email.com', LanguageOption.EN),
+        style: styles.field,
+        validate: validateEmail,
+      },
+      phone: {
+        value: '',
+        isValid: false,
+        type: 'tel',
+        name: 'phone',
+        label: addKey(PHONE_KEY, 'Phone', LanguageOption.EN),
+        placeholder: addKey(PH_PHONE_KEY, '(555) 99999-0000', LanguageOption.EN),
+        style: styles.field,
+        validate: notEmpty,
+      },
+      birthdate: {
+        value: '',
+        isValid: false,
+        type: 'date',
+        name: 'birthdate',
+        label: addKey(BIRTHDATE_KEY, 'Date of birth', LanguageOption.EN),
+        style: styles.field,
+        validate: validateDate,
+      },
+      password: {
+        value: '',
+        isValid: false,
+        type: 'password',
+        name: 'password',
+        label: addKey(PASSWORD_KEY, 'Password', LanguageOption.EN),
+        placeholder: addKey(PH_PASSWORD_KEY, 'Minimum 8 characters', LanguageOption.EN),
+        style: styles.field,
+        validate: validateStrongPassword,
+      },
+      confirmPassword: {
+        value: '',
+        isValid: null,
+        type: 'password',
+        name: 'confirmPassword',
+        label: addKey(CONFIRM_PASSWORD_KEY, 'Confirm password', LanguageOption.EN),
+        placeholder: addKey(PH_CONFIRM_PASSWORD_KEY, 'Repeat password', LanguageOption.EN),
+        style: styles.field,
+      },
+    }
+  }
 
   function translate(): RegistrationTranslations {
     const tr = {} as RegistrationTranslations
@@ -64,29 +158,8 @@ export default function Registration() {
     addKey(PERSONAL_DATA_KEY, 'Dados pessoais', LanguageOption.PT_BR)
     tr[PERSONAL_DATA_KEY] = addKey(PERSONAL_DATA_KEY, 'Personal data', LanguageOption.EN)
 
-    addKey(FIRST_NAME_KEY, 'Nome', LanguageOption.PT_BR)
-    tr[FIRST_NAME_KEY] = addKey(FIRST_NAME_KEY, 'First name', LanguageOption.EN)
-
-    addKey(LAST_NAME_KEY, 'Sobrenome', LanguageOption.PT_BR)
-    tr[LAST_NAME_KEY] = addKey(LAST_NAME_KEY, 'Last name', LanguageOption.EN)
-
-    addKey(EMAIL_KEY, 'Email', LanguageOption.PT_BR)
-    tr[EMAIL_KEY] = addKey(EMAIL_KEY, 'Email', LanguageOption.EN)
-
-    addKey(PHONE_KEY, 'Telefone', LanguageOption.PT_BR)
-    tr[PHONE_KEY] = addKey(PHONE_KEY, 'Phone', LanguageOption.EN)
-
-    addKey(BIRTHDATE_KEY, 'Data de nascimento', LanguageOption.PT_BR)
-    tr[BIRTHDATE_KEY] = addKey(BIRTHDATE_KEY, 'Date of birth', LanguageOption.EN)
-
     addKey(ACCESS_KEY, 'Acesso', LanguageOption.PT_BR)
     tr[ACCESS_KEY] = addKey(ACCESS_KEY, 'Access', LanguageOption.EN)
-
-    addKey(PASSWORD_KEY, 'Senha', LanguageOption.PT_BR)
-    tr[PASSWORD_KEY] = addKey(PASSWORD_KEY, 'Password', LanguageOption.EN)
-
-    addKey(CONFIRM_PASSWORD_KEY, 'Confirmar senha', LanguageOption.PT_BR)
-    tr[CONFIRM_PASSWORD_KEY] = addKey(CONFIRM_PASSWORD_KEY, 'Confirm password', LanguageOption.EN)
 
     addKey(SUBMIT_KEY, 'Cadastrar', LanguageOption.PT_BR)
     tr[SUBMIT_KEY] = addKey(SUBMIT_KEY, 'Register', LanguageOption.EN)
@@ -103,23 +176,8 @@ export default function Registration() {
     addKey(SUCCESS_KEY, 'Cadastro realizado com sucesso!', LanguageOption.PT_BR)
     tr[SUCCESS_KEY] = addKey(SUCCESS_KEY, 'Registration successful!', LanguageOption.EN)
 
-    addKey(PH_FIRST_NAME_KEY, 'João', LanguageOption.PT_BR)
-    tr[PH_FIRST_NAME_KEY] = addKey(PH_FIRST_NAME_KEY, 'John', LanguageOption.EN)
-
-    addKey(PH_LAST_NAME_KEY, 'Silva', LanguageOption.PT_BR)
-    tr[PH_LAST_NAME_KEY] = addKey(PH_LAST_NAME_KEY, 'Smith', LanguageOption.EN)
-
-    addKey(PH_EMAIL_KEY, 'joao@email.com', LanguageOption.PT_BR)
-    tr[PH_EMAIL_KEY] = addKey(PH_EMAIL_KEY, 'john@email.com', LanguageOption.EN)
-
-    addKey(PH_PHONE_KEY, '(51) 99999-0000', LanguageOption.PT_BR)
-    tr[PH_PHONE_KEY] = addKey(PH_PHONE_KEY, '(555) 99999-0000', LanguageOption.EN)
-
     addKey(PH_PASSWORD_KEY, 'Mínimo 8 caracteres', LanguageOption.PT_BR)
     tr[PH_PASSWORD_KEY] = addKey(PH_PASSWORD_KEY, 'Minimum 8 characters', LanguageOption.EN)
-
-    addKey(PH_CONFIRM_PASSWORD_KEY, 'Repita a senha', LanguageOption.PT_BR)
-    tr[PH_CONFIRM_PASSWORD_KEY] = addKey(PH_CONFIRM_PASSWORD_KEY, 'Repeat password', LanguageOption.EN)
 
     return tr
   }
@@ -129,57 +187,64 @@ export default function Registration() {
       [TITLE_KEY]: getValue(TITLE_KEY),
       [SUBTITLE_KEY]: getValue(SUBTITLE_KEY),
       [PERSONAL_DATA_KEY]: getValue(PERSONAL_DATA_KEY),
-      [FIRST_NAME_KEY]: getValue(FIRST_NAME_KEY),
-      [LAST_NAME_KEY]: getValue(LAST_NAME_KEY),
-      [EMAIL_KEY]: getValue(EMAIL_KEY),
-      [PHONE_KEY]: getValue(PHONE_KEY),
-      [BIRTHDATE_KEY]: getValue(BIRTHDATE_KEY),
       [ACCESS_KEY]: getValue(ACCESS_KEY),
-      [PASSWORD_KEY]: getValue(PASSWORD_KEY),
-      [CONFIRM_PASSWORD_KEY]: getValue(CONFIRM_PASSWORD_KEY),
       [SUBMIT_KEY]: getValue(SUBMIT_KEY),
       [ERROR_REQUIRED_KEY]: getValue(ERROR_REQUIRED_KEY),
       [ERROR_PASSWORD_MATCH_KEY]: getValue(ERROR_PASSWORD_MATCH_KEY),
       [ERROR_PASSWORD_MIN_KEY]: getValue(ERROR_PASSWORD_MIN_KEY),
       [SUCCESS_KEY]: getValue(SUCCESS_KEY),
-      [PH_FIRST_NAME_KEY]: getValue(PH_FIRST_NAME_KEY),
-      [PH_LAST_NAME_KEY]: getValue(PH_LAST_NAME_KEY),
-      [PH_EMAIL_KEY]: getValue(PH_EMAIL_KEY),
-      [PH_PHONE_KEY]: getValue(PH_PHONE_KEY),
-      [PH_PASSWORD_KEY]: getValue(PH_PASSWORD_KEY),
-      [PH_CONFIRM_PASSWORD_KEY]: getValue(PH_CONFIRM_PASSWORD_KEY),
     })
+
+    setForm(prev => ({
+      ...prev,
+      firstName: { ...prev.firstName, label: getValue(FIRST_NAME_KEY), placeholder: getValue(PH_FIRST_NAME_KEY) },
+      lastName: { ...prev.lastName, label: getValue(LAST_NAME_KEY), placeholder: getValue(PH_LAST_NAME_KEY) },
+      email: { ...prev.email, label: getValue(EMAIL_KEY), placeholder: getValue(PH_EMAIL_KEY) },
+      phone: { ...prev.phone, label: getValue(PHONE_KEY), placeholder: getValue(PH_PHONE_KEY) },
+      birthdate: { ...prev.birthdate, label: getValue(BIRTHDATE_KEY) },
+      password: { ...prev.password, label: getValue(PASSWORD_KEY), placeholder: getValue(PH_PASSWORD_KEY) },
+      confirmPassword: { ...prev.confirmPassword, label: getValue(CONFIRM_PASSWORD_KEY), placeholder: getValue(PH_CONFIRM_PASSWORD_KEY) },
+    }))
   }, [language])
 
   const handleChange = (field: string, value: string) => {
-    setForm({ ...form, [field]: value })
+    setForm(prev => {
+      const fieldData = prev[field]
+      const isValid = fieldData.validate ? fieldData.validate(value) : true
+      let updatedForm = {
+        ...prev,
+        [field]: { ...fieldData, value, isValid },
+      }
+
+      if (field === 'password' || field === 'confirmPassword') {
+        const passwordValue = field === 'password' ? value : prev.password.value
+        const confirmValue = field === 'confirmPassword' ? value : prev.confirmPassword.value
+        const confirmIsValid = confirmValue !== ''
+          ? passwordValue !== '' && passwordValue === confirmValue
+          : null
+        console.log('Password match validation:', { passwordValue, confirmValue, confirmIsValid })
+
+        updatedForm = {
+          ...updatedForm,
+          confirmPassword: { ...updatedForm.confirmPassword, isValid: confirmIsValid },
+        }
+      }
+
+      const allValid = Object.values(updatedForm).every(f => f.isValid)
+      setEnabled(allValid)
+
+      return updatedForm
+    })
   }
 
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    setError('')
-
-    if (!form.firstName || !form.email || !form.password) {
-      setError(translation[ERROR_REQUIRED_KEY])
-      return
-    }
-
-    if (form.password !== form.confirmPassword) {
-      setError(translation[ERROR_PASSWORD_MATCH_KEY])
-      return
-    }
-
-    if (form.password.length < 8) {
-      setError(translation[ERROR_PASSWORD_MIN_KEY])
+    const allValid = Object.values(form).every(f => f.isValid)
+    if (!allValid) {
       return
     }
 
     setSuccess(true)
-  }
-
-  const handleDisabledSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
-
   }
 
   return <main style={styles.container}>
@@ -192,53 +257,28 @@ export default function Registration() {
 
         <div style={styles.row}>
           <FrameworkInput
-            type={'text'}
-            label={translation[FIRST_NAME_KEY]}
-            name={'firstName'}
-            value={form.firstName}
-            changeHandle={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('firstName', e.target.value)}
-            placeholder={translation[PH_FIRST_NAME_KEY]}
-            style={styles.field}
+            {...form.firstName}
+            changeHandle={(e) => handleChange('firstName', e.target.value)}
           />
           <FrameworkInput
-            type={'text'}
-            label={translation[LAST_NAME_KEY]}
-            name={'lastName'}
-            value={form.lastName}
-            changeHandle={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('lastName', e.target.value)}
-            placeholder={translation[PH_LAST_NAME_KEY]}
-            style={styles.field}
+            {...form.lastName}
+            changeHandle={(e) => handleChange('lastName', e.target.value)}
           />
         </div>
 
         <FrameworkInput
-          type={'email'}
-          label={translation[EMAIL_KEY]}
-          name={'email'}
-          value={form.email}
-          changeHandle={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('email', e.target.value)}
-          placeholder={translation[PH_EMAIL_KEY]}
-          style={styles.field}
-          validate={validateEmail}
+          {...form.email}
+          changeHandle={(e) => handleChange('email', e.target.value)}
         />
 
         <div style={styles.row}>
           <FrameworkInput
-            type={'tel'}
-            label={translation[PHONE_KEY]}
-            name={'phone'}
-            value={form.phone}
-            changeHandle={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('phone', e.target.value)}
-            placeholder={translation[PH_PHONE_KEY]}
-            style={styles.field}
+            {...form.phone}
+            changeHandle={(e) => handleChange('phone', e.target.value)}
           />
           <FrameworkInput
-            type={'date'}
-            label={translation[BIRTHDATE_KEY]}
-            name={'birthdate'}
-            value={form.birthdate}
-            changeHandle={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('birthdate', e.target.value)}
-            style={styles.field}
+            {...form.birthdate}
+            changeHandle={(e) => handleChange('birthdate', e.target.value)}
           />
         </div>
 
@@ -247,30 +287,21 @@ export default function Registration() {
         <ThemeText noSelection noWrap style={styles.sectionLabel} textTag={TextTag.P} color={'#000'}>{translation[ACCESS_KEY]}</ThemeText>
 
         <FrameworkInput
-          type={'password'}
-          label={translation[PASSWORD_KEY]}
-          name={'password'}
-          value={form.password}
-          changeHandle={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('password', e.target.value)}
-          placeholder={translation[PH_PASSWORD_KEY]}
-          style={styles.field}
+          {...form.password}
+          changeHandle={(e) => handleChange('password', e.target.value)}
         />
 
         <FrameworkInput
-          type={'password'}
-          label={translation[CONFIRM_PASSWORD_KEY]}
-          name={'confirmPassword'}
-          value={form.confirmPassword}
-          changeHandle={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('confirmPassword', e.target.value)}
-          placeholder={translation[PH_CONFIRM_PASSWORD_KEY]}
-          style={styles.field}
+          {...form.confirmPassword}
+          changeHandle={(e) => handleChange('confirmPassword', e.target.value)}
         />
 
-        {error && <ThemeText noSelection noWrap style={styles.error} textTag={TextTag.P} color={'#000'}>{error}</ThemeText>}
         {success && <ThemeText noSelection noWrap style={styles.success} textTag={TextTag.P} color={'#000'}>{translation[SUCCESS_KEY]}</ThemeText>}
 
         <div style={styles.buttonsContainer}>
-          <ThemeButton clickHandle={handleSubmit} clickHandleDisabled={handleDisabledSubmit}>{translation[SUBMIT_KEY]}</ThemeButton>
+          <ThemeButton enabled={enabled} clickHandle={handleSubmit}>
+            {translation[SUBMIT_KEY]}
+          </ThemeButton>
         </div>
       </form>
     </div>

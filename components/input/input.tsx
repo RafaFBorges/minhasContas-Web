@@ -3,7 +3,7 @@ import { MAX_VALUE, MIN_VALUE } from '../../utils/DataConstants'
 
 
 export interface StyledInputProps {
-  type: string;
+  type?: string;
   name: string;
   value: number | string;
   placeholder?: string;
@@ -19,12 +19,13 @@ export interface StyledInputProps {
   borderNormalColor?: string;
   validate?: ((value: string) => boolean) | undefined;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  isValid?: boolean | null;
 }
 
 type SpecificInputProps = Pick<React.InputHTMLAttributes<HTMLInputElement>, 'step' | 'max' | 'min'>
 
 const StyledInput = forwardRef<HTMLInputElement, StyledInputProps>(({
-  type,
+  type = 'text',
   name,
   value,
   placeholder,
@@ -40,8 +41,9 @@ const StyledInput = forwardRef<HTMLInputElement, StyledInputProps>(({
   borderNormalColor = '#d1d5db',
   validate = undefined,
   onKeyDown = undefined,
+  isValid = undefined,
 }: StyledInputProps, ref) => {
-  const [isValid, setIsValid] = useState<boolean | null>(null)
+  const [isValidState, setIsValid] = useState<boolean | null>(null)
 
   const handleBlur = () => {
     if (validate == undefined)
@@ -57,9 +59,10 @@ const StyledInput = forwardRef<HTMLInputElement, StyledInputProps>(({
       changeHandle(e)
   }
 
-  const borderColor = isValid === false
+  const validValue = validate !== undefined ? isValidState : isValid
+  const borderColor = validValue === false
     ? borderErrorColor
-    : isValid === true
+    : validValue === true
       ? borderSuccessColor
       : borderNormalColor
 

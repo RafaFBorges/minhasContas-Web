@@ -26,6 +26,7 @@ export default function PasswordInput({
   validate = undefined,
   onKeyDown = undefined,
   iconColor = '#6b7280',
+  isValid = null,
 }: PasswordInputProps) {
   const [show, setShow] = useState<boolean>(false)
   const Icon = show ? HideIcon : ShowIcon
@@ -41,6 +42,7 @@ export default function PasswordInput({
   return <div style={styles.container}>
     <StyledInput
       type={show ? 'text' : 'password'}
+      isValid={isValid}
       name={name}
       value={value}
       placeholder={placeholder}

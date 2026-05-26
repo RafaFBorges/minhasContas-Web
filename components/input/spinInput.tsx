@@ -21,7 +21,8 @@ export default function SpinInput({
   max = MAX_VALUE,
   min = MIN_VALUE,
   setValueHandle = () => { },
-  height = 36
+  height = 36,
+  isValid = null,
 }: SpinProps) {
   const [isHovered, setIsHovered] = useState<boolean>(false)
 
@@ -55,6 +56,7 @@ export default function SpinInput({
   >
     <StyledInput
       type={'number'}
+      isValid={isValid}
       name={name}
       value={value}
       changeHandle={changeHandle}
