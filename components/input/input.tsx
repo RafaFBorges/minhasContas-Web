@@ -44,22 +44,33 @@ const StyledInput = forwardRef<HTMLInputElement, StyledInputProps>(({
   isValid = undefined,
 }: StyledInputProps, ref) => {
   const [isValidState, setIsValid] = useState<boolean | null>(null)
+  const [touched, setTouched] = useState(false)
+  const [focused, setFocused] = useState(false)
+
+  const handleFocus = () => setFocused(true)
 
   const handleBlur = () => {
-    if (validate == undefined)
-      setIsValid(null)
-    else
+    setFocused(false)
+    setTouched(true)
+
+    if (validate !== undefined)
       setIsValid(validate(String(value)))
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsValid(null)
+    if (validate !== undefined)
+      setIsValid(null)
 
     if (changeHandle)
       changeHandle(e)
   }
 
-  const validValue = validate !== undefined ? isValidState : isValid
+  const validValue = focused
+    ? null
+    : validate !== undefined
+      ? isValidState
+      : touched ? isValid : null
+
   const borderColor = validValue === false
     ? borderErrorColor
     : validValue === true
@@ -89,6 +100,7 @@ const StyledInput = forwardRef<HTMLInputElement, StyledInputProps>(({
     placeholder={placeholder}
     style={inputStyle}
     onKeyDown={onKeyDown}
+    onFocus={handleFocus}
 
     {...specificInputProps}
   />
