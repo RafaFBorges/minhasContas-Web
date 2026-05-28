@@ -44,7 +44,6 @@ export default function Login({
   const [labelText, setLabelText] = useState<LoginTranslations>(translate())
 
   function onLoginError() {
-    console.log('Login Error 1 > ')
     addPopup('Login Error', 'Invalid username or password. Please try again.', PopupType.ERROR)
   }
 
@@ -97,7 +96,7 @@ export default function Login({
 
         console.log('Login > [sucesses] user=' + token.id)
         router.push('/home')
-      } // TO-DO : fazer um popup de erro de login
+      }
     }}
     >
       {labelText[SEND_LOGIN_KEY]}
