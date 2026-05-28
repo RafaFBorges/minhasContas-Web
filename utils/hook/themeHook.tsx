@@ -111,7 +111,7 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
   const TR_THEME_KEY = 'TR.ThemeProvider.Theme'
   const TR_LOGOUT_KEY = 'TR.ThemeProvider.Logout'
 
-  const { language, setLang, addKey, getValue } = useTranslate()
+  const { language, setLang, addKeys, getValue } = useTranslate()
   const { userInfo, logout } = useUser()
   const router = useRouter()
   const pathname = usePathname()
@@ -120,12 +120,9 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
   const [config, setConfig] = useState<ThemeStyleProps>(() => loadConfig(theme))
 
   function translate() {
-    addKey(TR_THEME_KEY, 'tema', LanguageOption.PT_BR)
-    addKey(TR_THEME_KEY, 'theme', LanguageOption.EN)
-    addKey(TR_LANGUAGE_KEY, 'idioma', LanguageOption.PT_BR)
-    addKey(TR_LANGUAGE_KEY, 'language', LanguageOption.EN)
-    addKey(TR_LOGOUT_KEY, 'Logout', LanguageOption.PT_BR)
-    addKey(TR_LOGOUT_KEY, 'Logout', LanguageOption.EN)
+    addKeys(TR_THEME_KEY, [{ value: 'tema', lang: LanguageOption.PT_BR }, { value: 'theme', lang: LanguageOption.EN },])
+    addKeys(TR_LANGUAGE_KEY, [{ value: 'idioma', lang: LanguageOption.PT_BR }, { value: 'language', lang: LanguageOption.EN },])
+    addKeys(TR_LOGOUT_KEY, [{ value: 'Logout', lang: LanguageOption.PT_BR }, { value: 'Logout', lang: LanguageOption.EN },])
   }
 
   function setLightTheme() {

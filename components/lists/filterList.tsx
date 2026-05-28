@@ -30,7 +30,7 @@ export default function FilterList({
   const ALL_FILTER_KEY = 'FilterList.Save'
 
   const { config } = useTheme()
-  const { language, addKey, getValue } = useTranslate()
+  const { language, addKeys, getValue } = useTranslate()
   const selected = useRef<number | null>(-1)
   const translationName = useRef<string>('')
 
@@ -71,8 +71,7 @@ export default function FilterList({
   }
 
   function translate() {
-    addKey(ALL_FILTER_KEY, 'Todas', LanguageOption.PT_BR)
-    addKey(ALL_FILTER_KEY, 'All', LanguageOption.EN)
+    addKeys(ALL_FILTER_KEY, [{ value: 'Todas', lang: LanguageOption.PT_BR }, { value: 'All', lang: LanguageOption.EN },])
   }
 
   useEffect(() => {

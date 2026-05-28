@@ -34,7 +34,7 @@ export default function Login({
   const FIRST_TIME_KEY = 'Login.FirstTime'
   const CREATE_ACCOUNT_KEY = 'Login.CreateAccount'
 
-  const { language, addKey, getValue } = useTranslate()
+  const { language, addKeys, getValue } = useTranslate()
   const { setPlataformUser } = useUser()
   const { addPopup } = usePopup()
   const router = useRouter()
@@ -51,20 +51,11 @@ export default function Login({
   function translate() {
     const translation = {} as LoginTranslations
 
-    addKey(EMAIL_PLACEHOLDER_KEY, 'Digite seu email', LanguageOption.PT_BR)
-    translation[EMAIL_PLACEHOLDER_KEY] = addKey(EMAIL_PLACEHOLDER_KEY, 'Enter your email', LanguageOption.EN)
-
-    addKey(SEND_LOGIN_KEY, 'Enviar', LanguageOption.PT_BR)
-    translation[SEND_LOGIN_KEY] = addKey(SEND_LOGIN_KEY, 'Send', LanguageOption.EN)
-
-    addKey(FORGOT_PASSWOR_KEY, 'Esqueceu a senha?', LanguageOption.PT_BR)
-    translation[FORGOT_PASSWOR_KEY] = addKey(FORGOT_PASSWOR_KEY, 'Forgot password?', LanguageOption.EN)
-
-    addKey(CREATE_ACCOUNT_KEY, 'Criar conta', LanguageOption.PT_BR)
-    translation[CREATE_ACCOUNT_KEY] = addKey(CREATE_ACCOUNT_KEY, 'Create account', LanguageOption.EN)
-
-    addKey(FIRST_TIME_KEY, 'Primeira vez?', LanguageOption.PT_BR)
-    translation[FIRST_TIME_KEY] = addKey(FIRST_TIME_KEY, 'First time?', LanguageOption.EN)
+    translation[EMAIL_PLACEHOLDER_KEY] = addKeys(EMAIL_PLACEHOLDER_KEY, [{ value: 'Digite seu email', lang: LanguageOption.PT_BR }, { value: 'Enter your email', lang: LanguageOption.EN },])
+    translation[SEND_LOGIN_KEY] = addKeys(SEND_LOGIN_KEY, [{ value: 'Enviar', lang: LanguageOption.PT_BR }, { value: 'Send', lang: LanguageOption.EN },])
+    translation[FORGOT_PASSWOR_KEY] = addKeys(FORGOT_PASSWOR_KEY, [{ value: 'Esqueceu a senha?', lang: LanguageOption.PT_BR }, { value: 'Forgot password?', lang: LanguageOption.EN },])
+    translation[CREATE_ACCOUNT_KEY] = addKeys(CREATE_ACCOUNT_KEY, [{ value: 'Criar conta', lang: LanguageOption.PT_BR }, { value: 'Create account', lang: LanguageOption.EN },])
+    translation[FIRST_TIME_KEY] = addKeys(FIRST_TIME_KEY, [{ value: 'Primeira vez?', lang: LanguageOption.PT_BR }, { value: 'First time?', lang: LanguageOption.EN },])
 
     return translation
   }

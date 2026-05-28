@@ -40,7 +40,7 @@ export default function TagList({
   const UNKOWN_CATEGORY_KEY = 'unkownCategory'
 
   const { addCategory, userInfo } = useUser()
-  const { getValue, addKey } = useTranslate()
+  const { getValue, addKeys } = useTranslate()
   const { openModal } = useModal()
 
   const handleCreateCategory = async (item: CategoryVerifyData) => {
@@ -66,8 +66,7 @@ export default function TagList({
   }
 
   function translate() {
-    addKey(NEW_CATEGORY_TITLE_KEY, 'Nova categoria', LanguageOption.PT_BR)
-    addKey(NEW_CATEGORY_TITLE_KEY, 'New category', LanguageOption.EN)
+    addKeys(NEW_CATEGORY_TITLE_KEY, [{ value: 'Nova categoria', lang: LanguageOption.PT_BR }, { value: 'New category', lang: LanguageOption.EN },])
   }
 
   function printTag(name: string, index: number, isDisabled: boolean) {

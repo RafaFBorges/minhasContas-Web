@@ -23,15 +23,14 @@ export interface CardProps {
 export default function Card({ title, date, categories, style = null, id = -1, editClickHandle = null, deleteClickHandle = null, backgroundColor = '' }: CardProps) {
   const UNKOWN_CATEGORY_KEY = 'unkownCategory'
 
-  const { addKey } = useTranslate()
+  const { addKeys } = useTranslate()
 
   let cardStyle: React.CSSProperties = style != null ? { ...styles.card, ...style } : styles.card
   if (backgroundColor != '')
     cardStyle = { ...cardStyle, backgroundColor: backgroundColor }
 
   function translate() {
-    addKey(UNKOWN_CATEGORY_KEY, 'desconhecido', LanguageOption.PT_BR)
-    addKey(UNKOWN_CATEGORY_KEY, 'unkown', LanguageOption.EN)
+    addKeys(UNKOWN_CATEGORY_KEY, [{ value: 'desconhecido', lang: LanguageOption.PT_BR }, { value: 'unknown', lang: LanguageOption.EN },])
   }
 
   translate()

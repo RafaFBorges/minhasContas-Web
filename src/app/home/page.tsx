@@ -28,7 +28,7 @@ export default function Home() {
   const PROPERTIES_TITLE_KEY = 'Home.PropertiesTitle'
 
   const { openModal } = useModal()
-  const { addKey, getValue, language } = useTranslate()
+  const { addKeys, getValue, language } = useTranslate()
   const { sideColor } = useTheme()
   const {
     financialList,
@@ -46,10 +46,8 @@ export default function Home() {
   const [expensesText, setExpensesText] = useState<string>(translate())
 
   function translate(): string {
-    addKey(PROPERTIES_TITLE_KEY, 'Editar despesa', LanguageOption.PT_BR)
-    addKey(PROPERTIES_TITLE_KEY, 'Edit expense', LanguageOption.EN)
-    addKey(SUBTITLE_KEY, 'Despesas', LanguageOption.PT_BR)
-    return addKey(SUBTITLE_KEY, 'Expenses', LanguageOption.EN)
+    addKeys(PROPERTIES_TITLE_KEY, [{ value: 'Editar despesa', lang: LanguageOption.PT_BR }, { value: 'Edit expense', lang: LanguageOption.EN },])
+    return addKeys(SUBTITLE_KEY, [{ value: 'Despesas', lang: LanguageOption.PT_BR }, { value: 'Expenses', lang: LanguageOption.EN },])
   }
 
   const handleDeleteClick = async (index: number) => {

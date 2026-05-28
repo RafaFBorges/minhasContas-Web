@@ -14,6 +14,11 @@ export enum LanguageOption {
   EN = 'en-US',
 }
 
+export interface TranslateEntry {
+  value: string
+  lang: LanguageOption
+}
+
 const validValues = Object.values(LanguageOption)
 export function isValidLanguage(language: string): boolean {
   return Object.values(LanguageOption).includes(language as LanguageOption)
@@ -21,6 +26,7 @@ export function isValidLanguage(language: string): boolean {
 
 interface TranslateContextType {
   addKey: (key: string, value: string, lang?: string) => string;
+  addKeys: (key: string, entries: TranslateEntry[]) => string;  // ← adicionado
   getValue: (key: string) => string;
   language: LanguageOption;
   setLang: (newLanguage: LanguageOption) => void;
@@ -59,6 +65,18 @@ export function TranslateProvider({ children, lang }: { children: ReactNode, lan
       return dictionary.current[`${language}_${key}`]
   }
 
+  function addKeys(key: string, entries: TranslateEntry[]): string {
+    let currentLangValue = ''
+
+    for (const entry of entries) {
+      const result = addKey(key, entry.value, entry.lang)
+      if (entry.lang === language)
+        currentLangValue = result
+    }
+
+    return currentLangValue
+  }
+
   function getValue(key: string): string {
     if (key == '')
       throw new Error('Key is empty')
@@ -93,6 +111,7 @@ export function TranslateProvider({ children, lang }: { children: ReactNode, lan
   return <TranslateContext.Provider
     value={{
       addKey,
+      addKeys,
       getValue,
       language,
       setLang,

@@ -22,20 +22,10 @@ export default function Modal({ children, closeModal, title, enabledVerify = tru
   const CANCEL_KEY = 'Modal.Cancel'
 
   const { config } = useTheme()
-  const { language, addKey, getValue } = useTranslate()
+  const { language, addKeys, getValue } = useTranslate()
 
-  const [saveButton, setSaveButton] = useState<string>(translateSaveKey())
-  const [cancelButton, setCancelButton] = useState<string>(translateCancelKey())
-
-  function translateSaveKey(): string {
-    addKey(SAVE_KEY, 'Salvar', LanguageOption.PT_BR)
-    return addKey(SAVE_KEY, 'Save', LanguageOption.EN)
-  }
-
-  function translateCancelKey(): string {
-    addKey(CANCEL_KEY, 'Cancelar', LanguageOption.PT_BR)
-    return addKey(CANCEL_KEY, 'Cancel', LanguageOption.EN)
-  }
+  const [saveButton, setSaveButton] = useState<string>(addKeys(SAVE_KEY, [{ value: 'Salvar', lang: LanguageOption.PT_BR }, { value: 'Save', lang: LanguageOption.EN },]))
+  const [cancelButton, setCancelButton] = useState<string>(addKeys(CANCEL_KEY, [{ value: 'Cancelar', lang: LanguageOption.PT_BR }, { value: 'Cancel', lang: LanguageOption.EN },]))
 
   useEffect(() => {
     setSaveButton(getValue(SAVE_KEY))

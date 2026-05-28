@@ -23,11 +23,10 @@ export default function CategoryConfiguration({ oldValue, enabledVerify = null }
   const [placeholder, setPlaceholder] = useState<string>('')
 
   const { setEnabledSave, setData } = useModal()
-  const { addKey, getValue, language } = useTranslate()
+  const { addKeys, getValue, language } = useTranslate()
 
   function translate() {
-    addKey(NAME_PLACEHOLDER_KEY, 'Nome', LanguageOption.PT_BR)
-    addKey(NAME_PLACEHOLDER_KEY, 'Name', LanguageOption.EN)
+    addKeys(NAME_PLACEHOLDER_KEY, [{ value: 'Nome', lang: LanguageOption.PT_BR }, { value: 'Name', lang: LanguageOption.EN },])
   }
 
   useEffect(() => {

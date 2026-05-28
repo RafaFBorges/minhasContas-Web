@@ -36,34 +36,20 @@ export default function Registration() {
   const PH_PASSWORD_KEY = 'Registration.PlaceholderPassword'
   const PH_CONFIRM_PASSWORD_KEY = 'Registration.PlaceholderConfirmPassword'
 
-  const { language, addKey, getValue } = useTranslate()
+  const { language, addKeys, getValue } = useTranslate()
   const { form, addOrSetField, getFieldValue, canSubmit, onFieldBlur, onFieldChange } = useForm(buildInitialFields())
 
   const [translation, setTranslation] = useState<RegistrationTranslations>(translate())
 
   function buildInitialFields(): FormInputField[] {
-    addKey(FIRST_NAME_KEY, 'Nome', LanguageOption.PT_BR)
-    addKey(PH_FIRST_NAME_KEY, 'João', LanguageOption.PT_BR)
-    addKey(LAST_NAME_KEY, 'Sobrenome', LanguageOption.PT_BR)
-    addKey(PH_LAST_NAME_KEY, 'Silva', LanguageOption.PT_BR)
-    addKey(EMAIL_KEY, 'Email', LanguageOption.PT_BR)
-    addKey(PH_EMAIL_KEY, 'joao@email.com', LanguageOption.PT_BR)
-    addKey(PHONE_KEY, 'Telefone', LanguageOption.PT_BR)
-    addKey(PH_PHONE_KEY, '(51) 99999-0000', LanguageOption.PT_BR)
-    addKey(BIRTHDATE_KEY, 'Data de nascimento', LanguageOption.PT_BR)
-    addKey(PASSWORD_KEY, 'Senha', LanguageOption.PT_BR)
-    addKey(PH_PASSWORD_KEY, 'Mínimo 8 caracteres', LanguageOption.PT_BR)
-    addKey(CONFIRM_PASSWORD_KEY, 'Confirmar senha', LanguageOption.PT_BR)
-    addKey(PH_CONFIRM_PASSWORD_KEY, 'Repita a senha', LanguageOption.PT_BR)
-
     return [
       {
         value: '',
         isValid: null,
         type: 'text',
         name: 'firstName',
-        label: addKey(FIRST_NAME_KEY, 'First name', LanguageOption.EN),
-        placeholder: addKey(PH_FIRST_NAME_KEY, 'John', LanguageOption.EN),
+        label: addKeys(FIRST_NAME_KEY, [{ value: 'Nome', lang: LanguageOption.PT_BR }, { value: 'First name', lang: LanguageOption.EN },]),
+        placeholder: addKeys(PH_FIRST_NAME_KEY, [{ value: 'João', lang: LanguageOption.PT_BR }, { value: 'John', lang: LanguageOption.EN },]),
         style: styles.field,
         validate: notEmpty,
       },
@@ -72,8 +58,8 @@ export default function Registration() {
         isValid: null,
         type: 'text',
         name: 'lastName',
-        label: addKey(LAST_NAME_KEY, 'Last name', LanguageOption.EN),
-        placeholder: addKey(PH_LAST_NAME_KEY, 'Smith', LanguageOption.EN),
+        label: addKeys(LAST_NAME_KEY, [{ value: 'Sobrenome', lang: LanguageOption.PT_BR }, { value: 'Last name', lang: LanguageOption.EN },]),
+        placeholder: addKeys(PH_LAST_NAME_KEY, [{ value: 'Silva', lang: LanguageOption.PT_BR }, { value: 'Smith', lang: LanguageOption.EN },]),
         style: styles.field,
         validate: notEmpty,
       },
@@ -82,8 +68,8 @@ export default function Registration() {
         isValid: null,
         type: 'email',
         name: 'email',
-        label: addKey(EMAIL_KEY, 'Email', LanguageOption.EN),
-        placeholder: addKey(PH_EMAIL_KEY, 'john@email.com', LanguageOption.EN),
+        label: addKeys(EMAIL_KEY, [{ value: 'Email', lang: LanguageOption.PT_BR }, { value: 'Email', lang: LanguageOption.EN },]),
+        placeholder: addKeys(PH_EMAIL_KEY, [{ value: 'joao@email.com', lang: LanguageOption.PT_BR }, { value: 'john@email.com', lang: LanguageOption.EN },]),
         style: styles.field,
         validate: validateEmail,
       },
@@ -92,8 +78,8 @@ export default function Registration() {
         isValid: null,
         type: 'tel',
         name: 'phone',
-        label: addKey(PHONE_KEY, 'Phone', LanguageOption.EN),
-        placeholder: addKey(PH_PHONE_KEY, '(555) 99999-0000', LanguageOption.EN),
+        label: addKeys(PHONE_KEY, [{ value: 'Telefone', lang: LanguageOption.PT_BR }, { value: 'Phone', lang: LanguageOption.EN },]),
+        placeholder: addKeys(PH_PHONE_KEY, [{ value: '(51) 99999-0000', lang: LanguageOption.PT_BR }, { value: '(555) 99999-0000', lang: LanguageOption.EN },]),
         style: styles.field,
         validate: notEmpty,
       },
@@ -102,7 +88,7 @@ export default function Registration() {
         isValid: null,
         type: 'date',
         name: 'birthdate',
-        label: addKey(BIRTHDATE_KEY, 'Date of birth', LanguageOption.EN),
+        label: addKeys(BIRTHDATE_KEY, [{ value: 'Data de nascimento', lang: LanguageOption.PT_BR }, { value: 'Date of birth', lang: LanguageOption.EN },]),
         style: styles.field,
         validate: validateDate,
       },
@@ -111,8 +97,8 @@ export default function Registration() {
         isValid: null,
         type: 'password',
         name: 'password',
-        label: addKey(PASSWORD_KEY, 'Password', LanguageOption.EN),
-        placeholder: addKey(PH_PASSWORD_KEY, 'Minimum 8 characters', LanguageOption.EN),
+        label: addKeys(PASSWORD_KEY, [{ value: 'Senha', lang: LanguageOption.PT_BR }, { value: 'Password', lang: LanguageOption.EN },]),
+        placeholder: addKeys(PH_PASSWORD_KEY, [{ value: 'Mínimo 8 caracteres', lang: LanguageOption.PT_BR }, { value: 'Minimum 8 characters', lang: LanguageOption.EN },]),
         style: styles.field,
         validate: validateStrongPassword,
       },
@@ -121,8 +107,8 @@ export default function Registration() {
         isValid: null,
         type: 'password',
         name: 'confirmPassword',
-        label: addKey(CONFIRM_PASSWORD_KEY, 'Confirm password', LanguageOption.EN),
-        placeholder: addKey(PH_CONFIRM_PASSWORD_KEY, 'Repeat password', LanguageOption.EN),
+        label: addKeys(CONFIRM_PASSWORD_KEY, [{ value: 'Confirmar senha', lang: LanguageOption.PT_BR }, { value: 'Confirm password', lang: LanguageOption.EN },]),
+        placeholder: addKeys(PH_CONFIRM_PASSWORD_KEY, [{ value: 'Repita a senha', lang: LanguageOption.PT_BR }, { value: 'Repeat password', lang: LanguageOption.EN },]),
         style: styles.field,
       },
     ]
@@ -131,26 +117,13 @@ export default function Registration() {
   function translate(): RegistrationTranslations {
     const tr = {} as RegistrationTranslations
 
-    addKey(TITLE_KEY, 'Criar conta', LanguageOption.PT_BR)
-    tr[TITLE_KEY] = addKey(TITLE_KEY, 'Create account', LanguageOption.EN)
-
-    addKey(SUBTITLE_KEY, 'Preencha os dados abaixo para se cadastrar.', LanguageOption.PT_BR)
-    tr[SUBTITLE_KEY] = addKey(SUBTITLE_KEY, 'Fill in the details below to register.', LanguageOption.EN)
-
-    addKey(PERSONAL_DATA_KEY, 'Dados pessoais', LanguageOption.PT_BR)
-    tr[PERSONAL_DATA_KEY] = addKey(PERSONAL_DATA_KEY, 'Personal data', LanguageOption.EN)
-
-    addKey(ACCESS_KEY, 'Acesso', LanguageOption.PT_BR)
-    tr[ACCESS_KEY] = addKey(ACCESS_KEY, 'Access', LanguageOption.EN)
-
-    addKey(SUBMIT_KEY, 'Cadastrar', LanguageOption.PT_BR)
-    tr[SUBMIT_KEY] = addKey(SUBMIT_KEY, 'Register', LanguageOption.EN)
-
-    addKey(ERROR_REQUIRED_KEY, 'Por favor, preencha os campos obrigatórios.', LanguageOption.PT_BR)
-    tr[ERROR_REQUIRED_KEY] = addKey(ERROR_REQUIRED_KEY, 'Please fill in the required fields.', LanguageOption.EN)
-
-    addKey(ERROR_PASSWORD_MATCH_KEY, 'As senhas não coincidem.', LanguageOption.PT_BR)
-    tr[ERROR_PASSWORD_MATCH_KEY] = addKey(ERROR_PASSWORD_MATCH_KEY, 'Passwords do not match.', LanguageOption.EN)
+    tr[TITLE_KEY] = addKeys(TITLE_KEY, [{ value: 'Criar conta', lang: LanguageOption.PT_BR }, { value: 'Create account', lang: LanguageOption.EN },])
+    tr[SUBTITLE_KEY] = addKeys(SUBTITLE_KEY, [{ value: 'Preencha os dados abaixo para se cadastrar.', lang: LanguageOption.PT_BR }, { value: 'Fill in the details below to register.', lang: LanguageOption.EN },])
+    tr[PERSONAL_DATA_KEY] = addKeys(PERSONAL_DATA_KEY, [{ value: 'Dados pessoais', lang: LanguageOption.PT_BR }, { value: 'Personal data', lang: LanguageOption.EN },])
+    tr[ACCESS_KEY] = addKeys(ACCESS_KEY, [{ value: 'Acesso', lang: LanguageOption.PT_BR }, { value: 'Access', lang: LanguageOption.EN },])
+    tr[SUBMIT_KEY] = addKeys(SUBMIT_KEY, [{ value: 'Cadastrar', lang: LanguageOption.PT_BR }, { value: 'Register', lang: LanguageOption.EN },])
+    tr[ERROR_REQUIRED_KEY] = addKeys(ERROR_REQUIRED_KEY, [{ value: 'Por favor, preencha os campos obrigatórios.', lang: LanguageOption.PT_BR }, { value: 'Please fill in the required fields.', lang: LanguageOption.EN },])
+    tr[ERROR_PASSWORD_MATCH_KEY] = addKeys(ERROR_PASSWORD_MATCH_KEY, [{ value: 'As senhas não coincidem.', lang: LanguageOption.PT_BR }, { value: 'Passwords do not match.', lang: LanguageOption.EN },])
 
     return tr
   }
