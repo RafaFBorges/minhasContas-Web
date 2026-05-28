@@ -59,6 +59,7 @@ const StyledButton = forwardRef<HTMLButtonElement, StyledButtonProps>(({
   const handleMouseLeave = () => { setIsHovered(false) }
 
   return <button
+    type={'button'}
     ref={ref}
     onMouseEnter={handleMouseEnter}
     onMouseLeave={handleMouseLeave}
