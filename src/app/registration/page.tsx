@@ -37,9 +37,8 @@ export default function Registration() {
   const PH_CONFIRM_PASSWORD_KEY = 'Registration.PlaceholderConfirmPassword'
 
   const { language, addKey, getValue } = useTranslate()
-  const { form, addOrSetField, getFieldValue, isAllValid, onFieldBlur } = useForm(buildInitialFields())
+  const { form, addOrSetField, getFieldValue, canSubmit, onFieldBlur, onFieldChange } = useForm(buildInitialFields())
 
-  const [enabled, setEnabled] = useState(false)
   const [translation, setTranslation] = useState<RegistrationTranslations>(translate())
 
   function buildInitialFields(): FormInputField[] {
@@ -177,7 +176,7 @@ export default function Registration() {
   }, [language])
 
   const handleChange = (fieldName: string, value: string) => {
-    setEnabled(false)
+    onFieldChange()
     const { success, field } = getFieldValue(fieldName, value)
     if (!success)
       return
@@ -198,14 +197,9 @@ export default function Registration() {
       addOrSetField({ ...form()[fieldName], value: value, isValid: field.isValid })
   }
 
-  const handleBlur = () => {
-    onFieldBlur()
-    setEnabled(isAllValid())
-  }
-
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    if (!isAllValid())
+    if (!canSubmit)
       return
 
     console.log('Enviou')
@@ -222,31 +216,31 @@ export default function Registration() {
         <div style={styles.row}>
           <FrameworkInput
             {...form().firstName}
-            onBlur={handleBlur}
+            onBlur={onFieldBlur}
             changeHandle={(e) => handleChange('firstName', e.target.value)}
           />
           <FrameworkInput
             {...form().lastName}
-            onBlur={handleBlur}
+            onBlur={onFieldBlur}
             changeHandle={(e) => handleChange('lastName', e.target.value)}
           />
         </div>
 
         <FrameworkInput
           {...form().email}
-          onBlur={handleBlur}
+          onBlur={onFieldBlur}
           changeHandle={(e) => handleChange('email', e.target.value)}
         />
 
         <div style={styles.row}>
           <FrameworkInput
             {...form().phone}
-            onBlur={handleBlur}
+            onBlur={onFieldBlur}
             changeHandle={(e) => handleChange('phone', e.target.value)}
           />
           <FrameworkInput
             {...form().birthdate}
-            onBlur={handleBlur}
+            onBlur={onFieldBlur}
             changeHandle={(e) => handleChange('birthdate', e.target.value)}
           />
         </div>
@@ -257,18 +251,18 @@ export default function Registration() {
 
         <FrameworkInput
           {...form().password}
-          onBlur={handleBlur}
+          onBlur={onFieldBlur}
           changeHandle={(e) => handleChange('password', e.target.value)}
         />
 
         <FrameworkInput
           {...form().confirmPassword}
-          onBlur={handleBlur}
+          onBlur={onFieldBlur}
           changeHandle={(e) => handleChange('confirmPassword', e.target.value)}
         />
 
         <div style={styles.buttonsContainer}>
-          <ThemeButton enabled={enabled} clickHandle={handleSubmit}>
+          <ThemeButton enabled={canSubmit()} clickHandle={handleSubmit}>
             {translation[SUBMIT_KEY]}
           </ThemeButton>
         </div>

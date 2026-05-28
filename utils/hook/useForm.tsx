@@ -33,8 +33,9 @@ interface UseFormReturn {
   form: () => FormState
   addOrSetField: (field: FormInputField) => void
   getFieldValue: (name: string, value: string) => getFieldValueResult
-  isAllValid: () => boolean
+  canSubmit: () => boolean
   onFieldBlur: () => void
+  onFieldChange: () => void
 }
 
 export function useForm(initialFields: FormInputField[] = []): UseFormReturn {
@@ -46,7 +47,7 @@ export function useForm(initialFields: FormInputField[] = []): UseFormReturn {
   }
 
   const formRef = useRef<FormState>(buildInitialState())
-  const isAllValidRef = useRef<boolean>(false)
+  const canSubmitRef = useRef<boolean>(false)
   const [, forceUpdate] = useState(0)
 
   const addOrSetField = (field: FormInputField) => {
@@ -59,7 +60,12 @@ export function useForm(initialFields: FormInputField[] = []): UseFormReturn {
   }
 
   const onFieldBlur = () => {
-    isAllValidRef.current = Object.values(formRef.current).every(f => f.isValid === true)
+    canSubmitRef.current = Object.values(formRef.current).every(f => f.isValid === true)
+    forceUpdate(n => n + 1)
+  }
+
+  const onFieldChange = () => {
+    canSubmitRef.current = false
     forceUpdate(n => n + 1)
   }
 
@@ -78,7 +84,7 @@ export function useForm(initialFields: FormInputField[] = []): UseFormReturn {
 
   const form = (): FormState => formRef.current
 
-  const isAllValid = (): boolean => isAllValidRef.current
+  const canSubmit = (): boolean => canSubmitRef.current
 
-  return { form, onFieldBlur, addOrSetField, getFieldValue, isAllValid }
+  return { form, canSubmit, onFieldBlur, onFieldChange, addOrSetField, getFieldValue }
 }
