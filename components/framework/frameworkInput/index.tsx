@@ -29,6 +29,7 @@ export default function FrameworkInput({
   borderNormalColor = undefined,
   isValid = null,
   validate = undefined,
+  onBlur
 }: FrameworkInputProps) {
   const { config } = useTheme()
   const InputComponent = resolveInput(type)
@@ -52,6 +53,7 @@ export default function FrameworkInput({
       borderErrorColor={borderErrorColor ? borderErrorColor : config.borderErrorColor}
       borderSuccessColor={borderSuccessColor ? borderSuccessColor : config.borderSuccessColor}
       borderNormalColor={borderNormalColor ? borderNormalColor : config.borderColor}
+      onBlur={onBlur}
     />
   </div>
 }

@@ -9,6 +9,7 @@ export default function PhoneInput({
   value,
   placeholder,
   changeHandle,
+  onBlur = undefined,
   style = null,
   step = null,
   hasAutocomplete = false,
@@ -132,6 +133,7 @@ export default function PhoneInput({
     borderNormalColor={borderNormalColor}
     validate={validate}
     onKeyDown={handleKeyDown}
+    onBlur={onBlur}
     isValid={isValid}
   />
 }

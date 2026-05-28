@@ -8,6 +8,7 @@ export interface StyledInputProps {
   value: number | string;
   placeholder?: string;
   changeHandle?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: () => void;
   style?: React.CSSProperties | null;
   step?: number | null;
   hasAutocomplete?: boolean;
@@ -41,6 +42,7 @@ const StyledInput = forwardRef<HTMLInputElement, StyledInputProps>(({
   borderNormalColor = '#d1d5db',
   validate = undefined,
   onKeyDown = undefined,
+  onBlur = undefined,
   isValid = undefined,
 }: StyledInputProps, ref) => {
   const [isValidState, setIsValid] = useState<boolean | null>(null)
@@ -55,6 +57,9 @@ const StyledInput = forwardRef<HTMLInputElement, StyledInputProps>(({
 
     if (validate !== undefined)
       setIsValid(validate(String(value)))
+
+    if (onBlur)
+      onBlur()
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

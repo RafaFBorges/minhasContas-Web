@@ -34,6 +34,7 @@ interface UseFormReturn {
   addOrSetField: (field: FormInputField) => void
   getFieldValue: (name: string, value: string) => getFieldValueResult
   isAllValid: () => boolean
+  onFieldBlur: () => void
 }
 
 export function useForm(initialFields: FormInputField[] = []): UseFormReturn {
@@ -54,6 +55,10 @@ export function useForm(initialFields: FormInputField[] = []): UseFormReturn {
       [field.name]: field,
     }
 
+    forceUpdate(n => n + 1)
+  }
+
+  const onFieldBlur = () => {
     isAllValidRef.current = Object.values(formRef.current).every(f => f.isValid === true)
     forceUpdate(n => n + 1)
   }
@@ -75,5 +80,5 @@ export function useForm(initialFields: FormInputField[] = []): UseFormReturn {
 
   const isAllValid = (): boolean => isAllValidRef.current
 
-  return { form, addOrSetField, getFieldValue, isAllValid }
+  return { form, onFieldBlur, addOrSetField, getFieldValue, isAllValid }
 }

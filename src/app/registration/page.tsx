@@ -37,7 +37,7 @@ export default function Registration() {
   const PH_CONFIRM_PASSWORD_KEY = 'Registration.PlaceholderConfirmPassword'
 
   const { language, addKey, getValue } = useTranslate()
-  const { form, addOrSetField, getFieldValue, isAllValid } = useForm(buildInitialFields())
+  const { form, addOrSetField, getFieldValue, isAllValid, onFieldBlur } = useForm(buildInitialFields())
 
   const [enabled, setEnabled] = useState(false)
   const [translation, setTranslation] = useState<RegistrationTranslations>(translate())
@@ -177,6 +177,7 @@ export default function Registration() {
   }, [language])
 
   const handleChange = (fieldName: string, value: string) => {
+    setEnabled(false)
     const { success, field } = getFieldValue(fieldName, value)
     if (!success)
       return
@@ -195,7 +196,10 @@ export default function Registration() {
       }
     } else
       addOrSetField({ ...form()[fieldName], value: value, isValid: field.isValid })
+  }
 
+  const handleBlur = () => {
+    onFieldBlur()
     setEnabled(isAllValid())
   }
 
@@ -218,26 +222,31 @@ export default function Registration() {
         <div style={styles.row}>
           <FrameworkInput
             {...form().firstName}
+            onBlur={handleBlur}
             changeHandle={(e) => handleChange('firstName', e.target.value)}
           />
           <FrameworkInput
             {...form().lastName}
+            onBlur={handleBlur}
             changeHandle={(e) => handleChange('lastName', e.target.value)}
           />
         </div>
 
         <FrameworkInput
           {...form().email}
+          onBlur={handleBlur}
           changeHandle={(e) => handleChange('email', e.target.value)}
         />
 
         <div style={styles.row}>
           <FrameworkInput
             {...form().phone}
+            onBlur={handleBlur}
             changeHandle={(e) => handleChange('phone', e.target.value)}
           />
           <FrameworkInput
             {...form().birthdate}
+            onBlur={handleBlur}
             changeHandle={(e) => handleChange('birthdate', e.target.value)}
           />
         </div>
@@ -248,11 +257,13 @@ export default function Registration() {
 
         <FrameworkInput
           {...form().password}
+          onBlur={handleBlur}
           changeHandle={(e) => handleChange('password', e.target.value)}
         />
 
         <FrameworkInput
           {...form().confirmPassword}
+          onBlur={handleBlur}
           changeHandle={(e) => handleChange('confirmPassword', e.target.value)}
         />
 

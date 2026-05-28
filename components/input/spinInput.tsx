@@ -17,6 +17,7 @@ export default function SpinInput({
   value,
   placeholder,
   changeHandle,
+  onBlur = undefined,
   style = null,
   max = MAX_VALUE,
   min = MIN_VALUE,
@@ -60,6 +61,7 @@ export default function SpinInput({
       name={name}
       value={value}
       changeHandle={changeHandle}
+      onBlur={onBlur}
       placeholder={placeholder}
       style={style}
       max={max}

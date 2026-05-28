@@ -27,6 +27,7 @@ export default function PasswordInput({
   onKeyDown = undefined,
   iconColor = '#6b7280',
   isValid = null,
+  onBlur = undefined,
 }: PasswordInputProps) {
   const [show, setShow] = useState<boolean>(false)
   const Icon = show ? HideIcon : ShowIcon
@@ -58,6 +59,7 @@ export default function PasswordInput({
       borderNormalColor={borderNormalColor}
       validate={validate}
       onKeyDown={onKeyDown}
+      onBlur={onBlur}
     />
     <Icon
       color={iconColor}
