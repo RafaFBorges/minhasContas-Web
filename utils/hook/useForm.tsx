@@ -7,6 +7,7 @@ export interface FormInputField {
   type: React.HTMLInputTypeAttribute
   name: string
   label: string
+  position: number
   placeholder?: string
   style?: React.CSSProperties
   validate?: (value: string) => boolean
@@ -27,10 +28,12 @@ const EMPTY_FIELD: FormInputField = {
   type: 'text',
   name: '',
   label: '',
+  position: 0,
 }
 
 interface UseFormReturn {
   form: () => FormState
+  orderedFields: () => FormInputField[]
   addOrSetField: (field: FormInputField) => void
   getFieldValue: (name: string, value: string) => getFieldValueResult
   canSubmit: () => boolean
@@ -40,24 +43,40 @@ interface UseFormReturn {
 
 export function useForm(initialFields: FormInputField[] = []): UseFormReturn {
   const buildInitialState = (): FormState => {
-    return initialFields.reduce<FormState>((acc, field) => {
-      acc[field.name] = field
+    return initialFields.reduce<FormState>((acc, field, index) => {
+      acc[field.name] = { ...field, position: field.position ?? index }
       return acc
     }, {})
   }
 
   const formRef = useRef<FormState>(buildInitialState())
+  const orderRef = useRef<string[]>(initialFields.map(f => f.name))
   const canSubmitRef = useRef<boolean>(false)
   const [, forceUpdate] = useState(0)
 
   const addOrSetField = (field: FormInputField) => {
+    const isNew = !formRef.current[field.name]
+
     formRef.current = {
       ...formRef.current,
       [field.name]: field,
     }
 
+    if (isNew) {
+      orderRef.current = [
+        ...orderRef.current.filter(n => n !== field.name),
+        field.name,
+      ].sort((a, b) => (formRef.current[a]?.position ?? 0) - (formRef.current[b]?.position ?? 0))
+    }
+
     forceUpdate(n => n + 1)
   }
+
+  const orderedFields = (): FormInputField[] =>
+    orderRef.current
+      .map(name => formRef.current[name])
+      .filter(Boolean)
+      .sort((a, b) => a.position - b.position)
 
   const onFieldBlur = () => {
     canSubmitRef.current = Object.values(formRef.current).every(f => f.isValid === true)
@@ -86,5 +105,5 @@ export function useForm(initialFields: FormInputField[] = []): UseFormReturn {
 
   const canSubmit = (): boolean => canSubmitRef.current
 
-  return { form, canSubmit, onFieldBlur, onFieldChange, addOrSetField, getFieldValue }
+  return { form, orderedFields, canSubmit, onFieldBlur, onFieldChange, addOrSetField, getFieldValue }
 }

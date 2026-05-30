@@ -8,6 +8,7 @@ import FrameworkInput from '../../../components/framework/frameworkInput'
 import { LanguageOption, useTranslate } from '../../../utils/hook/translateHook'
 import { notEmpty, validateDate, validateEmail, validateStrongPassword } from '../../../utils/validations'
 import { useForm, FormInputField } from '../../../utils/hook/useForm'
+import { useViewForm } from '../../../utils/hook/useViewForm'
 
 
 interface RegistrationTranslations {
@@ -36,14 +37,10 @@ export default function Registration() {
   const PH_PASSWORD_KEY = 'Registration.PlaceholderPassword'
   const PH_CONFIRM_PASSWORD_KEY = 'Registration.PlaceholderConfirmPassword'
 
-  const { language, addKeys, getValue } = useTranslate()
-  const { form, addOrSetField, getFieldValue, canSubmit, onFieldBlur, onFieldChange } = useForm(buildInitialFields())
-
-  const [translation, setTranslation] = useState<RegistrationTranslations>(translate())
-
   function buildInitialFields(): FormInputField[] {
     return [
       {
+        position: 0,
         value: '',
         isValid: null,
         type: 'text',
@@ -54,6 +51,7 @@ export default function Registration() {
         validate: notEmpty,
       },
       {
+        position: 1,
         value: '',
         isValid: null,
         type: 'text',
@@ -64,6 +62,7 @@ export default function Registration() {
         validate: notEmpty,
       },
       {
+        position: 2,
         value: '',
         isValid: null,
         type: 'email',
@@ -74,6 +73,7 @@ export default function Registration() {
         validate: validateEmail,
       },
       {
+        position: 3,
         value: '',
         isValid: null,
         type: 'tel',
@@ -84,6 +84,7 @@ export default function Registration() {
         validate: notEmpty,
       },
       {
+        position: 4,
         value: '',
         isValid: null,
         type: 'date',
@@ -93,6 +94,7 @@ export default function Registration() {
         validate: validateDate,
       },
       {
+        position: 5,
         value: '',
         isValid: null,
         type: 'password',
@@ -103,6 +105,7 @@ export default function Registration() {
         validate: validateStrongPassword,
       },
       {
+        position: 6,
         value: '',
         isValid: null,
         type: 'password',
@@ -127,26 +130,6 @@ export default function Registration() {
 
     return tr
   }
-
-  useEffect(() => {
-    setTranslation({
-      [TITLE_KEY]: getValue(TITLE_KEY),
-      [SUBTITLE_KEY]: getValue(SUBTITLE_KEY),
-      [PERSONAL_DATA_KEY]: getValue(PERSONAL_DATA_KEY),
-      [ACCESS_KEY]: getValue(ACCESS_KEY),
-      [SUBMIT_KEY]: getValue(SUBMIT_KEY),
-      [ERROR_REQUIRED_KEY]: getValue(ERROR_REQUIRED_KEY),
-      [ERROR_PASSWORD_MATCH_KEY]: getValue(ERROR_PASSWORD_MATCH_KEY),
-    })
-
-    addOrSetField({ ...form().firstName, label: getValue(FIRST_NAME_KEY), placeholder: getValue(PH_FIRST_NAME_KEY) })
-    addOrSetField({ ...form().lastName, label: getValue(LAST_NAME_KEY), placeholder: getValue(PH_LAST_NAME_KEY) })
-    addOrSetField({ ...form().email, label: getValue(EMAIL_KEY), placeholder: getValue(PH_EMAIL_KEY) })
-    addOrSetField({ ...form().phone, label: getValue(PHONE_KEY), placeholder: getValue(PH_PHONE_KEY) })
-    addOrSetField({ ...form().birthdate, label: getValue(BIRTHDATE_KEY) })
-    addOrSetField({ ...form().password, label: getValue(PASSWORD_KEY), placeholder: getValue(PH_PASSWORD_KEY) })
-    addOrSetField({ ...form().confirmPassword, label: getValue(CONFIRM_PASSWORD_KEY), placeholder: getValue(PH_CONFIRM_PASSWORD_KEY) })
-  }, [language])
 
   const handleChange = (fieldName: string, value: string) => {
     onFieldChange()
@@ -177,6 +160,32 @@ export default function Registration() {
 
     console.log('Enviou')
   }
+
+  const { language, addKeys, getValue } = useTranslate()
+  const { form, orderedFields, addOrSetField, getFieldValue, canSubmit, onFieldBlur, onFieldChange } = useForm(buildInitialFields())
+  const { renderFields } = useViewForm({ orderedFields, onFieldBlur, handleChange })
+
+  const [translation, setTranslation] = useState<RegistrationTranslations>(translate())
+
+  useEffect(() => {
+    setTranslation({
+      [TITLE_KEY]: getValue(TITLE_KEY),
+      [SUBTITLE_KEY]: getValue(SUBTITLE_KEY),
+      [PERSONAL_DATA_KEY]: getValue(PERSONAL_DATA_KEY),
+      [ACCESS_KEY]: getValue(ACCESS_KEY),
+      [SUBMIT_KEY]: getValue(SUBMIT_KEY),
+      [ERROR_REQUIRED_KEY]: getValue(ERROR_REQUIRED_KEY),
+      [ERROR_PASSWORD_MATCH_KEY]: getValue(ERROR_PASSWORD_MATCH_KEY),
+    })
+
+    addOrSetField({ ...form().firstName, label: getValue(FIRST_NAME_KEY), placeholder: getValue(PH_FIRST_NAME_KEY) })
+    addOrSetField({ ...form().lastName, label: getValue(LAST_NAME_KEY), placeholder: getValue(PH_LAST_NAME_KEY) })
+    addOrSetField({ ...form().email, label: getValue(EMAIL_KEY), placeholder: getValue(PH_EMAIL_KEY) })
+    addOrSetField({ ...form().phone, label: getValue(PHONE_KEY), placeholder: getValue(PH_PHONE_KEY) })
+    addOrSetField({ ...form().birthdate, label: getValue(BIRTHDATE_KEY) })
+    addOrSetField({ ...form().password, label: getValue(PASSWORD_KEY), placeholder: getValue(PH_PASSWORD_KEY) })
+    addOrSetField({ ...form().confirmPassword, label: getValue(CONFIRM_PASSWORD_KEY), placeholder: getValue(PH_CONFIRM_PASSWORD_KEY) })
+  }, [language])
 
   return <main style={styles.container}>
     <div style={styles.card}>
