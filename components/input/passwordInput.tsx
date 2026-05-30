@@ -40,6 +40,9 @@ export default function PasswordInput({
     return () => document.removeEventListener('mouseup', handleMouseUp)
   }, [show])
 
+  const iconSize = 22
+  const iconTop = height / 2 - iconSize / 2
+
   return <div style={styles.container}>
     <StyledInput
       type={show ? 'text' : 'password'}
@@ -63,8 +66,8 @@ export default function PasswordInput({
     />
     <Icon
       color={iconColor}
-      size={24}
-      style={styles.icon}
+      size={iconSize}
+      style={{ ...styles.icon, top: iconTop }}
       onMouseDown={() => setShow(true)}
     />
   </div>
@@ -74,15 +77,16 @@ const styles: { [key: string]: React.CSSProperties } = {
   container: {
     position: 'relative',
     width: '100%',
+    display: 'flex',
+    alignItems: 'center',
   },
   input: {
-    paddingRight: '2.5em',
+    paddingRight: '2.5rem',
+    width: '100%',
   },
   icon: {
     position: 'absolute',
-    right: '1em',
-    top: '50%',
-    transform: 'translateY(-50%)',
+    right: '1rem',
     cursor: 'pointer',
   },
 }

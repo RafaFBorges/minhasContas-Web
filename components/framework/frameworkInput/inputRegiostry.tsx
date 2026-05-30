@@ -3,7 +3,7 @@ import PhoneInput from '../../input/phoneInput'
 import StyledInput from '../../input/input'
 import React from 'react'
 import SpinInput from '../../input/spinInput'
-import PasswordInput from '../../input/passwordInpout'
+import PasswordInput from '../../input/passwordInput'
 
 const INPUT_REGISTRY: Partial<Record<React.HTMLInputTypeAttribute, React.ComponentType<StyledInputProps>>> = {
   tel: PhoneInput,
