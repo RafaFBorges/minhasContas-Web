@@ -8,6 +8,8 @@ export interface FormInputField {
   name: string
   label: string
   position: number
+  group?: string
+  section?: string
   placeholder?: string
   style?: React.CSSProperties
   validate?: (value: string) => boolean
