@@ -1,5 +1,4 @@
 import React, { useRef } from 'react'
-import { MAX_VALUE, MIN_VALUE } from '../../utils/DataConstants'
 import StyledInput, { StyledInputProps } from './input'
 
 interface PhoneInputProps extends StyledInputProps { }
@@ -11,10 +10,7 @@ export default function PhoneInput({
   changeHandle,
   onBlur = undefined,
   style = null,
-  step = null,
   hasAutocomplete = false,
-  max = MAX_VALUE,
-  min = MIN_VALUE,
   height = 36,
   borderErrorColor = '#e24b4a',
   borderSuccessColor = '#639922',
@@ -123,10 +119,7 @@ export default function PhoneInput({
     placeholder={placeholder}
     changeHandle={handleChange}
     style={style}
-    step={step}
     hasAutocomplete={hasAutocomplete}
-    max={max}
-    min={min}
     height={height}
     borderErrorColor={borderErrorColor}
     borderSuccessColor={borderSuccessColor}

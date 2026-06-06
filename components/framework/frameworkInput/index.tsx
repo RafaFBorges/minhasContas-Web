@@ -1,6 +1,5 @@
 import React from 'react'
 
-import { MAX_VALUE, MIN_VALUE } from '../../../utils/DataConstants'
 import { StyledInputProps } from '../../input/input'
 import ThemeText from '../../themeComponents/themeText'
 import { TextTag } from '../../api/text'
@@ -20,9 +19,6 @@ export default function FrameworkInput({
   placeholder,
   changeHandle,
   style = null,
-  step = null,
-  max = MAX_VALUE,
-  min = MIN_VALUE,
   height = 36,
   borderErrorColor = undefined,
   borderSuccessColor = undefined,
@@ -40,10 +36,7 @@ export default function FrameworkInput({
     <InputComponent
       type={type}
       name={name}
-      step={step != null ? step : 1}
       value={value}
-      max={max}
-      min={min = Number.MAX_VALUE ? MIN_VALUE : min}
       changeHandle={changeHandle}
       placeholder={placeholder}
       style={style}

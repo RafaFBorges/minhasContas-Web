@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react'
+import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react'
 
 import { FaChevronUp as UpIcon, FaChevronDown as DownIcon } from 'react-icons/fa'
 
@@ -9,10 +9,15 @@ import { MAX_VALUE, MIN_VALUE } from '../../utils/DataConstants'
 
 
 interface SpinProps extends StyledInputProps {
-  setValueHandle?: (newValue: number) => void;
+  setValueHandle?: (newValue: number) => void
+  disabledButtons?: boolean
+  padNumber?: number
+  step?: number
+  max?: number
+  min?: number
 }
 
-export default function SpinInput({
+const SpinInput = forwardRef<HTMLInputElement, SpinProps>(({
   name,
   value,
   placeholder,
@@ -21,15 +26,69 @@ export default function SpinInput({
   style = null,
   max = MAX_VALUE,
   min = MIN_VALUE,
+  step = 1,
   setValueHandle = () => { },
   height = 36,
   isValid = null,
-}: SpinProps) {
+  disabledButtons = false,
+  padNumber = 1,
+  onKeyDown = undefined,
+  onFocus = undefined,
+}: SpinProps, ref) => {
   const [isHovered, setIsHovered] = useState<boolean>(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const cursorPosRef = useRef<number | null>(null)
 
   let spinStyle: React.CSSProperties = { ...styles.spin, height: height }
   if (style != null)
     spinStyle = { ...spinStyle, ...style }
+
+  useImperativeHandle(ref, () => inputRef.current! as HTMLInputElement, [])
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    cursorPosRef.current = (e.target as HTMLInputElement).selectionStart
+
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      e.preventDefault()
+
+      const increment = e.key === 'ArrowUp' ? step : -step
+      const currentValue = typeof value === 'number' ? value : Number(value)
+      const newValue = Math.min(max, Math.max(min, currentValue + increment))
+
+
+      if (newValue !== currentValue && inputRef.current != null) {
+        // O valor é mudado através do evento de changeHandle, por isso disparamos um evento deste tipo
+        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set
+
+        nativeInputValueSetter?.call(inputRef.current, String(newValue).padStart(padNumber, '0'))
+        inputRef.current.dispatchEvent(new Event('input', { bubbles: true }))
+      }
+    }
+
+    if (onKeyDown)
+      onKeyDown(e)
+  }
+
+  function spinChangeHandle(e: React.ChangeEvent<HTMLInputElement>) {
+    const prevLen = String(value).length
+    const newRaw = e.target.value.replace(/\D/g, '')
+
+    let newValue: number = Number(newRaw)
+    newValue = Math.min(max, Math.max(min, newValue))
+
+    const newStr = String(newValue).padStart(padNumber, '0')
+    const lengthDiff = newStr.length - prevLen
+
+    requestAnimationFrame(() => {
+      if (inputRef.current && cursorPosRef.current !== null) {
+        const newPos = cursorPosRef.current + lengthDiff
+        inputRef.current.setSelectionRange(newPos, newPos)
+      }
+    })
+
+    if (changeHandle)
+      changeHandle({ ...e, target: { ...e.target, value: newStr } } as React.ChangeEvent<HTMLInputElement>)
+  }
 
   function IconClick(increment: number) {
     if (typeof value !== 'number')
@@ -56,19 +115,21 @@ export default function SpinInput({
     style={spinStyle}
   >
     <StyledInput
-      type={'number'}
+      ref={inputRef}
+      type={'text'}
+      inputMode="numeric"
       isValid={isValid}
       name={name}
       value={value}
-      changeHandle={changeHandle}
+      changeHandle={spinChangeHandle}
       onBlur={onBlur}
       placeholder={placeholder}
       style={style}
-      max={max}
-      min={min}
+      onKeyDown={handleKeyDown}
       height={height}
+      onFocus={onFocus}
     />
-    {isHovered &&
+    {isHovered && !disabledButtons &&
       <div style={{ ...styles.buttonArea, top: (height - 34) / 2 }}>
         <ThemeButton
           clickHandle={() => IconClick(1)}
@@ -83,7 +144,7 @@ export default function SpinInput({
       </div>
     }
   </div>
-}
+})
 
 const styles: { [key: string]: React.CSSProperties } = {
   spin: {
@@ -105,3 +166,5 @@ const styles: { [key: string]: React.CSSProperties } = {
     zIndex: 10,
   }
 }
+
+export default SpinInput

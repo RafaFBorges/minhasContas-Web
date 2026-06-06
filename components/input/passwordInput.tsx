@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 
-import { MAX_VALUE, MIN_VALUE } from '../../utils/DataConstants'
 import StyledInput, { StyledInputProps } from './input'
 import { FaEye as ShowIcon, FaEyeSlash as HideIcon } from 'react-icons/fa'
 
@@ -15,10 +14,7 @@ export default function PasswordInput({
   placeholder,
   changeHandle,
   style = null,
-  step = null,
   hasAutocomplete = false,
-  max = MAX_VALUE,
-  min = MIN_VALUE,
   height = 36,
   borderErrorColor = '#e24b4a',
   borderSuccessColor = '#639922',
@@ -52,10 +48,7 @@ export default function PasswordInput({
       placeholder={placeholder}
       changeHandle={changeHandle}
       style={{ ...styles.input, ...style }}
-      step={step}
       hasAutocomplete={hasAutocomplete}
-      max={max}
-      min={min}
       height={height}
       borderErrorColor={borderErrorColor}
       borderSuccessColor={borderSuccessColor}

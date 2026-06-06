@@ -5,7 +5,7 @@ import ThemeButton from '../../../components/themeComponents/themeButton'
 import ThemeText from '../../../components/themeComponents/themeText'
 import { TextTag } from '../../../components/api/text'
 import { LanguageOption, useTranslate } from '../../../utils/hook/translateHook'
-import { notEmpty, validateDate, validateEmail, validateStrongPassword } from '../../../utils/validations'
+import { validateDate, notEmpty, validateEmail, validateStrongPassword } from '../../../utils/validations'
 import { useForm, FormInputField } from '../../../utils/hook/useForm'
 import { useViewForm } from '../../../utils/hook/useViewForm'
 
