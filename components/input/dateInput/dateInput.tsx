@@ -1,17 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-import { StyledInputProps } from './input'
+import { StyledInputProps } from '../input'
 import { FaRegCalendar as CalendarIcon } from 'react-icons/fa'
-import { validateDate } from '../../utils/validations'
-import Text from '../api/text'
-import SpinInput from './spinInput'
+import { validateDate } from '../../../utils/validations'
+import Text from '../../api/text'
+import SpinInput from '../spinInput'
+import Calendar from './calendar'
 
 
 interface DateInputProps extends StyledInputProps {
   iconColor?: string;
 }
 
-interface DateValue {
+export interface DateValue {
   day: string
   month: string
   year: string
@@ -48,8 +49,6 @@ export default function DateInput({
   const dayRef = useRef<HTMLInputElement>(null)
   const monthRef = useRef<HTMLInputElement>(null)
   const yearRef = useRef<HTMLInputElement>(null)
-
-  const dropDownContainerRef = useRef<HTMLDivElement>(null)
 
   const iconSize = 18
   const iconTop = height / 2 - iconSize / 2
@@ -162,18 +161,6 @@ export default function DateInput({
   }
 
   useEffect(() => {
-    if (!show) return
-
-    const handleMouseDown = (e: MouseEvent) => {
-      if (dropDownContainerRef.current && !dropDownContainerRef.current.contains(e.target as Node))
-        setShow(false)
-    }
-
-    document.addEventListener('mousedown', handleMouseDown)
-    return () => document.removeEventListener('mousedown', handleMouseDown)
-  }, [show])
-
-  useEffect(() => {
     checkHasIconSpace()
 
     window.addEventListener('resize', checkHasIconSpace)
@@ -245,9 +232,12 @@ export default function DateInput({
       onMouseDown={() => setShow(true)}
     />}
 
-    {show && <div ref={dropDownContainerRef} style={{ ...styles.calendar, top: height + calendarMargin }}>
-      Calendar
-    </div>}
+    <Calendar
+      show={show}
+      setShow={setShow}
+      date={dateStruct}
+      top={height + calendarMargin}
+    />
   </div>
 }
 
