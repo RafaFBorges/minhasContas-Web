@@ -18,14 +18,11 @@ export default function FrameworkInput({
   value,
   placeholder,
   changeHandle,
-  style = null,
   height = 36,
   borderErrorColor = undefined,
   borderSuccessColor = undefined,
   borderNormalColor = undefined,
-  isValid = null,
-  validate = undefined,
-  onBlur
+  ...rest
 }: FrameworkInputProps) {
   const { config } = useTheme()
   const InputComponent = resolveInput(type)
@@ -39,14 +36,11 @@ export default function FrameworkInput({
       value={value}
       changeHandle={changeHandle}
       placeholder={placeholder}
-      style={style}
       height={height}
-      validate={validate}
-      isValid={isValid}
       borderErrorColor={borderErrorColor ? borderErrorColor : config.borderErrorColor}
       borderSuccessColor={borderSuccessColor ? borderSuccessColor : config.borderSuccessColor}
       borderNormalColor={borderNormalColor ? borderNormalColor : config.borderColor}
-      onBlur={onBlur}
+      {...rest}
     />
   </div>
 }
