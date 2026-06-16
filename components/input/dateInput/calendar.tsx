@@ -140,10 +140,10 @@ export default function Calendar({
 
     <div style={styles.body}>
       {getDaysOfMonth(currentMonth)?.map((item: CalendarDay, index: number) => {
-        let style = item.selected ? { ...styles.day, backgroundColor: 'blue' } : styles.day
+        let style = item.selected ? { ...styles.day, backgroundColor: config.selectedDate } : styles.day
 
         if (item.diferentMonth)
-          style = { ...style, backgroundColor: '#FF8F4C' }
+          style = { ...style, backgroundColor: config.diferentMonth }
 
         return <div key={index} style={style} onClick={() => onSelect(item as DateValue)} >
           <ThemeText noWrap noSelection textTag={TextTag.P}>{item.day}</ThemeText>

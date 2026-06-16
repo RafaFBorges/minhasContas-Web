@@ -40,6 +40,9 @@ const LIGHT_CONFIG = {
   enabledColor: '#00D84C',
   disabledColor: '#727272ff',
   iconColor: '#999999',
+  diferentMonth: '#D8D8D8',
+  selectedDate: '#0070f3',
+  disabledDay: '#808080',
 }
 
 const DARK_CONFIG = {
@@ -59,6 +62,9 @@ const DARK_CONFIG = {
   enabledColor: '#00D84C',
   disabledColor: '#727272ff',
   iconColor: '#eed7b8',
+  diferentMonth: '#D8D8D8',
+  selectedDate: '#328f16ff',
+  disabledDay: '#555',
 }
 
 const geistSans = Geist({
@@ -78,22 +84,25 @@ interface ThemeContextType {
 }
 
 export interface ThemeStyleProps {
-  color: string;
-  backgroundColor: string;
-  fontSize: string | number;
-  fontColor: string;
-  disabledFontColor: string;
-  cardBackground: string;
-  tagDefaultColor: string;
-  LossSideColor: string;
-  NeutralSidedColor: string;
-  GainSideColor: string;
-  borderColor: string;
-  borderSuccessColor: string;
-  borderErrorColor: string;
-  enabledColor: string;
-  disabledColor: string;
-  iconColor: string;
+  color: string
+  backgroundColor: string
+  fontSize: string | number
+  fontColor: string
+  disabledFontColor: string
+  cardBackground: string
+  tagDefaultColor: string
+  LossSideColor: string
+  NeutralSidedColor: string
+  GainSideColor: string
+  borderColor: string
+  borderSuccessColor: string
+  borderErrorColor: string
+  enabledColor: string
+  disabledColor: string
+  iconColor: string
+  diferentMonth: string
+  selectedDate: string
+  disabledDay: string
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
