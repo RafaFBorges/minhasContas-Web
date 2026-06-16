@@ -152,6 +152,15 @@ export default function DateInput({
       changeHandle({ ...e, target: { ...e.target, value: getSettedDate(newStruct), } } as React.ChangeEvent<HTMLInputElement>)
   }
 
+  function changeCalendarHandle(value: DateValue) {
+    if (!changeHandle)
+      return
+
+    setDateStruct(value)
+    const event = { target: { value: getSettedDate(value) }, } as React.ChangeEvent<HTMLInputElement>
+    changeHandle(event)
+  }
+
   function checkHasIconSpace() {
     if (!containerRef.current)
       return
@@ -237,6 +246,7 @@ export default function DateInput({
       setShow={setShow}
       date={dateStruct}
       top={height + calendarMargin}
+      onSelect={changeCalendarHandle}
     />
   </div>
 }
