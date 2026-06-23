@@ -84,7 +84,7 @@ export default function Calendar({
         date: dayDate,
         selected: dayDate.eq(date),
         diferentMonth: today.getMonth() + 1 !== +selectedDate.month || today.getFullYear() !== +selectedDate.year,
-        enabled: (!minDate || dayDate.gte(minDate)) && (!maxDate || dayDate.lte(maxDate)),
+        enabled: (!minDate || dayDate.gt(minDate)) && (!maxDate || dayDate.lt(maxDate)),
       }
     })
   }
