@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import React from 'react'
+import { DateValue } from '../../components/input/dateInput/dateInput'
 
 export interface FormInputField {
   value: string
@@ -13,6 +14,8 @@ export interface FormInputField {
   placeholder?: string
   style?: React.CSSProperties
   validate?: (value: string) => boolean
+  maxDate?: DateValue
+  minDate?: DateValue
 }
 
 export interface getFieldValueResult {

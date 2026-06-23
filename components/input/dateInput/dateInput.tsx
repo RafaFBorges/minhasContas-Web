@@ -9,13 +9,41 @@ import Calendar from './calendar'
 
 
 interface DateInputProps extends StyledInputProps {
-  iconColor?: string;
+  iconColor?: string
+  maxDate?: DateValue
+  minDate?: DateValue
 }
 
-export interface DateValue {
+export type DateField = 'day' | 'month' | 'year'
+
+export class DateValue {
   day: string
   month: string
   year: string
+
+  constructor(day: string, month: string, year: string) {
+    this.day = day
+    this.month = month
+    this.year = year
+  }
+
+  update(field: DateField, value: string): DateValue {
+    return new DateValue(
+      field === 'day' ? value : this.day,
+      field === 'month' ? value : this.month,
+      field === 'year' ? value : this.year,
+    )
+  }
+
+  private toNumber(): number {
+    return +`${this.year}${this.month.padStart(2, '0')}${this.day.padStart(2, '0')}`
+  }
+
+  lt(other: DateValue): boolean { return this.toNumber() < other.toNumber() }   // <
+  gt(other: DateValue): boolean { return this.toNumber() > other.toNumber() }   // >
+  lte(other: DateValue): boolean { return this.toNumber() <= other.toNumber() } // <=
+  gte(other: DateValue): boolean { return this.toNumber() >= other.toNumber() } // >=
+  eq(other: DateValue): boolean { return this.toNumber() === other.toNumber() } // ==
 }
 
 export default function DateInput({
@@ -32,6 +60,8 @@ export default function DateInput({
   iconColor = '#6b7280',
   isValid = null,
   onBlur = undefined,
+  maxDate = undefined,
+  minDate = undefined,
 }: DateInputProps) {
   const TEXT_WIDTH = 152
   const DAY_FIELD = 'day'
@@ -77,7 +107,7 @@ export default function DateInput({
     const date = validateDate(String(value)) ? String(value) : getTodayDate()
     const [day, month, year] = date.split('/')
 
-    return { day: day, month: month, year: year }
+    return new DateValue(day, month, year)
   }
 
   function getTodayDate(): string {
@@ -145,11 +175,11 @@ export default function DateInput({
 
     const newValue = e.target.value
 
-    const newStruct = { ...dateStruct, [field]: newValue }
-    setDateStruct(newStruct)
+    dateStruct.update(field as DateField, newValue)
+    setDateStruct(dateStruct)
 
     if (changeHandle)
-      changeHandle({ ...e, target: { ...e.target, value: getSettedDate(newStruct), } } as React.ChangeEvent<HTMLInputElement>)
+      changeHandle({ ...e, target: { ...e.target, value: getSettedDate(dateStruct), } } as React.ChangeEvent<HTMLInputElement>)
   }
 
   function changeCalendarHandle(value: DateValue) {
@@ -247,6 +277,8 @@ export default function DateInput({
       date={dateStruct}
       top={height + calendarMargin}
       onSelect={changeCalendarHandle}
+      maxDate={maxDate}
+      minDate={minDate}
     />
   </div>
 }

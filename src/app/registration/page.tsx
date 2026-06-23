@@ -8,6 +8,7 @@ import { LanguageOption, useTranslate } from '../../../utils/hook/translateHook'
 import { validateDate, notEmpty, validateEmail, validateStrongPassword } from '../../../utils/validations'
 import { useForm, FormInputField } from '../../../utils/hook/useForm'
 import { useViewForm } from '../../../utils/hook/useViewForm'
+import { DateValue } from '../../../components/input/dateInput/dateInput'
 
 
 interface RegistrationTranslations {
@@ -77,6 +78,11 @@ export default function Registration() {
       return
 
     console.log('Enviou')
+  }
+
+  function getTomorrow(): DateValue {
+    const tomorrow = new Date(Date.now() + 86400000)
+    return new DateValue(String(tomorrow.getDate()).padStart(2, '0'), String(tomorrow.getMonth() + 1).padStart(2, '0'), String(tomorrow.getFullYear()))
   }
 
   const { language, addKeys, getValue } = useTranslate()
@@ -149,6 +155,7 @@ export default function Registration() {
         label: addKeys(BIRTHDATE_KEY, [{ value: 'Data de nascimento', lang: LanguageOption.PT_BR }, { value: 'Date of birth', lang: LanguageOption.EN },]),
         style: styles.field,
         validate: validateDate,
+        maxDate: getTomorrow(),
       },
       {
         position: 5,

@@ -14,10 +14,15 @@ interface CalendarProps {
   setShow: (show: boolean) => void
   top: number
   onSelect: (date: DateValue) => void
+  maxDate?: DateValue
+  minDate?: DateValue
 }
-interface CalendarDay extends DateValue {
+
+interface CalendarDay {
+  date: DateValue
   selected: boolean
   diferentMonth: boolean
+  enabled: boolean
 }
 
 export default function Calendar({
@@ -25,7 +30,9 @@ export default function Calendar({
   show,
   setShow,
   top,
-  onSelect = (date: DateValue) => { },
+  maxDate,
+  minDate,
+  onSelect = () => { },
 }: CalendarProps) {
   const CALENDAR_ITEM_COUNT = 35
   const MONTH_NAME = {
@@ -42,42 +49,42 @@ export default function Calendar({
     11: 'Novembro',
     12: 'Dezembro',
   }
-  const WEEK_DADYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
+  const WEEK_DAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
   const calendarRef = useRef<HTMLDivElement>(null)
   const [currentMonth, setCurrentMonth] = useState<DateValue>(date)
 
   const { config } = useTheme()
 
   function incrementMonth(inc: number) {
-    const newMonth = (parseInt(currentMonth.month) - 1) + inc //current - 1 + 12) % 12
+    const newMonth = (parseInt(currentMonth.month) - 1) + inc
     const incYear = (11 < newMonth) ? 1 : (newMonth < 0) ? -1 : 0
 
-    setCurrentMonth({
-      ...currentMonth,
-      month: String(((newMonth + 12) % 12) + 1),
-      year: String(parseInt(currentMonth.year) + incYear),
-    })
+    setCurrentMonth(
+      currentMonth
+        .update('month', String(((newMonth + 12) % 12) + 1).padStart(2, '0'))
+        .update('year', String(+currentMonth.year + incYear))
+    )
   }
 
   function getDaysOfMonth(selectedDate: DateValue): CalendarDay[] {
     const base: Date = new Date(Number(selectedDate.year), Number(selectedDate.month) - 1, 1)
     const firstDayOfWeek: number = base.getDay()
-    const day: number = Number(date.day)
-    const month: number = Number(date.month)
-    const year: number = Number(date.year)
 
     return Array.from({ length: CALENDAR_ITEM_COUNT }, (_, i) => {
       const today = new Date(base)
       today.setDate(base.getDate() - firstDayOfWeek + i)
 
-      const monthOfTheDate: number = today.getMonth() + 1
+      const dayDate = new DateValue(
+        String(today.getDate()).padStart(2, '0'),
+        String(today.getMonth() + 1).padStart(2, '0'),
+        String(today.getFullYear()),
+      )
 
       return {
-        day: String(today.getDate()).padStart(2, '0'),
-        month: String(today.getMonth() + 1).padStart(2, '0'),
-        year: String(today.getFullYear()),
-        selected: today.getDate() === day && monthOfTheDate === month && today.getFullYear() === year,
-        diferentMonth: monthOfTheDate !== Number(currentMonth.month) || (today.getFullYear()) !== Number(currentMonth.year),
+        date: dayDate,
+        selected: dayDate.eq(date),
+        diferentMonth: today.getMonth() + 1 !== +selectedDate.month || today.getFullYear() !== +selectedDate.year,
+        enabled: (!minDate || dayDate.gte(minDate)) && (!maxDate || dayDate.lte(maxDate)),
       }
     })
   }
@@ -109,29 +116,23 @@ export default function Calendar({
     }}>
     <div style={styles.header}>
       <LeftIcon size={18} color={config.disabledFontColor} onClick={() => incrementMonth(-1)} />
-      <ThemeText
-        noSelection
-        noWrap
-        fontSize={14}
-        style={styles.title}
-        textTag={TextTag.P}
-        color={config.disabledFontColor}
-      >
+      <ThemeText noSelection noWrap fontSize={14} textTag={TextTag.P} color={config.disabledFontColor}>
         {MONTH_NAME[parseInt(currentMonth.month) as keyof typeof MONTH_NAME]}
       </ThemeText>
       <RightIcon size={18} color={config.disabledFontColor} onClick={() => incrementMonth(1)} />
     </div>
+
     <hr style={styles.sectionDivider} />
 
     <div style={styles.weekDays}>
-      {WEEK_DADYS.map((day) => <ThemeText
+      {WEEK_DAYS.map((day) => <ThemeText
         key={day}
         noSelection
         noWrap
         fontSize={12}
         textTag={TextTag.P}
         color={config.disabledFontColor}
-        style={{ width: '14.28%', textAlign: 'center' }}
+        style={{ textAlign: 'center' }}
       >
         {day}
       </ThemeText>
@@ -139,18 +140,22 @@ export default function Calendar({
     </div>
 
     <div style={styles.body}>
-      {getDaysOfMonth(currentMonth)?.map((item: CalendarDay, index: number) => {
-        let style = item.selected ? { ...styles.day, backgroundColor: config.selectedDate } : styles.day
+      {getDaysOfMonth(currentMonth).map((item: CalendarDay, index: number) => {
+        let style = item.diferentMonth
+          ? { ...styles.day, backgroundColor: config.diferentMonth }
+          : item.selected
+            ? { ...styles.day, backgroundColor: config.selectedDate }
+            : styles.day
 
-        if (item.diferentMonth)
-          style = { ...style, backgroundColor: config.diferentMonth }
+        if (!item.enabled)
+          style = { ...style, opacity: 0.4, cursor: 'not-allowed' }
 
-        return <div key={index} style={style} onClick={() => onSelect(item as DateValue)} >
-          <ThemeText noWrap noSelection textTag={TextTag.P}>{item.day}</ThemeText>
+        return <div key={index} style={style} onClick={() => item.enabled && onSelect(item.date)}>
+          <ThemeText noWrap noSelection textTag={TextTag.P}>{item.date.day}</ThemeText>
         </div>
       })}
     </div>
-  </div >
+  </div>
 }
 
 const styles: { [key: string]: React.CSSProperties } = {
@@ -183,10 +188,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     gridTemplateColumns: 'repeat(7, 1fr)',
     padding: '0px 8px',
     margin: '4px 0px',
-  },
-  dayContainer: {
-    backgroundColor: 'red',
-    borderRadius: '8px',
   },
   body: {
     boxSizing: 'border-box',
