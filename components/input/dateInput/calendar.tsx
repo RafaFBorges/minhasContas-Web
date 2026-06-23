@@ -117,7 +117,7 @@ export default function Calendar({
     <div style={styles.header}>
       <LeftIcon size={18} color={config.disabledFontColor} onClick={() => incrementMonth(-1)} />
       <ThemeText noSelection noWrap fontSize={14} textTag={TextTag.P} color={config.disabledFontColor}>
-        {MONTH_NAME[parseInt(currentMonth.month) as keyof typeof MONTH_NAME]}
+        {MONTH_NAME[parseInt(currentMonth.month) as keyof typeof MONTH_NAME] + ' / ' + currentMonth.year}
       </ThemeText>
       <RightIcon size={18} color={config.disabledFontColor} onClick={() => incrementMonth(1)} />
     </div>
