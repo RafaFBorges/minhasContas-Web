@@ -141,10 +141,10 @@ export default function Calendar({
 
     <div style={styles.body}>
       {getDaysOfMonth(currentMonth).map((item: CalendarDay, index: number) => {
-        let style = item.diferentMonth
-          ? { ...styles.day, backgroundColor: config.diferentMonth }
-          : item.selected
-            ? { ...styles.day, backgroundColor: config.selectedDate }
+        let style = item.selected
+          ? { ...styles.day, backgroundColor: config.selectedDate }
+          : item.diferentMonth
+            ? { ...styles.day, backgroundColor: config.diferentMonth }
             : styles.day
 
         if (!item.enabled)
