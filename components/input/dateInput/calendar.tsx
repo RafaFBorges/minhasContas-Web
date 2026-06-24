@@ -5,10 +5,28 @@ import { HiChevronLeft as LeftIcon, HiChevronRight as RightIcon } from 'react-ic
 import { DateValue } from './dateInput'
 import ThemeText from '../../themeComponents/themeText'
 import { TextTag } from '../../api/text'
-import { useTheme } from '../../../utils/hook/themeHook'
 
 
-interface CalendarProps {
+export type WeekDaysType = [string, string, string, string, string, string, string]
+export const WEEK_DAYS: WeekDaysType = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
+export const CALENDAR_ITEM_COUNT: number = 35
+export const MONTH_NAME: Record<number, string>
+  = {
+  1: 'Janeiro',
+  2: 'Fevereiro',
+  3: 'Março',
+  4: 'Abril',
+  5: 'Maio',
+  6: 'Junho',
+  7: 'Julho',
+  8: 'Agosto',
+  9: 'Setembro',
+  10: 'Outubro',
+  11: 'Novembro',
+  12: 'Dezembro',
+}
+
+export interface CalendarProps {
   date: DateValue
   show: boolean
   setShow: (show: boolean) => void
@@ -16,6 +34,14 @@ interface CalendarProps {
   onSelect: (date: DateValue) => void
   maxDate?: DateValue
   minDate?: DateValue
+  calendarItemCount?: number
+  borderColor?: string
+  backgroundColor?: string
+  disabledFontColor?: string
+  selectedDate?: string
+  diferentMonth?: string
+  monthName?: Record<number, string>
+  weekDays?: WeekDaysType
 }
 
 interface CalendarDay {
@@ -33,27 +59,17 @@ export default function Calendar({
   maxDate,
   minDate,
   onSelect = () => { },
+  borderColor = '#555',
+  backgroundColor = '#fff',
+  disabledFontColor = '#555',
+  selectedDate = '#0070f3',
+  diferentMonth = '#D8D8D8',
+  calendarItemCount = CALENDAR_ITEM_COUNT,
+  monthName = MONTH_NAME,
+  weekDays = WEEK_DAYS,
 }: CalendarProps) {
-  const CALENDAR_ITEM_COUNT = 35
-  const MONTH_NAME = {
-    1: 'Janeiro',
-    2: 'Fevereiro',
-    3: 'Março',
-    4: 'Abril',
-    5: 'Maio',
-    6: 'Junho',
-    7: 'Julho',
-    8: 'Agosto',
-    9: 'Setembro',
-    10: 'Outubro',
-    11: 'Novembro',
-    12: 'Dezembro',
-  }
-  const WEEK_DAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
   const calendarRef = useRef<HTMLDivElement>(null)
   const [currentMonth, setCurrentMonth] = useState<DateValue>(date)
-
-  const { config } = useTheme()
 
   function incrementMonth(inc: number) {
     const newMonth = (parseInt(currentMonth.month) - 1) + inc
@@ -70,7 +86,7 @@ export default function Calendar({
     const base: Date = new Date(Number(selectedDate.year), Number(selectedDate.month) - 1, 1)
     const firstDayOfWeek: number = base.getDay()
 
-    return Array.from({ length: CALENDAR_ITEM_COUNT }, (_, i) => {
+    return Array.from({ length: calendarItemCount }, (_, i) => {
       const today = new Date(base)
       today.setDate(base.getDate() - firstDayOfWeek + i)
 
@@ -111,27 +127,27 @@ export default function Calendar({
     style={{
       ...styles.calendar,
       top: top,
-      border: `1.5px solid ${config.borderColor}`,
-      backgroundColor: config.backgroundColor,
+      border: `1.5px solid ${borderColor}`,
+      backgroundColor: backgroundColor,
     }}>
     <div style={styles.header}>
-      <LeftIcon size={18} color={config.disabledFontColor} onClick={() => incrementMonth(-1)} />
-      <ThemeText noSelection noWrap fontSize={14} textTag={TextTag.P} color={config.disabledFontColor}>
-        {MONTH_NAME[parseInt(currentMonth.month) as keyof typeof MONTH_NAME] + ' / ' + currentMonth.year}
+      <LeftIcon size={18} color={disabledFontColor} onClick={() => incrementMonth(-1)} />
+      <ThemeText noSelection noWrap fontSize={14} textTag={TextTag.P} color={disabledFontColor}>
+        {monthName[parseInt(currentMonth.month)] + ' / ' + currentMonth.year}
       </ThemeText>
-      <RightIcon size={18} color={config.disabledFontColor} onClick={() => incrementMonth(1)} />
+      <RightIcon size={18} color={disabledFontColor} onClick={() => incrementMonth(1)} />
     </div>
 
-    <hr style={{ ...styles.sectionDivider, borderColor: config.disabledFontColor }} />
+    <hr style={{ ...styles.sectionDivider, borderColor: disabledFontColor }} />
 
     <div style={styles.weekDays}>
-      {WEEK_DAYS.map((day) => <ThemeText
+      {weekDays.map((day) => <ThemeText
         key={day}
         noSelection
         noWrap
         fontSize={12}
         textTag={TextTag.P}
-        color={config.disabledFontColor}
+        color={disabledFontColor}
         style={{ textAlign: 'center' }}
       >
         {day}
@@ -142,9 +158,9 @@ export default function Calendar({
     <div style={styles.body}>
       {getDaysOfMonth(currentMonth).map((item: CalendarDay, index: number) => {
         let style = item.selected
-          ? { ...styles.day, backgroundColor: config.selectedDate }
+          ? { ...styles.day, backgroundColor: selectedDate }
           : item.diferentMonth
-            ? { ...styles.day, backgroundColor: config.diferentMonth }
+            ? { ...styles.day, backgroundColor: diferentMonth }
             : styles.day
 
         if (!item.enabled)
