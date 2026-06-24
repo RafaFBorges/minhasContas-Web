@@ -122,7 +122,7 @@ export default function Calendar({
       <RightIcon size={18} color={config.disabledFontColor} onClick={() => incrementMonth(1)} />
     </div>
 
-    <hr style={styles.sectionDivider} />
+    <hr style={{ ...styles.sectionDivider, borderColor: config.disabledFontColor }} />
 
     <div style={styles.weekDays}>
       {WEEK_DAYS.map((day) => <ThemeText
