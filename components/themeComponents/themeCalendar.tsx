@@ -84,6 +84,7 @@ export default function ThemeCalendar({ ...rest }: CalendarProps) {
     disabledFontColor={config.disabledFontColor}
     selectedDate={config.selectedDate}
     diferentMonth={config.diferentMonth}
+    fontColor={config.fontColor}
     calendarItemCount={CALENDAR_ITEM_COUNT}
     monthName={monthNames}
     weekDays={weekDays}

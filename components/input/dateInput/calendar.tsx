@@ -3,8 +3,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { HiChevronLeft as LeftIcon, HiChevronRight as RightIcon } from 'react-icons/hi'
 
 import { DateValue } from './dateInput'
-import ThemeText from '../../themeComponents/themeText'
-import { TextTag } from '../../api/text'
+import Text, { TextTag } from '../../api/text'
 
 
 export type WeekDaysType = [string, string, string, string, string, string, string]
@@ -38,6 +37,7 @@ export interface CalendarProps {
   borderColor?: string
   backgroundColor?: string
   disabledFontColor?: string
+  fontColor?: string
   selectedDate?: string
   diferentMonth?: string
   monthName?: Record<number, string>
@@ -62,6 +62,7 @@ export default function Calendar({
   borderColor = '#555',
   backgroundColor = '#fff',
   disabledFontColor = '#555',
+  fontColor = '',
   selectedDate = '#0070f3',
   diferentMonth = '#D8D8D8',
   calendarItemCount = CALENDAR_ITEM_COUNT,
@@ -132,26 +133,36 @@ export default function Calendar({
     }}>
     <div style={styles.header}>
       <LeftIcon size={18} color={disabledFontColor} onClick={() => incrementMonth(-1)} />
-      <ThemeText noSelection noWrap fontSize={14} textTag={TextTag.P} color={disabledFontColor}>
+      <Text
+        noSelection
+        noWrap
+        fontSize={14}
+        textTag={TextTag.P}
+        color={disabledFontColor}
+        fontColor={fontColor}
+        disabledFontColor={disabledFontColor}
+      >
         {monthName[parseInt(currentMonth.month)] + ' / ' + currentMonth.year}
-      </ThemeText>
+      </Text>
       <RightIcon size={18} color={disabledFontColor} onClick={() => incrementMonth(1)} />
     </div>
 
     <hr style={{ ...styles.sectionDivider, borderColor: disabledFontColor }} />
 
     <div style={styles.weekDays}>
-      {weekDays.map((day) => <ThemeText
+      {weekDays.map((day) => <Text
         key={day}
         noSelection
         noWrap
         fontSize={12}
         textTag={TextTag.P}
         color={disabledFontColor}
+        fontColor={fontColor}
+        disabledFontColor={disabledFontColor}
         style={{ textAlign: 'center' }}
       >
         {day}
-      </ThemeText>
+      </Text>
       )}
     </div>
 
@@ -167,7 +178,15 @@ export default function Calendar({
           style = { ...style, opacity: 0.4, cursor: 'not-allowed' }
 
         return <div key={index} style={style} onClick={() => item.enabled && onSelect(item.date)}>
-          <ThemeText noWrap noSelection textTag={TextTag.P}>{item.date.day}</ThemeText>
+          <Text
+            noWrap
+            noSelection
+            textTag={TextTag.P}
+            fontColor={fontColor}
+            disabledFontColor={disabledFontColor}
+          >
+            {item.date.day}
+          </Text>
         </div>
       })}
     </div>
