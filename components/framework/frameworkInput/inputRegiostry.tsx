@@ -4,13 +4,13 @@ import StyledInput from '../../input/input'
 import React from 'react'
 import SpinInput from '../../input/spinInput'
 import PasswordInput from '../../input/passwordInput'
-import DateInput from '../../input/dateInput/dateInput'
+import ThemeDateInput from '../../themeComponents/themeDateInput'
 
 const INPUT_REGISTRY: Partial<Record<React.HTMLInputTypeAttribute, React.ComponentType<StyledInputProps>>> = {
   tel: PhoneInput,
   number: SpinInput,
   password: PasswordInput,
-  date: DateInput,
+  date: ThemeDateInput,
   text: StyledInput,
 }
 

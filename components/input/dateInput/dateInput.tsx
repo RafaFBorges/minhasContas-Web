@@ -5,13 +5,14 @@ import { FaRegCalendar as CalendarIcon } from 'react-icons/fa'
 import { validateDate } from '../../../utils/validations'
 import Text from '../../api/text'
 import SpinInput from '../spinInput'
-import Calendar from './calendar'
+import { CalendarProps } from './calendar'
 
 
-interface DateInputProps extends StyledInputProps {
+export interface DateInputProps extends StyledInputProps {
   iconColor?: string
   maxDate?: DateValue
   minDate?: DateValue
+  Calendar?: React.ComponentType<CalendarProps>
 }
 
 export type DateField = 'day' | 'month' | 'year'
@@ -62,6 +63,7 @@ export default function DateInput({
   onBlur = undefined,
   maxDate = undefined,
   minDate = undefined,
+  Calendar = undefined,
 }: DateInputProps) {
   const TEXT_WIDTH = 152
   const DAY_FIELD = 'day'
@@ -264,14 +266,14 @@ export default function DateInput({
       />
     </div>
 
-    {hasIconSpace && <CalendarIcon
+    {Calendar && hasIconSpace && <CalendarIcon
       color={iconColor}
       size={iconSize}
       style={{ ...styles.icon, top: iconTop }}
       onMouseDown={() => setShow(true)}
     />}
 
-    <Calendar
+    {Calendar && <Calendar
       show={show}
       setShow={setShow}
       date={dateStruct}
@@ -279,7 +281,7 @@ export default function DateInput({
       onSelect={changeCalendarHandle}
       maxDate={maxDate}
       minDate={minDate}
-    />
+    />}
   </div>
 }
 
