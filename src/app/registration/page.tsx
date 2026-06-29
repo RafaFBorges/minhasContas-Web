@@ -1,14 +1,14 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import ThemeButton from '../../../components/themeComponents/themeButton'
+
 import ThemeText from '../../../components/themeComponents/themeText'
 import { TextTag } from '../../../components/api/text'
 import { LanguageOption, useTranslate } from '../../../utils/hook/translateHook'
 import { validateDate, notEmpty, validateEmail, validateStrongPassword } from '../../../utils/validations'
 import { useForm, FormInputField } from '../../../utils/hook/useForm'
-import { useViewForm } from '../../../utils/hook/useViewForm'
 import { DateValue } from '../../../components/input/dateInput/dateInput'
+import { REGISTER_ENDPOINT } from '@/comunication/ApiResthandler'
 
 
 interface RegistrationTranslations {
@@ -27,7 +27,6 @@ export default function Registration() {
   const ACCESS_KEY = 'Registration.Access'
   const PASSWORD_KEY = 'Registration.Password'
   const CONFIRM_PASSWORD_KEY = 'Registration.ConfirmPassword'
-  const SUBMIT_KEY = 'Registration.Submit'
   const ERROR_REQUIRED_KEY = 'Registration.ErrorRequired'
   const ERROR_PASSWORD_MATCH_KEY = 'Registration.ErrorPasswordMatch'
   const PH_FIRST_NAME_KEY = 'Registration.PlaceholderFirstName'
@@ -36,6 +35,9 @@ export default function Registration() {
   const PH_PHONE_KEY = 'Registration.PlaceholderPhone'
   const PH_PASSWORD_KEY = 'Registration.PlaceholderPassword'
   const PH_CONFIRM_PASSWORD_KEY = 'Registration.PlaceholderConfirmPassword'
+  const USER_KEY = 'Registration.User'
+  const PH_USER_KEY = 'Registration.PlaceholderUser'
+  const SUCSESS_KEY = 'Registration.Sucsess'
 
   function translate(): RegistrationTranslations {
     const tr = {} as RegistrationTranslations
@@ -44,9 +46,9 @@ export default function Registration() {
     tr[SUBTITLE_KEY] = addKeys(SUBTITLE_KEY, [{ value: 'Preencha os dados abaixo para se cadastrar.', lang: LanguageOption.PT_BR }, { value: 'Fill in the details below to register.', lang: LanguageOption.EN },])
     tr[PERSONAL_DATA_KEY] = addKeys(PERSONAL_DATA_KEY, [{ value: 'Dados pessoais', lang: LanguageOption.PT_BR }, { value: 'Personal data', lang: LanguageOption.EN },])
     tr[ACCESS_KEY] = addKeys(ACCESS_KEY, [{ value: 'Acesso', lang: LanguageOption.PT_BR }, { value: 'Access', lang: LanguageOption.EN },])
-    tr[SUBMIT_KEY] = addKeys(SUBMIT_KEY, [{ value: 'Cadastrar', lang: LanguageOption.PT_BR }, { value: 'Register', lang: LanguageOption.EN },])
     tr[ERROR_REQUIRED_KEY] = addKeys(ERROR_REQUIRED_KEY, [{ value: 'Por favor, preencha os campos obrigatórios.', lang: LanguageOption.PT_BR }, { value: 'Please fill in the required fields.', lang: LanguageOption.EN },])
     tr[ERROR_PASSWORD_MATCH_KEY] = addKeys(ERROR_PASSWORD_MATCH_KEY, [{ value: 'As senhas não coincidem.', lang: LanguageOption.PT_BR }, { value: 'Passwords do not match.', lang: LanguageOption.EN },])
+    tr[SUCSESS_KEY] = addKeys(SUCSESS_KEY, [{ value: 'Parabéns! Sua conta foi criada', lang: LanguageOption.PT_BR }, { value: 'Congratulations! Your account has been created', lang: LanguageOption.EN },])
 
     return tr
   }
@@ -72,14 +74,6 @@ export default function Registration() {
       addOrSetField({ ...form()[fieldName], value: value, isValid: field.isValid })
   }
 
-  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
-    if (!canSubmit)
-      return
-
-    console.log('Enviou')
-  }
-
   function getTomorrow(): DateValue {
     const tomorrow = new Date(Date.now() + 86400000)
     return new DateValue(String(tomorrow.getDate()).padStart(2, '0'), String(tomorrow.getMonth() + 1).padStart(2, '0'), String(tomorrow.getFullYear()))
@@ -87,9 +81,16 @@ export default function Registration() {
 
   const { language, addKeys, getValue } = useTranslate()
   const [translation, setTranslation] = useState<RegistrationTranslations>(translate())
-
-  const { form, orderedFields, addOrSetField, getFieldValue, canSubmit, onFieldBlur, onFieldChange } = useForm(buildInitialFields())
-  const { renderFields } = useViewForm({ orderedFields, onFieldBlur, handleChange })
+  const { form, renderForm, addOrSetField, getFieldValue, onFieldChange } = useForm({
+    initialFields: buildInitialFields(),
+    name: 'Registration',
+    handleChange: handleChange,
+    processResponse: wasSusessfull,
+    onSucsess: onSucsess,
+    path: REGISTER_ENDPOINT,
+    title: translation[TITLE_KEY],
+    subtitle: translation[SUBTITLE_KEY],
+  })
 
   function buildInitialFields(): FormInputField[] {
     return [
@@ -162,6 +163,18 @@ export default function Registration() {
         section: translation[ACCESS_KEY],
         value: '',
         isValid: null,
+        type: 'text',
+        name: 'user',
+        label: addKeys(USER_KEY, [{ value: 'Usuário', lang: LanguageOption.PT_BR }, { value: 'Username', lang: LanguageOption.EN },]),
+        placeholder: addKeys(PH_USER_KEY, [{ value: 'Identificação no sistema', lang: LanguageOption.PT_BR }, { value: 'System login', lang: LanguageOption.EN },]),
+        style: styles.field,
+        validate: notEmpty,
+      },
+      {
+        position: 6,
+        section: translation[ACCESS_KEY],
+        value: '',
+        isValid: null,
         type: 'password',
         name: 'password',
         label: addKeys(PASSWORD_KEY, [{ value: 'Senha', lang: LanguageOption.PT_BR }, { value: 'Password', lang: LanguageOption.EN },]),
@@ -170,7 +183,7 @@ export default function Registration() {
         validate: validateStrongPassword,
       },
       {
-        position: 6,
+        position: 7,
         section: translation[ACCESS_KEY],
         value: '',
         isValid: null,
@@ -183,15 +196,23 @@ export default function Registration() {
     ]
   }
 
+  function wasSusessfull(response: any): boolean {
+    return response != null && response.isCreated
+  }
+
+  function onSucsess() {
+    return <ThemeText noSelection style={styles.title} textTag={TextTag.H1} color={'#000'}>{translation[SUCSESS_KEY]}</ThemeText>
+  }
+
   useEffect(() => {
     setTranslation({
       [TITLE_KEY]: getValue(TITLE_KEY),
       [SUBTITLE_KEY]: getValue(SUBTITLE_KEY),
       [PERSONAL_DATA_KEY]: getValue(PERSONAL_DATA_KEY),
       [ACCESS_KEY]: getValue(ACCESS_KEY),
-      [SUBMIT_KEY]: getValue(SUBMIT_KEY),
       [ERROR_REQUIRED_KEY]: getValue(ERROR_REQUIRED_KEY),
       [ERROR_PASSWORD_MATCH_KEY]: getValue(ERROR_PASSWORD_MATCH_KEY),
+      [SUCSESS_KEY]: getValue(SUCSESS_KEY),
     })
 
     addOrSetField({ ...form().firstName, label: getValue(FIRST_NAME_KEY), placeholder: getValue(PH_FIRST_NAME_KEY) })
@@ -205,17 +226,7 @@ export default function Registration() {
 
   return <main style={styles.container}>
     <div style={styles.card}>
-      <ThemeText noSelection noWrap style={styles.title} textTag={TextTag.H1} color={'#000'}>{translation[TITLE_KEY]}</ThemeText>
-      <ThemeText noSelection noWrap style={styles.subtitle} textTag={TextTag.P} color={'#000'}>{translation[SUBTITLE_KEY]}</ThemeText>
-      <form noValidate>
-        {renderFields()}
-
-        <div style={styles.buttonsContainer}>
-          <ThemeButton enabled={canSubmit()} clickHandle={handleSubmit}>
-            {translation[SUBMIT_KEY]}
-          </ThemeButton>
-        </div>
-      </form>
+      {renderForm()}
     </div>
   </main>
 }
@@ -240,22 +251,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: '2rem',
     boxSizing: 'border-box',
   },
-  title: {
-    fontSize: 22,
-    fontWeight: 500,
-    margin: '0 0 0.25rem',
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#666',
-    margin: '0 0 1.75rem',
-  },
   field: {
     marginBottom: '1rem',
-  },
-  buttonsContainer: {
-    display: 'flex',
-    width: '100%',
-    justifyContent: 'flex-end',
   },
 }

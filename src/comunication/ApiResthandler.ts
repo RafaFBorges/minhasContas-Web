@@ -6,6 +6,7 @@ export const EXPENSES_ENDPOINT = 'expense'
 export const CATEGORIES_ENDPOINT = 'category'
 export const USER_ENDPOINT = 'user'
 export const LOGIN_ENDPOINT = 'login'
+export const REGISTER_ENDPOINT = 'register'
 
 interface ErrorResponse {
   status: number;
