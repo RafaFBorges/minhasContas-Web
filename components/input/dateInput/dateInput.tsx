@@ -177,8 +177,8 @@ export default function DateInput({
 
     const newValue = e.target.value
 
-    dateStruct.update(field as DateField, newValue)
-    setDateStruct(dateStruct)
+    const updatedStruct = dateStruct.update(field as DateField, newValue)
+    setDateStruct(updatedStruct)
 
     if (changeHandle)
       changeHandle({ ...e, target: { ...e.target, value: getSettedDate(dateStruct), } } as React.ChangeEvent<HTMLInputElement>)
