@@ -1,12 +1,8 @@
-import React, { ReactNode, useEffect, useRef, useState } from 'react'
+import React, { ReactNode, useRef, useState } from 'react'
 
 import { DateValue } from '../../components/input/dateInput/dateInput'
 import { handlePOST } from '@/comunication/ApiResthandler'
-import { TextTag } from '../../components/api/text'
-import ThemeText from '../../components/themeComponents/themeText'
-import FrameworkInput from '../../components/framework/frameworkInput'
-import ThemeButton from '../../components/themeComponents/themeButton'
-import { LanguageOption, useTranslate } from './translateHook'
+import { useViewForm } from './useViewForm'
 
 
 export interface FormInputField {
@@ -56,7 +52,7 @@ interface UseFormReturn {
   getFieldValue: (name: string, value: string) => getFieldValueResult
   canSubmit: () => boolean
   onFieldChange: () => void
-  handleSubmit: (e: React.MouseEvent<HTMLButtonElement>, path: string) => void
+  handleSubmit: (e: React.MouseEvent<HTMLButtonElement>) => Promise<void>
 }
 
 interface UseFormProps {
@@ -70,9 +66,7 @@ interface UseFormProps {
   subtitle?: string
 }
 
-export function useForm({ initialFields = [], name, handleChange, processResponse = undefined, onSucsess, path = '', title = undefined, subtitle = undefined }: UseFormProps): UseFormReturn {
-  const SUBMIT_KEY = 'Registration.Submit'
-
+export function useForm({ initialFields = [], name, handleChange, processResponse = undefined, path = '', onSucsess, title = undefined, subtitle = undefined }: UseFormProps): UseFormReturn {
   const buildInitialState = (): FormState => {
     return initialFields.reduce<FormState>((acc, field, index) => {
       acc[field.name] = { ...field, position: field.position ?? index }
@@ -84,9 +78,17 @@ export function useForm({ initialFields = [], name, handleChange, processRespons
   const orderRef = useRef<string[]>(initialFields.map(f => f.name))
   const canSubmitRef = useRef<boolean>(false)
   const [notSending, setNotSending] = useState<boolean>(false)
-  const [sucess, setSucess] = useState<boolean>(false)
   const [, forceUpdate] = useState(0)
-  const { addKeys, getValue } = useTranslate()
+  const { renderForm, setSucess } = useViewForm({
+    orderedFields: orderedFields,
+    onFieldBlur: onFieldBlur,
+    handleChange: handleChange,
+    onSucsess: onSucsess,
+    title: title,
+    subtitle: subtitle,
+    canSubmit: canSubmit,
+    handleSubmit: handleSubmit,
+  })
 
   const addOrSetField = (field: FormInputField) => {
     const isNew = !formRef.current[field.name]
@@ -106,23 +108,24 @@ export function useForm({ initialFields = [], name, handleChange, processRespons
     forceUpdate(n => n + 1)
   }
 
-  const orderedFields = (): FormInputField[] =>
-    orderRef.current
+  function orderedFields(): FormInputField[] {
+    return orderRef.current
       .map(name => formRef.current[name])
       .filter(Boolean)
       .sort((a, b) => a.position - b.position)
+  }
 
-  const onFieldBlur = () => {
+  function onFieldBlur() {
     canSubmitRef.current = Object.values(formRef.current).every(f => f.isValid === true)
     forceUpdate(n => n + 1)
   }
 
-  const onFieldChange = () => {
+  function onFieldChange() {
     canSubmitRef.current = false
     forceUpdate(n => n + 1)
   }
 
-  const getFieldValue = (name: string, value: string): getFieldValueResult => {
+  function getFieldValue(name: string, value: string): getFieldValueResult {
     const fieldData = formRef.current[name]
     if (!fieldData)
       return { success: false, field: EMPTY_FIELD }
@@ -135,7 +138,7 @@ export function useForm({ initialFields = [], name, handleChange, processRespons
     }
   }
 
-  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  async function handleSubmit(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault()
 
     if (!canSubmit)
@@ -158,157 +161,13 @@ export function useForm({ initialFields = [], name, handleChange, processRespons
     console.log('handleSubmit > ' + name + ' response=' + (response != null))
   }
 
-  const buildSections = (): SectionBlock[] => {
-    const fields: FormInputField[] = orderedFields()
-    const sections: SectionBlock[] = []
-    const sectionMap: Map<string, SectionBlock> = new Map<string, SectionBlock>()
-    const groupMap: Map<string, FormInputField[]> = new Map<string, FormInputField[]>()
-
-    for (const field of fields) {
-      const sectionKey = field.section ?? '__default__'
-
-      if (!sectionMap.has(sectionKey)) {
-        const block: SectionBlock = {
-          sectionKey,
-          sectionLabel: field.section,
-          rows: [],
-        }
-
-        sectionMap.set(sectionKey, block)
-        sections.push(block)
-      }
-
-      const section = sectionMap.get(sectionKey)!
-
-      if (field.group) {
-        const groupKey = `${sectionKey}::${field.group}`
-
-        if (!groupMap.has(groupKey)) {
-          const group: FormInputField[] = []
-          groupMap.set(groupKey, group)
-          section.rows.push(group)
-        }
-
-        groupMap.get(groupKey)!.push(field)
-      } else
-        section.rows.push(field)
-    }
-
-    return sections
+  function canSubmit(): boolean {
+    return !notSending && canSubmitRef.current
   }
 
-  const renderField = (item: FormInputField) => <FrameworkInput
-    key={item.name}
-    {...item}
-    onBlur={onFieldBlur}
-    changeHandle={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(item.name, e.target.value)}
-  />
-
-  const renderRow = (row: FormInputField | FormInputField[], index: number) => {
-    if (Array.isArray(row)) {
-      return <div key={row.map(f => f.name).join('-')} style={styles.group}>
-        {row.map(renderField)}
-      </div>
-    }
-
-    return renderField(row)
+  function form(): FormState {
+    return formRef.current
   }
-
-  const renderFields = () => {
-    const sections = buildSections()
-
-    return <div>
-      {sections.map((section, sIndex) => (
-        <div key={section.sectionKey}>
-          {section.sectionLabel && (
-            <ThemeText
-              noSelection
-              noWrap
-              style={styles.sectionLabel}
-              textTag={TextTag.P}
-              color={'#000'}
-            >
-              {section.sectionLabel}
-            </ThemeText>
-          )}
-
-          {section.rows.map((row, rIndex) => (
-            <div key={rIndex}>
-              {renderRow(row, rIndex)}
-              {rIndex < section.rows.length - 1 && <div style={styles.rowDivider} />}
-            </div>
-          ))}
-
-          {sIndex < sections.length - 1 && <hr style={styles.sectionDivider} />}
-        </div>
-      ))}
-    </div>
-  }
-
-  function renderForm() {
-    return <>
-      <ThemeText noSelection noWrap style={styles.title} textTag={TextTag.H1} color={'#000'}>{title}</ThemeText>
-      <ThemeText noSelection noWrap style={styles.subtitle} textTag={TextTag.P} color={'#000'}>{subtitle}</ThemeText>
-      <form noValidate>
-        {sucess
-          ? onSucsess ? onSucsess() : undefined
-          : renderFields()}
-
-        {!sucess && <div style={styles.buttonsContainer}>
-          <ThemeButton enabled={canSubmit()} clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => handleSubmit(e)}>
-            {getValue(SUBMIT_KEY)}
-          </ThemeButton>
-        </div>}
-      </form>
-    </>
-  }
-
-  const form = (): FormState => formRef.current
-
-  const canSubmit = (): boolean => !notSending && canSubmitRef.current
-
-  useEffect(() => {
-    addKeys(SUBMIT_KEY, [{ value: 'Cadastrar', lang: LanguageOption.PT_BR }, { value: 'Register', lang: LanguageOption.EN },])
-  }, [])
 
   return { form, canSubmit, onFieldChange, addOrSetField, getFieldValue, handleSubmit, renderForm }
-}
-
-const styles: { [key: string]: React.CSSProperties } = {
-  group: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(0, 1fr))',
-    gap: 12,
-  },
-  sectionLabel: {
-    fontSize: 12,
-    fontWeight: 500,
-    color: '#999',
-    textTransform: 'uppercase',
-    letterSpacing: '0.06em',
-    margin: '0 0 1rem',
-  },
-  rowDivider: {
-    height: 8,
-  },
-  sectionDivider: {
-    border: 'none',
-    borderTop: '1px solid #eee',
-    margin: '1.25rem 0',
-  },
-  buttonsContainer: {
-    display: 'flex',
-    width: '100%',
-    justifyContent: 'flex-end',
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 500,
-    margin: '0 0 0.25rem',
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#666',
-    margin: '0 0 1.75rem',
-  },
 }

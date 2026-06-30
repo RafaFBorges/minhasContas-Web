@@ -1,13 +1,22 @@
-import React from 'react'
+import React, { ReactNode, useEffect, useState } from 'react'
+
 import FrameworkInput from '../../components/framework/frameworkInput'
 import ThemeText from '../../components/themeComponents/themeText'
 import { TextTag } from '../../components/api/text'
 import { FormInputField } from './useForm'
+import ThemeButton from '../../components/themeComponents/themeButton'
+import { LanguageOption, useTranslate } from './translateHook'
+
 
 interface UseViewFormProps {
   orderedFields: () => FormInputField[]
   onFieldBlur: () => void
   handleChange: (name: string, value: string) => void
+  onSucsess?: () => ReactNode
+  title?: string
+  subtitle?: string
+  canSubmit: () => boolean
+  handleSubmit: (e: React.MouseEvent<HTMLButtonElement>) => Promise<void>
 }
 
 interface SectionBlock {
@@ -16,13 +25,22 @@ interface SectionBlock {
   rows: (FormInputField | FormInputField[])[]
 }
 
-export function useViewForm({ orderedFields, onFieldBlur, handleChange }: UseViewFormProps) {
+interface UseViewReturn {
+  renderForm: () => React.JSX.Element | undefined
+  setSucess: (value: boolean) => void
+}
 
-  const buildSections = (): SectionBlock[] => {
-    const fields = orderedFields()
+export function useViewForm({ orderedFields, onFieldBlur, handleChange, onSucsess, title = undefined, subtitle = undefined, canSubmit, handleSubmit }: UseViewFormProps): UseViewReturn {
+  const SUBMIT_KEY = 'Registration.Submit'
+
+  const [sucess, setSucess] = useState<boolean>(false)
+  const { addKeys, getValue } = useTranslate()
+
+  function buildSections(): SectionBlock[] {
+    const fields: FormInputField[] = orderedFields()
     const sections: SectionBlock[] = []
-    const sectionMap = new Map<string, SectionBlock>()
-    const groupMap = new Map<string, FormInputField[]>()
+    const sectionMap: Map<string, SectionBlock> = new Map<string, SectionBlock>()
+    const groupMap: Map<string, FormInputField[]> = new Map<string, FormInputField[]>()
 
     for (const field of fields) {
       const sectionKey = field.section ?? '__default__'
@@ -57,16 +75,16 @@ export function useViewForm({ orderedFields, onFieldBlur, handleChange }: UseVie
     return sections
   }
 
-  const renderField = (item: FormInputField) => (
-    <FrameworkInput
+  function renderField(item: FormInputField) {
+    return <FrameworkInput
       key={item.name}
       {...item}
       onBlur={onFieldBlur}
       changeHandle={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(item.name, e.target.value)}
     />
-  )
+  }
 
-  const renderRow = (row: FormInputField | FormInputField[], index: number) => {
+  function renderRow(row: FormInputField | FormInputField[], index: number) {
     if (Array.isArray(row)) {
       return <div key={row.map(f => f.name).join('-')} style={styles.group}>
         {row.map(renderField)}
@@ -76,7 +94,7 @@ export function useViewForm({ orderedFields, onFieldBlur, handleChange }: UseVie
     return renderField(row)
   }
 
-  const renderFields = () => {
+  function renderFields() {
     const sections = buildSections()
 
     return <div>
@@ -107,7 +125,29 @@ export function useViewForm({ orderedFields, onFieldBlur, handleChange }: UseVie
     </div>
   }
 
-  return { renderFields }
+  function renderForm() {
+    return <>
+      <ThemeText noSelection noWrap style={styles.title} textTag={TextTag.H1} color={'#000'}>{title}</ThemeText>
+      <ThemeText noSelection noWrap style={styles.subtitle} textTag={TextTag.P} color={'#000'}>{subtitle}</ThemeText>
+      <form noValidate>
+        {sucess
+          ? onSucsess ? onSucsess() : undefined
+          : renderFields()}
+
+        {!sucess && <div style={styles.buttonsContainer}>
+          <ThemeButton enabled={canSubmit()} clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => handleSubmit(e)}>
+            {getValue(SUBMIT_KEY)}
+          </ThemeButton>
+        </div>}
+      </form>
+    </>
+  }
+
+  useEffect(() => {
+    addKeys(SUBMIT_KEY, [{ value: 'Cadastrar', lang: LanguageOption.PT_BR }, { value: 'Register', lang: LanguageOption.EN },])
+  }, [])
+
+  return { renderForm, setSucess }
 }
 
 const styles: { [key: string]: React.CSSProperties } = {
@@ -131,5 +171,20 @@ const styles: { [key: string]: React.CSSProperties } = {
     border: 'none',
     borderTop: '1px solid #eee',
     margin: '1.25rem 0',
+  },
+  buttonsContainer: {
+    display: 'flex',
+    width: '100%',
+    justifyContent: 'flex-end',
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: 500,
+    margin: '0 0 0.25rem',
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#666',
+    margin: '0 0 1.75rem',
   },
 }
