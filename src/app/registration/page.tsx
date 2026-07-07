@@ -109,8 +109,6 @@ export default function Registration() {
         placeholder: addKeys(PH_FIRST_NAME_KEY, [{ value: 'João', lang: LanguageOption.PT_BR }, { value: 'John', lang: LanguageOption.EN },]),
         style: styles.field,
         validate: notEmpty,
-        isTouched: false,
-        setIsTouched: (touched: boolean) => addOrSetField({ ...form().firstName, isTouched: touched }),
       },
       {
         position: 1,
@@ -125,8 +123,6 @@ export default function Registration() {
         placeholder: addKeys(PH_LAST_NAME_KEY, [{ value: 'Silva', lang: LanguageOption.PT_BR }, { value: 'Smith', lang: LanguageOption.EN },]),
         style: styles.field,
         validate: notEmpty,
-        isTouched: false,
-        setIsTouched: (touched: boolean) => addOrSetField({ ...form().lastName, isTouched: touched }),
       },
       {
         position: 2,
@@ -140,8 +136,6 @@ export default function Registration() {
         placeholder: addKeys(PH_EMAIL_KEY, [{ value: 'joao@email.com', lang: LanguageOption.PT_BR }, { value: 'john@email.com', lang: LanguageOption.EN },]),
         style: styles.field,
         validate: validateEmail,
-        isTouched: false,
-        setIsTouched: (touched: boolean) => addOrSetField({ ...form().email, isTouched: touched }),
       },
       {
         position: 3,
@@ -156,8 +150,6 @@ export default function Registration() {
         placeholder: addKeys(PH_PHONE_KEY, [{ value: '(51) 99999-0000', lang: LanguageOption.PT_BR }, { value: '(51) 99999-0000', lang: LanguageOption.EN },]),
         style: styles.field,
         validate: notEmpty,
-        isTouched: false,
-        setIsTouched: (touched: boolean) => addOrSetField({ ...form().phone, isTouched: touched }),
       },
       {
         position: 4,
@@ -172,8 +164,6 @@ export default function Registration() {
         style: styles.field,
         validate: validateDate,
         maxDate: getTomorrow(),
-        isTouched: false,
-        setIsTouched: (touched: boolean) => addOrSetField({ ...form().birthdate, isTouched: touched }),
       },
       {
         position: 5,
@@ -187,8 +177,6 @@ export default function Registration() {
         placeholder: addKeys(PH_USER_KEY, [{ value: 'Identificação no sistema', lang: LanguageOption.PT_BR }, { value: 'System login', lang: LanguageOption.EN },]),
         style: styles.field,
         validate: notEmpty,
-        isTouched: false,
-        setIsTouched: (touched: boolean) => addOrSetField({ ...form().user, isTouched: touched }),
       },
       {
         position: 6,
@@ -202,8 +190,6 @@ export default function Registration() {
         placeholder: addKeys(PH_PASSWORD_KEY, [{ value: 'Mínimo 8 caracteres', lang: LanguageOption.PT_BR }, { value: 'Minimum 8 characters', lang: LanguageOption.EN },]),
         style: styles.field,
         validate: validateStrongPassword,
-        isTouched: false,
-        setIsTouched: (touched: boolean) => addOrSetField({ ...form().password, isTouched: touched }),
       },
       {
         position: 7,
@@ -216,8 +202,6 @@ export default function Registration() {
         label: addKeys(CONFIRM_PASSWORD_KEY, [{ value: 'Confirmar senha', lang: LanguageOption.PT_BR }, { value: 'Confirm password', lang: LanguageOption.EN },]),
         placeholder: addKeys(PH_CONFIRM_PASSWORD_KEY, [{ value: 'Repita a senha', lang: LanguageOption.PT_BR }, { value: 'Repeat password', lang: LanguageOption.EN },]),
         style: styles.field,
-        isTouched: false,
-        setIsTouched: (touched: boolean) => addOrSetField({ ...form().confirmPassword, isTouched: touched }),
       },
     ]
   }

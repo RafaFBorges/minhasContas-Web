@@ -68,7 +68,13 @@ interface UseFormProps {
 export function useForm({ initialFields = [], name, handleChange, processResponse = undefined, path = '', onSucsess, title = undefined, subtitle = undefined }: UseFormProps): UseFormReturn {
   const buildInitialState = (): FormState => {
     return initialFields.reduce<FormState>((acc, field, index) => {
-      acc[field.name] = { ...field, position: field.position ?? index }
+
+      acc[field.name] = {
+        ...field,
+        position: field.position ?? index,
+        isTouched: field.isTouched ?? false,
+        setIsTouched: (touched: boolean) => addOrSetField({ ...form()[field.name], isTouched: touched }),
+      }
       return acc
     }, {})
   }
