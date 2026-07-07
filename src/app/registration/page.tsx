@@ -147,7 +147,7 @@ export default function Registration() {
         type: 'tel',
         name: 'phone',
         label: addKeys(PHONE_KEY, [{ value: 'Telefone', lang: LanguageOption.PT_BR }, { value: 'Phone', lang: LanguageOption.EN },]),
-        placeholder: addKeys(PH_PHONE_KEY, [{ value: '(51) 99999-0000', lang: LanguageOption.PT_BR }, { value: '(555) 99999-0000', lang: LanguageOption.EN },]),
+        placeholder: addKeys(PH_PHONE_KEY, [{ value: '(51) 99999-0000', lang: LanguageOption.PT_BR }, { value: '(51) 99999-0000', lang: LanguageOption.EN },]),
         style: styles.field,
         validate: notEmpty,
       },
