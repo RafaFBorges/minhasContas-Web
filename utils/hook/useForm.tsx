@@ -1,5 +1,7 @@
 import React, { ReactNode, useRef, useState } from 'react'
 
+import { IconType } from 'react-icons'
+
 import { DateValue } from '../../components/input/dateInput/dateInput'
 import { handlePOST } from '@/comunication/ApiResthandler'
 import { useViewForm } from './useViewForm'
@@ -19,6 +21,7 @@ export interface FormInputField {
   validate?: (value: string) => boolean
   maxDate?: DateValue
   minDate?: DateValue
+  sectionIcon?: IconType | undefined
 }
 
 interface SectionBlock {

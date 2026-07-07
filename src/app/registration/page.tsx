@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from 'react'
 
+import { FaRegIdCard as PersonalDataIcon, FaLock as AccessIcon } from 'react-icons/fa'
+
 import ThemeText from '../../../components/themeComponents/themeText'
 import { TextTag } from '../../../components/api/text'
 import { LanguageOption, useTranslate } from '../../../utils/hook/translateHook'
@@ -97,6 +99,7 @@ export default function Registration() {
       {
         position: 0,
         section: translation[PERSONAL_DATA_KEY],
+        sectionIcon: PersonalDataIcon,
         group: 'name',
         value: '',
         isValid: null,
@@ -110,6 +113,7 @@ export default function Registration() {
       {
         position: 1,
         section: translation[PERSONAL_DATA_KEY],
+        sectionIcon: PersonalDataIcon,
         group: 'name',
         value: '',
         isValid: null,
@@ -123,6 +127,7 @@ export default function Registration() {
       {
         position: 2,
         section: translation[PERSONAL_DATA_KEY],
+        sectionIcon: PersonalDataIcon,
         value: '',
         isValid: null,
         type: 'email',
@@ -135,6 +140,7 @@ export default function Registration() {
       {
         position: 3,
         section: translation[PERSONAL_DATA_KEY],
+        sectionIcon: PersonalDataIcon,
         group: 'contact',
         value: '',
         isValid: null,
@@ -148,6 +154,7 @@ export default function Registration() {
       {
         position: 4,
         section: translation[PERSONAL_DATA_KEY],
+        sectionIcon: PersonalDataIcon,
         group: 'contact',
         value: '',
         isValid: null,
@@ -161,6 +168,7 @@ export default function Registration() {
       {
         position: 5,
         section: translation[ACCESS_KEY],
+        sectionIcon: AccessIcon,
         value: '',
         isValid: null,
         type: 'text',
@@ -173,6 +181,7 @@ export default function Registration() {
       {
         position: 6,
         section: translation[ACCESS_KEY],
+        sectionIcon: AccessIcon,
         value: '',
         isValid: null,
         type: 'password',
@@ -185,6 +194,7 @@ export default function Registration() {
       {
         position: 7,
         section: translation[ACCESS_KEY],
+        sectionIcon: AccessIcon,
         value: '',
         isValid: null,
         type: 'password',

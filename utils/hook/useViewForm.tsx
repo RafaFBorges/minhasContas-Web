@@ -1,11 +1,14 @@
 import React, { ReactNode, useEffect, useState } from 'react'
 
+import { IconType } from 'react-icons'
+
 import FrameworkInput from '../../components/framework/frameworkInput'
 import ThemeText from '../../components/themeComponents/themeText'
 import { TextTag } from '../../components/api/text'
 import { FormInputField } from './useForm'
 import ThemeButton from '../../components/themeComponents/themeButton'
 import { LanguageOption, useTranslate } from './translateHook'
+import { PaginationItem, usePagination } from './usePagination'
 
 
 interface UseViewFormProps {
@@ -22,6 +25,7 @@ interface UseViewFormProps {
 interface SectionBlock {
   sectionKey: string
   sectionLabel?: string
+  Icon?: IconType | undefined
   rows: (FormInputField | FormInputField[])[]
 }
 
@@ -30,11 +34,50 @@ interface UseViewReturn {
   setSucess: (value: boolean) => void
 }
 
-export function useViewForm({ orderedFields, onFieldBlur, handleChange, onSucsess, title = undefined, subtitle = undefined, canSubmit, handleSubmit }: UseViewFormProps): UseViewReturn {
+export function useViewForm({
+  orderedFields,
+  onFieldBlur,
+  handleChange,
+  onSucsess,
+  title = undefined,
+  subtitle = undefined,
+  canSubmit,
+  handleSubmit,
+}: UseViewFormProps): UseViewReturn {
   const SUBMIT_KEY = 'Registration.Submit'
 
   const [sucess, setSucess] = useState<boolean>(false)
-  const { addKeys, getValue } = useTranslate()
+  const { addKeys, getValue, language } = useTranslate()
+  const [submitLabel, setSubmitLabel] = useState<string>(translate())
+  const [paginationList, setPaginationlist] = useState<PaginationItem[]>(buildPagination())
+  const { renderController, renderNextButton, renderPreviousButton, renderContent } = usePagination({
+    list: paginationList,
+    firstIndex: 0,
+    lastAction: {
+      buttonName: submitLabel,
+      action: (e: React.MouseEvent<HTMLButtonElement>) => handleSubmit(e),
+      enabled: canSubmit,
+    }
+  })
+
+  function translate(): string {
+    return addKeys(SUBMIT_KEY, [{ value: 'Cadastrar', lang: LanguageOption.PT_BR }, { value: 'Register', lang: LanguageOption.EN },])
+  }
+
+  function buildPagination(): PaginationItem[] {
+    const sections: SectionBlock[] = buildSections()
+
+    return sections.map((section, index) => {
+      return {
+        name: section.sectionLabel ?? section.sectionKey,
+        Icon: section.Icon,
+        renderPage: () => {
+          const current = buildSections().find(s => s.sectionKey === section.sectionKey)
+          return current ? renderSectionRows(current) : undefined
+        },
+      }
+    })
+  }
 
   function buildSections(): SectionBlock[] {
     const fields: FormInputField[] = orderedFields()
@@ -49,6 +92,7 @@ export function useViewForm({ orderedFields, onFieldBlur, handleChange, onSucses
         const block: SectionBlock = {
           sectionKey,
           sectionLabel: field.section,
+          Icon: field.sectionIcon,
           rows: [],
         }
 
@@ -84,6 +128,31 @@ export function useViewForm({ orderedFields, onFieldBlur, handleChange, onSucses
     />
   }
 
+  function renderSectionRows(section: SectionBlock) {
+    return (
+      <div>
+        {section.sectionLabel && (
+          <ThemeText
+            noSelection
+            noWrap
+            style={styles.sectionLabel}
+            textTag={TextTag.P}
+            color={'#000'}
+          >
+            {section.sectionLabel}
+          </ThemeText>
+        )}
+
+        {section.rows.map((row, rIndex) => (
+          <div key={rIndex}>
+            {renderRow(row, rIndex)}
+            {rIndex < section.rows.length - 1 && <div style={styles.rowDivider} />}
+          </div>
+        ))}
+      </div>
+    )
+  }
+
   function renderRow(row: FormInputField | FormInputField[], index: number) {
     if (Array.isArray(row)) {
       return <div key={row.map(f => f.name).join('-')} style={styles.group}>
@@ -100,52 +169,49 @@ export function useViewForm({ orderedFields, onFieldBlur, handleChange, onSucses
     return <div>
       {sections.map((section, sIndex) => (
         <div key={section.sectionKey}>
-          {section.sectionLabel && (
-            <ThemeText
-              noSelection
-              noWrap
-              style={styles.sectionLabel}
-              textTag={TextTag.P}
-              color={'#000'}
-            >
-              {section.sectionLabel}
-            </ThemeText>
-          )}
-
-          {section.rows.map((row, rIndex) => (
-            <div key={rIndex}>
-              {renderRow(row, rIndex)}
-              {rIndex < section.rows.length - 1 && <div style={styles.rowDivider} />}
-            </div>
-          ))}
-
+          {renderSectionRows(section)}
           {sIndex < sections.length - 1 && <hr style={styles.sectionDivider} />}
         </div>
       ))}
     </div>
   }
 
+  function renderButtons(): React.JSX.Element | undefined {
+    if (paginationList.length <= 0)
+      return <ThemeButton enabled={canSubmit()} clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => handleSubmit(e)}>
+        {submitLabel}
+      </ThemeButton>
+
+    return <div style={styles.buttonsContainer}>
+      {renderPreviousButton()}
+      {renderNextButton()}
+    </div>
+  }
+
+  function renderFormContent(): React.JSX.Element | undefined {
+    if (sucess)
+      return onSucsess ? <>{onSucsess()}</> : undefined
+
+    return paginationList.length <= 0 ? renderFields() : renderContent()
+  }
+
   function renderForm() {
     return <>
-      <ThemeText noSelection noWrap style={styles.title} textTag={TextTag.H1} color={'#000'}>{title}</ThemeText>
+      <div style={styles.header}>
+        <ThemeText noSelection noWrap style={styles.title} textTag={TextTag.H1} color={'#000'}>{title}</ThemeText>
+        {renderController()}
+      </div>
       <ThemeText noSelection noWrap style={styles.subtitle} textTag={TextTag.P} color={'#000'}>{subtitle}</ThemeText>
       <form noValidate>
-        {sucess
-          ? onSucsess ? onSucsess() : undefined
-          : renderFields()}
-
-        {!sucess && <div style={styles.buttonsContainer}>
-          <ThemeButton enabled={canSubmit()} clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => handleSubmit(e)}>
-            {getValue(SUBMIT_KEY)}
-          </ThemeButton>
-        </div>}
+        {renderFormContent()}
+        {!sucess && renderButtons()}
       </form>
     </>
   }
 
   useEffect(() => {
-    addKeys(SUBMIT_KEY, [{ value: 'Cadastrar', lang: LanguageOption.PT_BR }, { value: 'Register', lang: LanguageOption.EN },])
-  }, [])
+    setSubmitLabel(getValue(SUBMIT_KEY))
+  }, [language])
 
   return { renderForm, setSucess }
 }
@@ -175,7 +241,12 @@ const styles: { [key: string]: React.CSSProperties } = {
   buttonsContainer: {
     display: 'flex',
     width: '100%',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
+  },
+  header: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   title: {
     fontSize: 22,
