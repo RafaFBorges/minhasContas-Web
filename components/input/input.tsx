@@ -19,6 +19,8 @@ export interface StyledInputProps {
   onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void
   isValid?: boolean | null
   inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode']
+  isTouched?: boolean
+  setIsTouched?: (touched: boolean) => void
 }
 
 const StyledInput = forwardRef<HTMLInputElement, StyledInputProps>(({
@@ -38,11 +40,23 @@ const StyledInput = forwardRef<HTMLInputElement, StyledInputProps>(({
   onFocus = undefined,
   onBlur = undefined,
   isValid = undefined,
+  isTouched = false,
+  setIsTouched = undefined,
   inputMode = undefined,
 }: StyledInputProps, ref) => {
-  const [isValidState, setIsValid] = useState<boolean | null>(null)
-  const [touched, setTouched] = useState(false)
+  const [isValidState, setIsValid] = useState<boolean | null>(getValidState())
+  const [touched, setTouched] = useState(isTouched)
   const [focused, setFocused] = useState(false)
+
+  function getValidState(): boolean | null {
+    if (!isTouched)
+      return null
+
+    if (validate !== undefined)
+      return validate(String(value))
+
+    return isValid !== undefined ? isValid : null
+  }
 
   const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
     setFocused(true)
@@ -53,7 +67,12 @@ const StyledInput = forwardRef<HTMLInputElement, StyledInputProps>(({
 
   const handleBlur = () => {
     setFocused(false)
-    setTouched(true)
+
+    if (!touched)
+      setTouched(true)
+
+    if (setIsTouched != null)
+      setIsTouched(true)
 
     if (validate !== undefined)
       setIsValid(validate(String(value)))

@@ -22,12 +22,8 @@ export interface FormInputField {
   maxDate?: DateValue
   minDate?: DateValue
   sectionIcon?: IconType | undefined
-}
-
-interface SectionBlock {
-  sectionKey: string
-  sectionLabel?: string
-  rows: (FormInputField | FormInputField[])[]
+  isTouched?: boolean
+  setIsTouched?: (touched: boolean) => void
 }
 
 export interface getFieldValueResult {
