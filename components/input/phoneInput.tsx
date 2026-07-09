@@ -3,21 +3,7 @@ import StyledInput, { StyledInputProps } from './input'
 
 interface PhoneInputProps extends StyledInputProps { }
 
-export default function PhoneInput({
-  name,
-  value,
-  placeholder,
-  changeHandle,
-  onBlur = undefined,
-  style = null,
-  hasAutocomplete = false,
-  height = 36,
-  borderErrorColor = '#e24b4a',
-  borderSuccessColor = '#639922',
-  borderNormalColor = '#d1d5db',
-  isValid = null,
-  validate = undefined,
-}: PhoneInputProps) {
+export default function PhoneInput({ changeHandle, ...ret }: PhoneInputProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const ALLOWED_CHARACTER = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Tab', 'Home', 'End']
 
@@ -114,19 +100,9 @@ export default function PhoneInput({
   return <StyledInput
     ref={inputRef}
     type={'tel'}
-    name={name}
-    value={value}
-    placeholder={placeholder}
     changeHandle={handleChange}
-    style={style}
-    hasAutocomplete={hasAutocomplete}
-    height={height}
-    borderErrorColor={borderErrorColor}
-    borderSuccessColor={borderSuccessColor}
-    borderNormalColor={borderNormalColor}
-    validate={validate}
     onKeyDown={handleKeyDown}
-    onBlur={onBlur}
-    isValid={isValid}
+
+    {...ret}
   />
 }
