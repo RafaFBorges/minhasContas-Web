@@ -64,6 +64,29 @@ export function useViewForm({
     return addKeys(SUBMIT_KEY, [{ value: 'Cadastrar', lang: LanguageOption.PT_BR }, { value: 'Register', lang: LanguageOption.EN },])
   }
 
+  function CanGoFurther(section: SectionBlock): boolean {
+    if (section == null || section.rows == null)
+      return true
+
+    if (!Array.isArray(section.rows)) {
+      const isValidRow: boolean | null = (section.rows as FormInputField).isValid
+      return isValidRow != null && isValidRow
+    }
+
+    for (const row of section.rows) {
+      if (Array.isArray(row)) {
+        for (const field of row)
+          if (!field.isValid)
+            return false
+      } else {
+        if (!row.isValid)
+          return false
+      }
+    }
+
+    return true
+  }
+
   function buildPagination(): PaginationItem[] {
     const sections: SectionBlock[] = buildSections()
 
@@ -74,6 +97,13 @@ export function useViewForm({
         renderPage: () => {
           const current = buildSections().find(s => s.sectionKey === section.sectionKey)
           return current ? renderSectionRows(current) : undefined
+        },
+        canGoFurther: (): boolean => {
+          const current = buildSections().find(s => s.sectionKey === section.sectionKey)
+
+          return current
+            ? CanGoFurther(current) && ((index != sections.length - 1) || canSubmit())
+            : true
         },
       }
     })

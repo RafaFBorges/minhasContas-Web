@@ -27,6 +27,8 @@ export interface PaginationItem {
   name: string
   Icon: IconType | undefined
   renderPage: () => React.JSX.Element | undefined
+  canGoFurther?: () => boolean
+  canGoBack?: () => boolean
 }
 
 interface ButtonsName {
@@ -64,18 +66,25 @@ export function usePagination({ list, firstIndex = 0, lastAction = undefined }: 
         if (item.Icon == null)
           return
 
+        const canClick = (index != selected) && (index < selected && (item.canGoBack == null || item.canGoBack()) || canGoFurther())
+        let style: React.CSSProperties = {
+          ...styles.paginationItem,
+          borderColor: selected === index
+            ? config.color
+            : index < selected ? config.iconColor : config.disabledColor
+        }
+
+        if (canClick)
+          style = { ...style, ...styles.canClick }
+
         const Icon: IconType = item.Icon
         return <div
           key={index}
-          style={{
-            ...styles.paginationItem,
-            borderColor: selected === index
-              ? config.color
-              : index < selected
-                ? config.iconColor
-                : config.disabledColor
+          style={style}
+          onClick={() => {
+            if (canClick)
+              setSelected(index)
           }}
-          onClick={() => setSelected(index)}
         >
           <Icon
             color={selected === index
@@ -93,9 +102,25 @@ export function usePagination({ list, firstIndex = 0, lastAction = undefined }: 
     return 0 <= selected && selected < paginationList.length ? paginationList[selected].renderPage() : undefined
   }
 
+  function canGoFurther(): boolean {
+    if ((selected < 0) || (paginationList.length < selected))
+      return false
+
+    const maxIndex = paginationList[selected].canGoFurther == null ? paginationList.length - 1 : paginationList.length
+    return (0 <= selected) && (selected < maxIndex) && (paginationList[selected].canGoFurther == null || paginationList[selected].canGoFurther())
+  }
+
+  function canGoBack(): boolean {
+    if ((selected < 0) || (paginationList.length < selected))
+      return false
+
+    const minIndex = paginationList[selected].canGoBack == null ? 1 : 0
+    return (minIndex <= selected) && (selected < paginationList.length) && (paginationList[selected].canGoBack == null || paginationList[selected].canGoBack())
+  }
+
   function renderNextButton(name: string | undefined = undefined): React.JSX.Element {
     return <ThemeButton
-      enabled={(selected < paginationList.length - 1) || (lastAction != null && lastAction.enabled != null && lastAction.enabled())}
+      enabled={canGoFurther()}
       clickHandle={(e: React.MouseEvent<HTMLButtonElement>) => {
         return (selected == paginationList.length - 1) && (lastAction != null) && lastAction.action != null
           ? lastAction.action(e)
@@ -112,7 +137,10 @@ export function usePagination({ list, firstIndex = 0, lastAction = undefined }: 
   }
 
   function renderPreviousButton(name: string | undefined = undefined): React.JSX.Element {
-    return <ThemeButton enabled={0 < selected} clickHandle={() => setSelected(prev => Math.max(0, prev - 1))}>
+    return <ThemeButton
+      enabled={canGoBack()}
+      clickHandle={() => setSelected(prev => Math.max(0, prev - 1))}
+    >
       {name === undefined ? buttonsNames.previous : name}
     </ThemeButton>
   }
@@ -141,6 +169,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: 6,
     border: '2px solid #ccc',
     padding: 4,
+  },
+  canClick: {
     cursor: 'pointer',
   },
 }
