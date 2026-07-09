@@ -48,13 +48,13 @@ const StyledButton = forwardRef<HTMLButtonElement, StyledButtonProps>(({
   if (width != '')
     buttonStyle = { ...buttonStyle, width: width }
 
-  if (!enabled) {
+  if (!enabled)
     buttonStyle = (isClickableIcon)
-      ? { ...buttonStyle, color: '#696969ff' }
-      : { ...buttonStyle, backgroundColor: '#696969ff' }
-  }
+      ? { ...buttonStyle, color: '#696969ff', ...styles.notClickable }
+      : { ...buttonStyle, backgroundColor: '#696969ff', ...styles.notClickable }
 
   buttonStyle = { ...buttonStyle, ...style }
+
   const handleMouseEnter = () => { setIsHovered(true) }
   const handleMouseLeave = () => { setIsHovered(false) }
 
@@ -103,6 +103,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     justifyContent: 'center',
     alignItems: 'center',
   },
+  notClickable: {
+    cursor: 'default',
+  }
 }
 
 StyledButton.displayName = 'StyledButton'
