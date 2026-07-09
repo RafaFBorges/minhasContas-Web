@@ -98,11 +98,11 @@ export default function PhoneInput({ changeHandle, ...ret }: PhoneInputProps) {
   }
 
   return <StyledInput
+    {...ret}
+
     ref={inputRef}
     type={'tel'}
     changeHandle={handleChange}
     onKeyDown={handleKeyDown}
-
-    {...ret}
   />
 }
