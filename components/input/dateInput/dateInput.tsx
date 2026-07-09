@@ -64,6 +64,8 @@ export default function DateInput({
   maxDate = undefined,
   minDate = undefined,
   Calendar = undefined,
+  isTouched = false,
+  setIsTouched = undefined,
 }: DateInputProps) {
   const TEXT_WIDTH = 152
   const DAY_FIELD = 'day'
@@ -73,8 +75,8 @@ export default function DateInput({
   const [show, setShow] = useState<boolean>(false)
   const [hasIconSpace, setHasIconSpace] = useState<boolean>(false)
   const [dateStruct, setDateStruct] = useState<DateValue>(getDateStruct(String(value)))
-  const [isValidState, setIsValid] = useState<boolean | null>(null)
-  const [touched, setTouched] = useState(false)
+  const [isValidState, setIsValid] = useState<boolean | null>(getValidState())
+  const [touched, setTouched] = useState(isTouched)
   const [focused, setFocused] = useState(false)
 
   const containerRef = React.useRef<HTMLDivElement>(null)
@@ -103,6 +105,16 @@ export default function DateInput({
     height: height,
     border: `1.5px solid ${borderColor}`,
     ...style
+  }
+
+  function getValidState(): boolean | null {
+    if (!isTouched)
+      return null
+
+    if (validate !== undefined)
+      return validate(getSettedDate(dateStruct))
+
+    return isValid !== undefined ? isValid : null
   }
 
   function getDateStruct(value: string): DateValue {
@@ -163,6 +175,9 @@ export default function DateInput({
     const isFocusedNow = isFocused()
     setFocused(isFocusedNow)
     setTouched(true)
+
+    if (setIsTouched != null)
+      setIsTouched(true)
 
     if (!isFocusedNow && validate !== undefined)
       setIsValid(validate(getSettedDate(dateStruct)))
