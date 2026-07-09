@@ -9,21 +9,11 @@ interface PasswordInputProps extends StyledInputProps {
 }
 
 export default function PasswordInput({
-  name,
-  value,
-  placeholder,
-  changeHandle,
   style = null,
-  hasAutocomplete = false,
   height = 36,
-  borderErrorColor = '#e24b4a',
-  borderSuccessColor = '#639922',
-  borderNormalColor = '#d1d5db',
-  validate = undefined,
-  onKeyDown = undefined,
   iconColor = '#6b7280',
-  isValid = null,
-  onBlur = undefined,
+
+  ...ret
 }: PasswordInputProps) {
   const [show, setShow] = useState<boolean>(false)
   const Icon = show ? HideIcon : ShowIcon
@@ -41,21 +31,11 @@ export default function PasswordInput({
 
   return <div style={styles.container}>
     <StyledInput
+      {...ret}
+
       type={show ? 'text' : 'password'}
-      isValid={isValid}
-      name={name}
-      value={value}
-      placeholder={placeholder}
-      changeHandle={changeHandle}
       style={{ ...styles.input, ...style }}
-      hasAutocomplete={hasAutocomplete}
       height={height}
-      borderErrorColor={borderErrorColor}
-      borderSuccessColor={borderSuccessColor}
-      borderNormalColor={borderNormalColor}
-      validate={validate}
-      onKeyDown={onKeyDown}
-      onBlur={onBlur}
     />
     <Icon
       color={iconColor}
