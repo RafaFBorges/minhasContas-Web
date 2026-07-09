@@ -18,22 +18,19 @@ interface SpinProps extends StyledInputProps {
 }
 
 const SpinInput = forwardRef<HTMLInputElement, SpinProps>(({
-  name,
   value,
-  placeholder,
   changeHandle,
-  onBlur = undefined,
   style = null,
   max = MAX_VALUE,
   min = MIN_VALUE,
   step = 1,
   setValueHandle = () => { },
   height = 36,
-  isValid = null,
   disabledButtons = false,
   padNumber = 1,
   onKeyDown = undefined,
-  onFocus = undefined,
+
+  ...ret
 }: SpinProps, ref) => {
   const [isHovered, setIsHovered] = useState<boolean>(false)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -115,19 +112,16 @@ const SpinInput = forwardRef<HTMLInputElement, SpinProps>(({
     style={spinStyle}
   >
     <StyledInput
+      {...ret}
+
       ref={inputRef}
       type={'text'}
-      inputMode="numeric"
-      isValid={isValid}
-      name={name}
+      inputMode={'numeric'}
       value={value}
       changeHandle={spinChangeHandle}
-      onBlur={onBlur}
-      placeholder={placeholder}
       style={style}
       onKeyDown={handleKeyDown}
       height={height}
-      onFocus={onFocus}
     />
     {isHovered && !disabledButtons &&
       <div style={{ ...styles.buttonArea, top: (height - 34) / 2 }}>
