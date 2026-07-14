@@ -7,6 +7,11 @@ import Text, { TextTag } from '../../api/text'
 import { isLeapYear } from '../../../utils/validations'
 
 
+export enum CalendarViewType {
+  Month = 'month',
+  Year = 'year',
+  Day = 'day'
+}
 export type WeekDaysType = [string, string, string, string, string, string, string]
 export const WEEK_DAYS: WeekDaysType = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
 export const CALENDAR_ITEM_COUNT: number = 35
@@ -78,7 +83,7 @@ export default function Calendar({
 }: CalendarProps) {
   const calendarRef = useRef<HTMLDivElement>(null)
   const [currentMonth, setCurrentMonth] = useState<DateValue>(date)
-  const [isMonth, setIsMonth] = useState<boolean>(true)
+  const [CalendarType, setCalendarType] = useState<CalendarViewType>(CalendarViewType.Day)
 
   function incrementYear(inc: number): void {
     setCurrentMonth(currentMonth.update('year', String(Number(currentMonth.year) + inc)))
@@ -97,10 +102,16 @@ export default function Calendar({
 
   function advanceDate(isForward: boolean): void {
     const direction: number = isForward ? 1 : -1
-    if (isMonth)
-      incrementMonth(1 * direction)
-    else
-      incrementYear(4 * direction)
+    switch (CalendarType) {
+      case CalendarViewType.Day:
+        incrementMonth(1 * direction)
+        break
+      case CalendarViewType.Year:
+        incrementYear(4 * direction)
+        break
+      default:
+        incrementMonth(1 * direction)
+    }
   }
 
   function getNextLeapYear(year: number): number {
@@ -112,11 +123,31 @@ export default function Calendar({
   }
 
   function calendarTitle(): string {
-    if (isMonth)
-      return monthName[parseInt(currentMonth.month)] + ' / ' + currentMonth.year
+    switch (CalendarType) {
+      case CalendarViewType.Day:
+        return monthName[parseInt(currentMonth.month)] + ' / ' + currentMonth.year
+      case CalendarViewType.Month:
+        return monthName[1] + ' - ' + monthName[12]
+      case CalendarViewType.Year:
+        const baseLeapYear = getNextLeapYear(Number(currentMonth.year))
+        return String(baseLeapYear - 7) + ' - ' + String(baseLeapYear + 4)
+      default:
+        return monthName[parseInt(currentMonth.month)] + ' / ' + currentMonth.year
+    }
+  }
 
-    const baseLeapYear = getNextLeapYear(Number(currentMonth.year))
-    return String(baseLeapYear - 7) + ' - ' + String(baseLeapYear + 4)
+  function renderCalendarItem(index: number, style: React.CSSProperties, onClick: () => void, value: React.ReactNode): JSX.Element {
+    return <div key={index} style={style} onClick={onClick}>
+      <Text
+        noWrap
+        noSelection
+        textTag={TextTag.P}
+        fontColor={fontColor}
+        disabledFontColor={disabledFontColor}
+      >
+        {value}
+      </Text>
+    </div>
   }
 
   function renderDaysOfMonth(): JSX.Element {
@@ -161,17 +192,19 @@ export default function Calendar({
     </>
   }
 
-  function renderCalendarItem(index: number, style: React.CSSProperties, onClick: () => void, value: React.ReactNode): JSX.Element {
-    return <div key={index} style={style} onClick={onClick}>
-      <Text
-        noWrap
-        noSelection
-        textTag={TextTag.P}
-        fontColor={fontColor}
-        disabledFontColor={disabledFontColor}
-      >
-        {value}
-      </Text>
+  function renderMonthsOfTheYear() {
+    return <div style={{ ...styles.body, ...styles.yearBody }}>
+      {Object.entries(monthName).map(([key, name]) => {
+        const index: number = Number(key)
+        let style: React.CSSProperties = Number(currentMonth.month) == index
+          ? { ...styles.year, backgroundColor: selectedDate }
+          : styles.year
+
+        return renderCalendarItem(index, style, () => {
+          setCurrentMonth(currentMonth.update('month', String(index).padStart(2, '0')))
+          setCalendarType(CalendarViewType.Day)
+        }, name.slice(0, 3))
+      })}
     </div>
   }
 
@@ -187,14 +220,33 @@ export default function Calendar({
 
         return renderCalendarItem(index, style, () => {
           setCurrentMonth(currentMonth.update('year', String(item.year)))
-          setIsMonth(true)
+          setCalendarType(CalendarViewType.Month)
         }, item.year)
       })}
     </div>
   }
 
   function renderCalendar(): JSX.Element {
-    return isMonth ? renderDaysOfMonth() : renderYear()
+    switch (CalendarType) {
+      case CalendarViewType.Day:
+        return renderDaysOfMonth()
+      case CalendarViewType.Month:
+        return renderMonthsOfTheYear()
+      case CalendarViewType.Year:
+        return renderYear()
+      default:
+        return renderDaysOfMonth()
+    }
+  }
+
+  function switchCalendarView(): void {
+    switch (CalendarType) {
+      case CalendarViewType.Day:
+        setCalendarType(CalendarViewType.Year)
+        break
+      default:
+        setCalendarType(CalendarViewType.Day)
+    }
   }
 
   function renderHeader(): JSX.Element {
@@ -213,7 +265,7 @@ export default function Calendar({
           color={disabledFontColor}
           fontColor={fontColor}
           disabledFontColor={disabledFontColor}
-          onClick={() => setIsMonth(!isMonth)}
+          onClick={switchCalendarView}
           style={styles.headerTile}
         >
           {calendarTitle()}
