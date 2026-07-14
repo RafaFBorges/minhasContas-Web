@@ -150,7 +150,12 @@ export default function Calendar({
           if (!item.enabled)
             style = { ...style, opacity: 0.4, cursor: 'not-allowed' }
 
-          return renderCalendarItem(index, style, () => item.enabled && onSelect(item.date), item.date.day)
+          return renderCalendarItem(index, style, () => {
+            if (item.enabled) {
+              onSelect(item.date)
+              setShow(false)
+            }
+          }, item.date.day)
         })}
       </div>
     </>
