@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { JSX, useEffect, useRef, useState } from 'react'
 
 import { HiChevronLeft as LeftIcon, HiChevronRight as RightIcon } from 'react-icons/hi'
 
 import { DateValue } from './dateInput'
 import Text, { TextTag } from '../../api/text'
+import { isLeapYear } from '../../../utils/validations'
 
 
 export type WeekDaysType = [string, string, string, string, string, string, string]
@@ -51,6 +52,12 @@ interface CalendarDay {
   enabled: boolean
 }
 
+interface CalendarYear {
+  year: number
+  selected: boolean
+  enabled: boolean
+}
+
 export default function Calendar({
   date,
   show,
@@ -71,8 +78,13 @@ export default function Calendar({
 }: CalendarProps) {
   const calendarRef = useRef<HTMLDivElement>(null)
   const [currentMonth, setCurrentMonth] = useState<DateValue>(date)
+  const [isMonth, setIsMonth] = useState<boolean>(true)
 
-  function incrementMonth(inc: number) {
+  function incrementYear(inc: number): void {
+    setCurrentMonth(currentMonth.update('year', String(Number(currentMonth.year) + inc)))
+  }
+
+  function incrementMonth(inc: number): void {
     const newMonth = (parseInt(currentMonth.month) - 1) + inc
     const incYear = (11 < newMonth) ? 1 : (newMonth < 0) ? -1 : 0
 
@@ -81,6 +93,149 @@ export default function Calendar({
         .update('month', String(((newMonth + 12) % 12) + 1).padStart(2, '0'))
         .update('year', String(+currentMonth.year + incYear))
     )
+  }
+
+  function advanceDate(isForward: boolean): void {
+    const direction: number = isForward ? 1 : -1
+    if (isMonth)
+      incrementMonth(1 * direction)
+    else
+      incrementYear(4 * direction)
+  }
+
+  function getNextLeapYear(year: number): number {
+    let selectedYear: number = Number(year)
+    while (!isLeapYear(selectedYear))
+      selectedYear += 1
+
+    return selectedYear
+  }
+
+  function calendarTitle(): string {
+    if (isMonth)
+      return monthName[parseInt(currentMonth.month)] + ' / ' + currentMonth.year
+
+    const baseLeapYear = getNextLeapYear(Number(currentMonth.year))
+    return String(baseLeapYear - 7) + ' - ' + String(baseLeapYear + 4)
+  }
+
+  function renderDaysOfMonth(): JSX.Element {
+    return <>
+      <div style={styles.weekDays}>
+        {weekDays.map((day) => {
+          return <Text
+            key={day}
+            noSelection
+            noWrap
+            fontSize={12}
+            textTag={TextTag.P}
+            color={disabledFontColor}
+            fontColor={fontColor}
+            disabledFontColor={disabledFontColor}
+            style={{ textAlign: 'center' }}
+          >
+            {day}
+          </Text>
+        })}
+      </div>
+
+      <div style={{ ...styles.body, ...styles.dayBody }}>
+        {getDaysOfMonth(currentMonth).map((item: CalendarDay, index: number) => {
+          let style: React.CSSProperties = item.selected
+            ? { ...styles.day, backgroundColor: selectedDate }
+            : item.diferentMonth
+              ? { ...styles.day, backgroundColor: diferentMonth }
+              : styles.day
+
+          if (!item.enabled)
+            style = { ...style, opacity: 0.4, cursor: 'not-allowed' }
+
+          return renderCalendarItem(index, style, () => item.enabled && onSelect(item.date), item.date.day)
+        })}
+      </div>
+    </>
+  }
+
+  function renderCalendarItem(index: number, style: React.CSSProperties, onClick: () => void, value: React.ReactNode): JSX.Element {
+    return <div key={index} style={style} onClick={onClick}>
+      <Text
+        noWrap
+        noSelection
+        textTag={TextTag.P}
+        fontColor={fontColor}
+        disabledFontColor={disabledFontColor}
+      >
+        {value}
+      </Text>
+    </div>
+  }
+
+  function renderYear(): JSX.Element {
+    return <div style={{ ...styles.body, ...styles.yearBody }}>
+      {getYearsList(currentMonth).map((item: CalendarYear, index: number) => {
+        let style: React.CSSProperties = item.selected
+          ? { ...styles.year, backgroundColor: selectedDate }
+          : styles.year
+
+        if (!item.enabled)
+          style = { ...style, opacity: 0.4, cursor: 'not-allowed' }
+
+        return renderCalendarItem(index, style, () => {
+          setCurrentMonth(currentMonth.update('year', String(item.year)))
+          setIsMonth(true)
+        }, item.year)
+      })}
+    </div>
+  }
+
+  function renderCalendar(): JSX.Element {
+    return isMonth ? renderDaysOfMonth() : renderYear()
+  }
+
+  function renderHeader(): JSX.Element {
+    return <>
+      <div style={styles.header}>
+        <LeftIcon
+          size={18}
+          color={disabledFontColor}
+          onClick={() => advanceDate(false)}
+        />
+        <Text
+          noSelection
+          noWrap
+          fontSize={14}
+          textTag={TextTag.P}
+          color={disabledFontColor}
+          fontColor={fontColor}
+          disabledFontColor={disabledFontColor}
+          onClick={() => setIsMonth(!isMonth)}
+          style={styles.headerTile}
+        >
+          {calendarTitle()}
+        </Text>
+        <RightIcon
+          size={18}
+          color={disabledFontColor}
+          onClick={() => advanceDate(true)}
+        />
+      </div>
+
+      <hr style={{ ...styles.sectionDivider, borderColor: disabledFontColor }} />
+    </>
+  }
+
+  function getYearsList(selectedDate: DateValue): CalendarYear[] {
+    let selectedYear: number = getNextLeapYear(Number(selectedDate.year))
+
+    return Array.from({ length: 12 }, (_, i) => {
+      const currentYear = selectedYear - 7 + i
+
+      return {
+        year: currentYear,
+        selected: currentYear == Number(date.year),
+        enabled: (!minDate || Number(minDate.year) <= currentYear) && (!maxDate || currentYear <= Number(maxDate.year)),
+      }
+    })
   }
 
   function getDaysOfMonth(selectedDate: DateValue): CalendarDay[] {
@@ -131,65 +286,8 @@ export default function Calendar({
       border: `1.5px solid ${borderColor}`,
       backgroundColor: backgroundColor,
     }}>
-    <div style={styles.header}>
-      <LeftIcon size={18} color={disabledFontColor} onClick={() => incrementMonth(-1)} />
-      <Text
-        noSelection
-        noWrap
-        fontSize={14}
-        textTag={TextTag.P}
-        color={disabledFontColor}
-        fontColor={fontColor}
-        disabledFontColor={disabledFontColor}
-      >
-        {monthName[parseInt(currentMonth.month)] + ' / ' + currentMonth.year}
-      </Text>
-      <RightIcon size={18} color={disabledFontColor} onClick={() => incrementMonth(1)} />
-    </div>
-
-    <hr style={{ ...styles.sectionDivider, borderColor: disabledFontColor }} />
-
-    <div style={styles.weekDays}>
-      {weekDays.map((day) => <Text
-        key={day}
-        noSelection
-        noWrap
-        fontSize={12}
-        textTag={TextTag.P}
-        color={disabledFontColor}
-        fontColor={fontColor}
-        disabledFontColor={disabledFontColor}
-        style={{ textAlign: 'center' }}
-      >
-        {day}
-      </Text>
-      )}
-    </div>
-
-    <div style={styles.body}>
-      {getDaysOfMonth(currentMonth).map((item: CalendarDay, index: number) => {
-        let style = item.selected
-          ? { ...styles.day, backgroundColor: selectedDate }
-          : item.diferentMonth
-            ? { ...styles.day, backgroundColor: diferentMonth }
-            : styles.day
-
-        if (!item.enabled)
-          style = { ...style, opacity: 0.4, cursor: 'not-allowed' }
-
-        return <div key={index} style={style} onClick={() => item.enabled && onSelect(item.date)}>
-          <Text
-            noWrap
-            noSelection
-            textTag={TextTag.P}
-            fontColor={fontColor}
-            disabledFontColor={disabledFontColor}
-          >
-            {item.date.day}
-          </Text>
-        </div>
-      })}
-    </div>
+    {renderHeader()}
+    {renderCalendar()}
   </div>
 }
 
@@ -209,6 +307,12 @@ const styles: { [key: string]: React.CSSProperties } = {
     flexDirection: 'row',
     justifyContent: 'space-between',
     margin: '2px 0',
+  },
+  headerTile: {
+    flexGrow: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   sectionDivider: {
     border: 'none',
@@ -230,8 +334,14 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: '0px 8px',
     display: 'grid',
     rowGap: '4px',
+  },
+  dayBody: {
     gridTemplateColumns: 'repeat(7, 1fr)',
     gridTemplateRows: 'repeat(5, 1fr)',
+  },
+  yearBody: {
+    gridTemplateColumns: 'repeat(4, 1fr)',
+    gridTemplateRows: 'repeat(3, 1fr)',
   },
   day: {
     display: 'flex',
@@ -239,6 +349,14 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: 'center',
     width: '25px',
     height: '25px',
+    borderRadius: '6px',
+  },
+  year: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '50px',
+    height: '50px',
     borderRadius: '6px',
   },
 }
