@@ -12,6 +12,7 @@ import ThemeText from './themeComponents/themeText'
 import { useUser } from '../utils/hook/userHook'
 import { usePopup } from '../utils/hook/usePopup'
 import { PopupType } from '@/types/popupTypes'
+import PasswordInput from './input/passwordInput'
 
 interface LoginProps {
   registerHRef?: string;
@@ -29,6 +30,7 @@ export default function Login({
   onSend
 }: LoginProps) {
   const EMAIL_PLACEHOLDER_KEY = 'Login.EmailPlaceHolder'
+  const PASSWORD_PLACEHOLDER_KEY = 'Login.PasswordPlaceHolder'
   const SEND_LOGIN_KEY = 'Login.SendLoogin'
   const FORGOT_PASSWOR_KEY = 'Login.ForgotPassWord'
   const FIRST_TIME_KEY = 'Login.FirstTime'
@@ -51,6 +53,7 @@ export default function Login({
     const translation = {} as LoginTranslations
 
     translation[EMAIL_PLACEHOLDER_KEY] = addKeys(EMAIL_PLACEHOLDER_KEY, [{ value: 'Digite seu email', lang: LanguageOption.PT_BR }, { value: 'Enter your email', lang: LanguageOption.EN },])
+    translation[PASSWORD_PLACEHOLDER_KEY] = addKeys(PASSWORD_PLACEHOLDER_KEY, [{ value: 'Digite sua senha', lang: LanguageOption.PT_BR }, { value: 'Enter your password', lang: LanguageOption.EN },])
     translation[SEND_LOGIN_KEY] = addKeys(SEND_LOGIN_KEY, [{ value: 'Enviar', lang: LanguageOption.PT_BR }, { value: 'Send', lang: LanguageOption.EN },])
     translation[FORGOT_PASSWOR_KEY] = addKeys(FORGOT_PASSWOR_KEY, [{ value: 'Esqueceu a senha?', lang: LanguageOption.PT_BR }, { value: 'Forgot password?', lang: LanguageOption.EN },])
     translation[CREATE_ACCOUNT_KEY] = addKeys(CREATE_ACCOUNT_KEY, [{ value: 'Criar conta', lang: LanguageOption.PT_BR }, { value: 'Create account', lang: LanguageOption.EN },])
@@ -62,6 +65,7 @@ export default function Login({
   useEffect(() => {
     setLabelText({
       [EMAIL_PLACEHOLDER_KEY]: getValue(EMAIL_PLACEHOLDER_KEY),
+      [PASSWORD_PLACEHOLDER_KEY]: getValue(PASSWORD_PLACEHOLDER_KEY),
       [SEND_LOGIN_KEY]: getValue(SEND_LOGIN_KEY),
       [FORGOT_PASSWOR_KEY]: getValue(FORGOT_PASSWOR_KEY),
       [CREATE_ACCOUNT_KEY]: getValue(CREATE_ACCOUNT_KEY),
@@ -79,9 +83,10 @@ export default function Login({
       style={styles.field}
     />
     <div style={styles.passwordContainer}>
-      <StyledInput
+      <PasswordInput
         type={'password'}
         name={'password'}
+        placeholder={labelText[PASSWORD_PLACEHOLDER_KEY]}
         value={password}
         changeHandle={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
         style={styles.field}
