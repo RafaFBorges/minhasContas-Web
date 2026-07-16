@@ -5,7 +5,7 @@ import { FaFilter as FilterIcon } from 'react-icons/fa'
 import { useTheme } from '../../utils/hook/themeHook'
 import { Tag } from '@/domain/Tag'
 import { Expense } from '@/domain/Expense'
-import { Filter_SELECTION_KEY } from '../../utils/DataConstants'
+import { FILTER_SELECTION_KEY } from '../../utils/DataConstants'
 import { saveCookie } from '@/app/actions/cookiesManager'
 import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
 import TagItem from '../tagItem'
@@ -30,7 +30,7 @@ export default function FilterList({
   const ALL_FILTER_KEY = 'FilterList.Save'
 
   const { config } = useTheme()
-  const { language, addKey, getValue } = useTranslate()
+  const { language, addKeys, getValue } = useTranslate()
   const selected = useRef<number | null>(-1)
   const translationName = useRef<string>('')
 
@@ -41,7 +41,7 @@ export default function FilterList({
       name={name}
       style={isDisabled ? {} : styles.selected}
       isDisabled={isDisabled}
-      onClick={(e: React.MouseEvent<HTMLDivElement>) => {
+      onClick={(_e: React.MouseEvent<HTMLDivElement>) => {
         if (tagList != null && 0 <= index && index < tagList.length && setTagList != null) {
           const newList: Array<Tag> = [...tagList]
 
@@ -52,7 +52,7 @@ export default function FilterList({
 
           newList[index].disabled = false
           setTagList(newList)
-          saveCookie(Filter_SELECTION_KEY, newList[index].ToString())
+          saveCookie(FILTER_SELECTION_KEY, newList[index].ToString())
           if (setter != null && listToFilter != null && filterCondition != null) {
             if (selected.current == 0)
               setter(listToFilter)
@@ -71,8 +71,7 @@ export default function FilterList({
   }
 
   function translate() {
-    addKey(ALL_FILTER_KEY, 'Todas', LanguageOption.PT_BR)
-    addKey(ALL_FILTER_KEY, 'All', LanguageOption.EN)
+    addKeys(ALL_FILTER_KEY, [{ value: 'Todas', lang: LanguageOption.PT_BR }, { value: 'All', lang: LanguageOption.EN },])
   }
 
   useEffect(() => {
@@ -119,6 +118,7 @@ export default function FilterList({
   useEffect(() => {
     translate()
     translationName.current = getValue(ALL_FILTER_KEY)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -134,6 +134,7 @@ export default function FilterList({
     translationName.current = getValue(ALL_FILTER_KEY)
     if (setTagList != null && list != null)
       setTagList(list)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language])
 
   return <div style={{ ...styles.container, ...style }}>

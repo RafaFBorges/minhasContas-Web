@@ -56,3 +56,33 @@ export async function getExpenseDisabledCookie(): Promise<ExpenseDisabledDiction
 
   return {} as ExpenseDisabledDictionary
 }
+
+export async function saveObjectCookie<T>(key: string, value: T, saveEmpty: boolean = false) {
+  try {
+    if (value == null && !saveEmpty) {
+      console.log('cookiesManager.saveObjectCookie >  [Empty value] key=' + key)
+      return
+    }
+
+    const data = JSON.stringify(value)
+    await saveCookie(key, encodeURIComponent(data))
+
+    console.log('cookiesManager.saveObjectCookie > key=' + key + ' hasData=' + (value != undefined))
+  } catch (error) {
+    console.error("cookiesManager.saveObjectCookie > [Couldnt convert Object to string] error=", error)
+  }
+}
+
+export async function getObjectCookie<T>(key: string): Promise<T | null> {
+  try {
+    const cookie = await getCookie(key)
+
+    console.log('cookiesManager.getObjectCookie > key=' + key + ' hasCookie=' + (cookie != null && cookie != undefined))
+    if (cookie != null && cookie != undefined && cookie != '' && cookie != 'null' && cookie != 'undefined')
+      return JSON.parse(decodeURIComponent(cookie)) as T
+  } catch (error) {
+    console.error("cookiesManager.getObjectCookie > [Couldnt convert string to Object] error=", error)
+  }
+
+  return null
+}

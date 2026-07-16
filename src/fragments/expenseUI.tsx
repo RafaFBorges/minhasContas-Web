@@ -10,11 +10,11 @@ import { Expense } from '@/domain/Expense'
 import { Tag } from '@/domain/Tag'
 import { Category } from '@/domain/Category'
 import { useTranslate } from '../../utils/hook/translateHook'
-import Spin from '../../components/spin'
-import ThemeButton from '../../components/themeButton'
+import SpinInput from '../../components/input/spinInput'
+import ThemeButton from '../../components/themeComponents/themeButton'
 import TagList from '../../components/lists/tagList'
 import { useModal } from '../../utils/hook/modalHook'
-import { ExpenseVerifyData } from '@/app/ExpenseConfiguration'
+import { ExpenseVerifyData } from '@/modalPages/ExpenseConfiguration'
 import { useUser } from '../../utils/hook/userHook'
 import { ExpenseDisabledDictionary, getExpenseDisabledCookie } from '@/app/actions/cookiesManager'
 
@@ -40,7 +40,7 @@ export default function ExpenseUI({
   const [isLoaded, setIsLoaded] = useState<boolean>(false)
   const [categories, setCategories] = useState<Array<Tag>>(tagList != null ? tagList.map((tag: Tag) => tag.clone()) : [])
 
-  const { addFinancial, disabledCategoriesDict } = useUser()
+  const { addFinancial, disabledCategoriesDict, userInfo } = useUser()
   const { language } = useTranslate()
   const { setEnabledSave, setData } = useModal()
 
@@ -57,13 +57,19 @@ export default function ExpenseUI({
     request.value = value
     request.categoryIds = list.filter(item => !item.disabled).map(item => item.id)
     request.date = new Date().toISOString()
-    const response = await handlePOST(EXPENSES_ENDPOINT, request)
+    request.owner = userInfo.id
+    const response = await handlePOST(EXPENSES_ENDPOINT, request, userInfo.token)
 
-    if (response != null) {
-      const categoryList: Category[] = []
-      response.categories.forEach((category: CategoryResponse) => categoryList.push(new Category(category.id, category.owner, category.name)))
+    const canAddFinancial = response != null && typeof response === 'object' &&
+      'categories' in response && response.categories != null &&
+      'id' in response &&
+      'value' in response &&
+      'dates' in response
 
-      addFinancial(new Expense(response.id, response.value, response.dates, categoryList, language))
+    if (canAddFinancial) {
+      const categoryList: Category[] = (response.categories as CategoryResponse[]).map((category: CategoryResponse) => new Category(category.id, category.owner, category.name))
+
+      addFinancial(new Expense(Number(response.id), Number(response.value), (response.dates as Array<string>), categoryList, language))
     }
   }
 
@@ -125,7 +131,7 @@ export default function ExpenseUI({
 
   return <div>
     <div style={{ ...styles.flexRow, gap: '1rem' }}>
-      <Spin
+      <SpinInput
         name={'expenseValue'}
         value={value}
         changeHandle={handleChange}

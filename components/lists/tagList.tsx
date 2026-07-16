@@ -3,12 +3,11 @@ import React, { useEffect } from 'react'
 import { FaPlus as AddIcon } from 'react-icons/fa'
 
 import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
-import ThemeButton from '../themeButton'
-import { useTheme } from '../../utils/hook/themeHook'
+import ThemeButton from '../themeComponents/themeButton'
 import { Tag } from '@/domain/Tag'
 import { useModal } from '../../utils/hook/modalHook'
-import CategoryConfiguration, { CategoryVerifyData } from '@/app/CategoryConfiguration'
-import { CategoryRequest } from '@/comunication/category'
+import CategoryConfiguration, { CategoryVerifyData } from '@/modalPages/CategoryConfiguration'
+import { CategoryRequest, CategoryResponse } from '@/comunication/category'
 import { CATEGORIES_ENDPOINT, handlePOST } from '@/comunication/ApiResthandler'
 import { Category } from '@/domain/Category'
 import { useUser } from '../../utils/hook/userHook'
@@ -30,7 +29,6 @@ export default function TagList({
   style,
   tagList,
   setTagList = undefined,
-  color = '',
   selectable = false,
   addNewTags = false,
   allowEmpty = false,
@@ -39,20 +37,19 @@ export default function TagList({
   const NEW_CATEGORY_TITLE_KEY = 'TagList.PropertiesTitle'
   const UNKOWN_CATEGORY_KEY = 'unkownCategory'
 
-  const { addCategory } = useUser()
-  const { getValue, addKey } = useTranslate()
-  const { config } = useTheme()
+  const { addCategory, userInfo } = useUser()
+  const { getValue, addKeys } = useTranslate()
   const { openModal } = useModal()
 
   const handleCreateCategory = async (item: CategoryVerifyData) => {
     const request: CategoryRequest = {} as CategoryRequest
     request.name = item.name
-    request.owner = 1
+    request.owner = userInfo.id
     request.date = new Date().toISOString()
-    const response = await handlePOST(CATEGORIES_ENDPOINT, request)
+    const response: CategoryResponse = await handlePOST<CategoryResponse>(CATEGORIES_ENDPOINT, request, userInfo.token)
 
-    if (response != null)
-      addCategory(new Category(response.id, response.owner, response.name, response.date))
+    if (response != null && typeof response === 'object' && 'id' in response && 'owner' in response && 'name' in response && 'date' in response)
+      addCategory(new Category(Number(response.id), Number(response.owner), String(response.name), String(response.date)))
   }
 
   const categoryCreate = () => {
@@ -67,8 +64,7 @@ export default function TagList({
   }
 
   function translate() {
-    addKey(NEW_CATEGORY_TITLE_KEY, 'Nova categoria', LanguageOption.PT_BR)
-    addKey(NEW_CATEGORY_TITLE_KEY, 'New category', LanguageOption.EN)
+    addKeys(NEW_CATEGORY_TITLE_KEY, [{ value: 'Nova categoria', lang: LanguageOption.PT_BR }, { value: 'New category', lang: LanguageOption.EN },])
   }
 
   function printTag(name: string, index: number, isDisabled: boolean) {
@@ -78,7 +74,7 @@ export default function TagList({
       name={name}
       isDisabled={isDisabled}
       onClick={selectable
-        ? (e: React.MouseEvent<HTMLDivElement>) => {
+        ? (_e: React.MouseEvent<HTMLDivElement>) => {
           if (tagList != null && 0 <= index && index < tagList.length && setTagList != null) {
             const newtag = tagList[index]
             newtag.disabled = !newtag.disabled

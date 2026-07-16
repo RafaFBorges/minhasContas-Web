@@ -8,7 +8,9 @@ export class Tag {
   }
 
   static getClearName(id: number, name: string) {
-    return `${id}_${name.normalize("NFD").replace(/[\u0300-\u036f]/g, "")}`
+    return name != undefined
+      ? `${id}_${name.normalize("NFD").replace(/[\u0300-\u036f]/g, "")}`
+      : `${id}_${name}`
   }
 
   constructor(id: number, name: string, disabled: boolean) {

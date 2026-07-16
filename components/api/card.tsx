@@ -2,8 +2,9 @@ import React from 'react'
 
 import { FaTrash as DeleteIcon, FaEdit as EditIcon } from 'react-icons/fa'
 
-import ThemeButton from '../themeButton'
-import Text, { TextTag } from '../text'
+import ThemeButton from '../themeComponents/themeButton'
+import { TextTag } from './text'
+import ThemeText from '../themeComponents/themeText'
 import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
 import { Category } from '@/domain/Category'
 import TagList from '../lists/tagList'
@@ -22,15 +23,14 @@ export interface CardProps {
 export default function Card({ title, date, categories, style = null, id = -1, editClickHandle = null, deleteClickHandle = null, backgroundColor = '' }: CardProps) {
   const UNKOWN_CATEGORY_KEY = 'unkownCategory'
 
-  const { addKey } = useTranslate()
+  const { addKeys } = useTranslate()
 
   let cardStyle: React.CSSProperties = style != null ? { ...styles.card, ...style } : styles.card
   if (backgroundColor != '')
     cardStyle = { ...cardStyle, backgroundColor: backgroundColor }
 
   function translate() {
-    addKey(UNKOWN_CATEGORY_KEY, 'desconhecido', LanguageOption.PT_BR)
-    addKey(UNKOWN_CATEGORY_KEY, 'unkown', LanguageOption.EN)
+    addKeys(UNKOWN_CATEGORY_KEY, [{ value: 'desconhecido', lang: LanguageOption.PT_BR }, { value: 'unknown', lang: LanguageOption.EN },])
   }
 
   translate()
@@ -38,7 +38,7 @@ export default function Card({ title, date, categories, style = null, id = -1, e
   return <div style={cardStyle}>
     <div style={styles.content}>
       <div style={styles.flexRow}>
-        <Text textTag={TextTag.H6} style={styles.title} noWrap>{title}</Text>
+        <ThemeText textTag={TextTag.H6} style={styles.title} noWrap>{title}</ThemeText>
         <div style={styles.buttonsArea}>
           {editClickHandle != null &&
             <ThemeButton
@@ -57,7 +57,7 @@ export default function Card({ title, date, categories, style = null, id = -1, e
         </div>
       </div>
       <TagList DisabledHover style={styles.tagList} tagList={Category.getTagList(categories)} />
-      <Text textTag={TextTag.P} style={styles.date} disabled>{date}</Text>
+      <ThemeText textTag={TextTag.P} style={styles.date} disabled>{date}</ThemeText>
     </div>
   </div>
 }

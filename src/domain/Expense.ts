@@ -3,6 +3,46 @@ import { isValidLanguage, LanguageOption } from "../../utils/hook/translateHook"
 import { Category } from "./Category"
 
 export class Expense {
+  private static __expenses: Expense[] = []
+  private static __expensesDict: Record<number, number> = {}
+  private static __laterReplace: Record<number, number[]> = {}
+
+  public static clearExpenses(): void {
+    this.__expenses = []
+    this.__expensesDict = {}
+  }
+
+  public static addToLater(expenseId: number, categoyList: number[]): void {
+    for (const category of categoyList) {
+      if (this.__laterReplace[category] == null)
+        this.__laterReplace[category] = [];
+      this.__laterReplace[category].push(expenseId);
+    }
+  }
+
+  public static addExpense(newExpense: Expense): void {
+    this.__expensesDict[newExpense.id] = this.__expenses.length
+    this.__expenses.push(newExpense)
+  }
+
+  public static CategoryAdded(category: Category): boolean {
+    const list = this.__laterReplace[category.id]
+    if (!list || list.length === 0)
+      return false
+
+    let updated = false
+    for (const expenseId of list) {
+      const expenseIndex: number = this.__expensesDict[expenseId]
+      if (expenseIndex != null && 0 <= expenseIndex && expenseIndex < this.__expenses.length && this.__expenses[expenseIndex] != null) {
+        this.__expenses[expenseIndex].addCategory(category)
+        updated = true
+      }
+    }
+
+    delete this.__laterReplace[category.id]
+    return updated
+  }
+
   private __id: number
   private __value: number
   private __dates: Array<Date>
@@ -17,6 +57,8 @@ export class Expense {
     this.__format = format
 
     date.forEach(item => this.__dates.push(new Date(item)))
+
+    Expense.addExpense(this)
   }
 
   get id(): number {
@@ -71,5 +113,13 @@ export class Expense {
         return true
 
     return false
+  }
+
+  public addCategory(category: Category): boolean {
+    const added: boolean = (category != null) && (this.__categories != null)
+    if (added)
+      this.__categories.push(category)
+
+    return added
   }
 }

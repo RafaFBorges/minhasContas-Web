@@ -1,14 +1,22 @@
 "use client"
 
-import { createContext, useContext, ReactNode, useState } from 'react'
+import { createContext, useContext, ReactNode, useState, useEffect } from 'react'
 import { Geist, Geist_Mono } from 'next/font/google'
-import { FaPaintBrush as ThemeIcon, FaGlobe as LanguageIcon } from 'react-icons/fa'
+import { FaUser as UserIcon, FaHome as HomeIcon } from 'react-icons/fa'
+import { FiMoon as DarkTheme, FiSun as LightTheme } from 'react-icons/fi'
 
-import ThemeButton from '../../components/themeButton'
+import ptImage from '../../src/assets/ptBr.png'
+import engImage from '../../src/assets/en.png'
+
 import { LanguageOption, useTranslate } from './translateHook'
 import { saveCookie } from '@/app/actions/cookiesManager'
 import { THEME_KEY } from '../DataConstants'
 import { getSideColor } from '../colors'
+import WindowButton from '../../components/windowButton'
+import ThemeToggle from '../../components/themeComponents/themeToggle'
+import ThemeText from '../../components/themeComponents/themeText'
+import { useUser } from './userHook'
+import { useRouter, usePathname } from 'next/navigation'
 
 export enum ThemeOptions {
   LIGHT = 'light',
@@ -26,6 +34,15 @@ const LIGHT_CONFIG = {
   GainSideColor: '#00D84C',
   NeutralSidedColor: '#727272ff',
   LossSideColor: '#ff0839ff',
+  borderColor: '#555',
+  borderSuccessColor: '#639922',
+  borderErrorColor: '#e24b4a',
+  enabledColor: '#00D84C',
+  disabledColor: '#727272ff',
+  iconColor: '#999999',
+  diferentMonth: '#D8D8D8',
+  selectedDate: '#0070f3',
+  disabledDay: '#808080',
 }
 
 const DARK_CONFIG = {
@@ -39,6 +56,15 @@ const DARK_CONFIG = {
   GainSideColor: '#54f523ff',
   NeutralSidedColor: '#727272ff',
   LossSideColor: '#ff4757ff',
+  borderColor: '#d1d5db',
+  borderSuccessColor: '#639922',
+  borderErrorColor: '#e24b4a',
+  enabledColor: '#00D84C',
+  disabledColor: '#727272ff',
+  iconColor: '#eed7b8',
+  diferentMonth: '#D8D8D8',
+  selectedDate: '#328f16ff',
+  disabledDay: '#555',
 }
 
 const geistSans = Geist({
@@ -58,16 +84,25 @@ interface ThemeContextType {
 }
 
 export interface ThemeStyleProps {
-  color: string;
-  backgroundColor: string;
-  fontSize: string | number;
-  fontColor: string;
-  disabledFontColor: string;
-  cardBackground: string;
-  tagDefaultColor: string;
-  LossSideColor: string;
-  NeutralSidedColor: string;
-  GainSideColor: string;
+  color: string
+  backgroundColor: string
+  fontSize: string | number
+  fontColor: string
+  disabledFontColor: string
+  cardBackground: string
+  tagDefaultColor: string
+  LossSideColor: string
+  NeutralSidedColor: string
+  GainSideColor: string
+  borderColor: string
+  borderSuccessColor: string
+  borderErrorColor: string
+  enabledColor: string
+  disabledColor: string
+  iconColor: string
+  diferentMonth: string
+  selectedDate: string
+  disabledDay: string
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
@@ -81,9 +116,23 @@ export function useTheme() {
 }
 
 export function ThemeProvider({ children, theme }: { children: ReactNode, theme: string | undefined }) {
+  const TR_LANGUAGE_KEY = 'TR.ThemeProvider.Language'
+  const TR_THEME_KEY = 'TR.ThemeProvider.Theme'
+  const TR_LOGOUT_KEY = 'TR.ThemeProvider.Logout'
+
+  const { language, setLang, addKeys, getValue } = useTranslate()
+  const { userInfo, logout } = useUser()
+  const router = useRouter()
+  const pathname = usePathname()
+
   const [settedTheme, setSettedTheme] = useState<ThemeOptions>(() => loadTheme(theme, true))
   const [config, setConfig] = useState<ThemeStyleProps>(() => loadConfig(theme))
-  const { language, setLang } = useTranslate()
+
+  function translate() {
+    addKeys(TR_THEME_KEY, [{ value: 'tema', lang: LanguageOption.PT_BR }, { value: 'theme', lang: LanguageOption.EN },])
+    addKeys(TR_LANGUAGE_KEY, [{ value: 'idioma', lang: LanguageOption.PT_BR }, { value: 'language', lang: LanguageOption.EN },])
+    addKeys(TR_LOGOUT_KEY, [{ value: 'Logout', lang: LanguageOption.PT_BR }, { value: 'Logout', lang: LanguageOption.EN },])
+  }
 
   function setLightTheme() {
     setConfig(LIGHT_CONFIG)
@@ -144,6 +193,18 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
     return getSideColor(value, config)
   }
 
+  async function doLogout() {
+    await logout()
+    console.log('Logout > [success]')
+
+    router.push('/')
+  }
+
+  useEffect(() => {
+    translate()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   return <ThemeContext.Provider
     value={{
       setTheme,
@@ -153,29 +214,53 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
   >
     <body className={`${geistSans.variable} ${geistMono.variable}`} style={{ ...styles.body, backgroundColor: config.backgroundColor }}>
       <div style={styles.row}>
-        <ThemeButton
+        {pathname !== '/' && !userInfo.user &&
+          <HomeIcon
+            color={config.color}
+            size={24}
+            style={styles.homeIcon}
+            onClick={() => router.push('/')}
+          />
+        }
+        <WindowButton
           isSecondary
           borderRadius='8px'
           iconSize='16'
-          clickHandle={async () => {
-            if (language == LanguageOption.PT_BR)
-              await setLang(LanguageOption.EN)
-            else
-              await setLang(LanguageOption.PT_BR)
+          Icon={UserIcon}
+          Menu={() => {
+            return <div style={styles.menuContainer}>
+              {userInfo.user && <ThemeText>{userInfo.user}</ThemeText>}
+              <ThemeToggle
+                name={getValue(TR_LANGUAGE_KEY)}
+                enabled={language == LanguageOption.PT_BR}
+                clickHandle={async () => {
+                  if (language == LanguageOption.PT_BR)
+                    await setLang(LanguageOption.EN)
+                  else
+                    await setLang(LanguageOption.PT_BR)
+                }}
+                enableImage={ptImage}
+                disableImage={engImage}
+                isImagePriority
+              />
+              <ThemeToggle
+                name={getValue(TR_THEME_KEY)}
+                enabled={settedTheme == ThemeOptions.LIGHT}
+                clickHandle={async () => {
+                  if (settedTheme == ThemeOptions.LIGHT)
+                    await setTheme(ThemeOptions.DARK)
+                  else
+                    await setTheme(ThemeOptions.LIGHT)
+                }}
+                EnableIcon={LightTheme}
+                DisableIcon={DarkTheme}
+                disabledColor={'#3f3f3f'}
+                color={'#e1eb5b'}
+                enableIconColor={'#1d1d1d'}
+              />
+              {userInfo.user && <ThemeText showHoover noWrap onClick={doLogout}>{getValue(TR_LOGOUT_KEY)}</ThemeText>}
+            </div>
           }}
-          Icon={LanguageIcon}
-        />
-        <ThemeButton
-          isSecondary
-          borderRadius='8px'
-          iconSize='16'
-          clickHandle={async () => {
-            if (settedTheme == ThemeOptions.LIGHT)
-              await setTheme(ThemeOptions.DARK)
-            else
-              await setTheme(ThemeOptions.LIGHT)
-          }}
-          Icon={ThemeIcon}
         />
       </div>
       {children}
@@ -199,4 +284,14 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: 'center',
     justifyContent: 'flex-end',
   },
+  homeIcon: {
+    cursor: 'pointer',
+    marginRight: 'auto',
+    flexShrink: 0,
+  },
+  menuContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+  }
 }

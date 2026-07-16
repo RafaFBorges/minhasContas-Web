@@ -1,12 +1,14 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { FaTimes as CloseIcon } from 'react-icons/fa'
 
-import { ModalFormProps } from '@/app/ModalPagePropsInterface'
-import ThemeButton from './themeButton'
+import { ModalFormProps } from '@/modalPages/ModalPagePropsInterface'
+import ThemeButton from './themeComponents/themeButton'
 import { useTheme } from '../utils/hook/themeHook'
-import Text, { TextTag } from './text'
+import { TextTag } from './api/text'
 import { LanguageOption, useTranslate } from '../utils/hook/translateHook'
+import ThemeText from './themeComponents/themeText'
+
 
 interface ModalProps extends ModalFormProps {
   children: React.ReactNode;
@@ -20,22 +22,21 @@ export default function Modal({ children, closeModal, title, enabledVerify = tru
   const CANCEL_KEY = 'Modal.Cancel'
 
   const { config } = useTheme()
-  const { language, addKey, getValue } = useTranslate()
+  const { language, addKeys, getValue } = useTranslate()
 
-  function translate() {
-    addKey(SAVE_KEY, 'Salvar', LanguageOption.PT_BR)
-    addKey(SAVE_KEY, 'Save', LanguageOption.EN)
-    addKey(CANCEL_KEY, 'Cancelar', LanguageOption.PT_BR)
-    addKey(CANCEL_KEY, 'Cancel', LanguageOption.EN)
-  }
+  const [saveButton, setSaveButton] = useState<string>(addKeys(SAVE_KEY, [{ value: 'Salvar', lang: LanguageOption.PT_BR }, { value: 'Save', lang: LanguageOption.EN },]))
+  const [cancelButton, setCancelButton] = useState<string>(addKeys(CANCEL_KEY, [{ value: 'Cancelar', lang: LanguageOption.PT_BR }, { value: 'Cancel', lang: LanguageOption.EN },]))
 
-  useEffect(() => translate(), [])
-  useEffect(() => translate(), [language])
+  useEffect(() => {
+    setSaveButton(getValue(SAVE_KEY))
+    setCancelButton(getValue(CANCEL_KEY))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [language])
 
   return <div style={styles.overlay}>
-    <div style={{ ...styles.modal, backgroundColor: config.backgroundColor }}>
+    <div style={{ ...styles.modal, backgroundColor: config.cardBackground }}>
       <div style={{ ...styles.titleRow, margin: '0 0 0.5rem 0' }}>
-        <Text textTag={TextTag.H6} style={styles.title}>{title}</Text>
+        <ThemeText textTag={TextTag.H6} style={styles.title}>{title}</ThemeText>
         <ThemeButton
           clickHandle={() => closeModal()}
           Icon={CloseIcon}
@@ -50,7 +51,7 @@ export default function Modal({ children, closeModal, title, enabledVerify = tru
           clickHandle={() => closeModal()}
           width='40%'
         >
-          {getValue(CANCEL_KEY)}
+          {cancelButton}
         </ThemeButton>
         <ThemeButton
           clickHandle={() => {
@@ -62,7 +63,7 @@ export default function Modal({ children, closeModal, title, enabledVerify = tru
           width='40%'
           enabled={enabledVerify}
         >
-          {getValue(SAVE_KEY)}
+          {saveButton}
         </ThemeButton>
       </div>
     </div>

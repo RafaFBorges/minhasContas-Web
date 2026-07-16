@@ -1,8 +1,8 @@
 'use client'
 
 import React from 'react'
-import Card, { CardProps } from './api/card'
-import { useTheme } from '../utils/hook/themeHook'
+import Card, { CardProps } from '../api/card'
+import { useTheme } from '../../utils/hook/themeHook'
 
 export default function ThemeCard({
   style,

@@ -1,127 +1,135 @@
-const SERVER_PATH = 'https://minhascontas-server.onrender.com/'
+import { encrypt, decrypt } from '../../utils/crypto'
+
+const SERVER_PATH = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/'
 
 export const EXPENSES_ENDPOINT = 'expense'
 export const CATEGORIES_ENDPOINT = 'category'
+export const USER_ENDPOINT = 'user'
+export const LOGIN_ENDPOINT = 'login'
+export const REGISTER_ENDPOINT = 'register'
 
-export async function handleGET(endpoint: string) {
+interface ErrorResponse {
+  status: number;
+  data: unknown;
+}
+
+function getHeaders(token?: string): Record<string, string> {
+  const headers: Record<string, string> = {}
+  if (token)
+    headers["token"] = token
+
+  return headers
+}
+
+function logSendMessage(sender: string, data: unknown) {
+  let logMessage = `${sender} : [request send]`
+  if (!data)
+    logMessage += 'empty data'
+  else if (Array.isArray(data))
+    logMessage += 'Count=' + data.length
+  else if (typeof data === "object")
+    logMessage += 'ObjectKeysCount=' + Object.keys(data).length
+  else
+    logMessage += 'Unexpected response type'
+
+  console.log(logMessage)
+}
+
+const request = async<T>(
+  endpoint: string,
+  method: string,
+  headers: Record<string, string> = {},
+  body: unknown | string | null | undefined,
+): Promise<T> => {
+  let processedBody: string | undefined = undefined;
+
+  if (body !== undefined && body !== null) {
+    const plainText = typeof body === "string"
+      ? body
+      : JSON.stringify(body)
+
+    processedBody = await encrypt(plainText)
+  }
+
+  const response: Response = await fetch(SERVER_PATH + endpoint, {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+      ...headers,
+    },
+    body: processedBody,
+  })
+
+  const responseText = await response.text()
+
+  let responseData: T | null = null
+  if (responseText) {
+    const decrypted = await decrypt(responseText)
+    responseData = JSON.parse(decrypted) as T
+  }
+
+  if (!response.ok)
+    throw { status: response.status, data: responseData } as ErrorResponse
+
+  return responseData as T
+}
+
+export async function handleGET<T = unknown>(endpoint: string, token?: string): Promise<T> {
   try {
     console.log("handleGET : [start] endpoint=" + SERVER_PATH + endpoint)
 
-    const response = await fetch(SERVER_PATH + endpoint, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
+    const data: T = await request<T>(endpoint, 'GET', getHeaders(token), null)
 
-    if (!response.ok)
-      throw new Error("Erro HTTP: " + response.status)
-
-    const data = await response.json()
-
-    let logMessage = "handleGET : [request send]"
-    if (!data)
-      logMessage += 'empty data'
-    else if (Array.isArray(data))
-      logMessage += 'Count=' + data.length
-    else if (typeof data === "object")
-      logMessage += 'ObjectKeysCount=' + Object.keys(data).length
-    else
-      logMessage += 'Unexpected response type'
-    console.log(logMessage)
+    logSendMessage("handleGET", data)
 
     return data
-  } catch {
-    return Response.json({ error: "Falha ao buscar dados" }, { status: 500 })
+  } catch (err) {
+    console.error("handleGET : [Error]", err)
+    throw err
   }
 }
 
-export async function handlePOST(endpoint: string, body: object) {
+export async function handlePOST<T = unknown>(endpoint: string, body: object, token?: string): Promise<T> {
   try {
     console.log("handlePOST : [start] endpoint=" + SERVER_PATH + endpoint)
 
-    const response = await fetch(SERVER_PATH + endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body)
-    })
+    const data: T = await request<T>(endpoint, 'POST', getHeaders(token), body)
 
-    if (!response.ok)
-      throw new Error("Erro HTTP: " + response.status)
-
-    const data = await response.json()
-
-    let logMessage = "handlePOST : [request send]"
-    if (!data)
-      logMessage += 'empty data'
-    else if (Array.isArray(data))
-      logMessage += 'Count=' + data.length
-    else if (typeof data === "object")
-      logMessage += 'ObjectKeysCount=' + Object.keys(data).length
-    else
-      logMessage += 'Unexpected response type'
-    console.log(logMessage)
+    logSendMessage("handlePOST", data)
 
     return data
-  } catch {
-    return Response.json({ error: "Erro ao processar" }, { status: 400 });
+  } catch (err) {
+    console.error("handlePOST : [Error]", err)
+    throw err
   }
 }
 
-export async function handleDELETE(endpoint: string) {
+export async function handleDELETE(endpoint: string, token?: string): Promise<boolean> {
   try {
-    console.log("handleDELETE : [start] endpoint=" + SERVER_PATH + endpoint)
+    await request<void>(endpoint, 'DELETE', getHeaders(token), null)
 
-    const response = await fetch(SERVER_PATH + endpoint, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
+    return true
+  } catch (err) {
+    const error = err as ErrorResponse
+    if (error.status === 204)
+      return true
 
-    console.log('handleDELETE : status=' + response.status)
-
-    if (!response.ok)
-      throw new Error("Erro HTTP: " + response.status)
-
-    return response.status == 204
-  } catch {
+    console.error("handleDELETE : [Error]", error)
     return false
   }
 }
 
-export async function handlePUT(endpoint: string, body: object) {
+export async function handlePUT<T = unknown>(endpoint: string, body: object, token?: string): Promise<T> {
   try {
     console.log("handlePUT : [start] endpoint=" + SERVER_PATH + endpoint)
 
-    const response = await fetch(SERVER_PATH + endpoint, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body)
-    })
+    const data: T = await request<T>(endpoint, 'PUT', getHeaders(token), body)
 
-    if (!response.ok)
-      throw new Error("Erro HTTP: " + response.status)
-
-    const data = await response.json()
-
-    let logMessage = "handlePUT : [request send]"
-    if (!data)
-      logMessage += 'empty data'
-    else if (Array.isArray(data))
-      logMessage += 'Count=' + data.length
-    else if (typeof data === "object")
-      logMessage += 'ObjectKeysCount=' + Object.keys(data).length
-    else
-      logMessage += 'Unexpected response type'
-    console.log(logMessage)
+    logSendMessage("handlePUT", data)
 
     return data
-  } catch {
-    return Response.json({ error: "Erro ao processar" }, { status: 400 });
+  } catch (err) {
+    console.error("handlePUT : [Error]", err)
+    throw err
   }
 }

@@ -1,13 +1,15 @@
 "use client"
 
-import { createContext, useContext, ReactNode, useState, useEffect } from 'react'
+import { createContext, useContext, ReactNode, useState, useEffect, useRef } from 'react'
 
 import { Expense } from '@/domain/Expense'
 import { useTranslate } from './translateHook'
 import { Category } from '@/domain/Category'
 import { CategoryResponse, SyncCategories } from '@/comunication/category'
 import { ExpenseResponse, SyncExpenses } from '@/comunication/expense'
-import { ExpenseDisabledDictionary } from '@/app/actions/cookiesManager'
+import { ExpenseDisabledDictionary, getObjectCookie, saveObjectCookie } from '@/app/actions/cookiesManager'
+import { User } from '@/domain/User'
+import { USER_COOKIE_KEY } from '../DataConstants'
 
 
 interface UserContextType {
@@ -24,6 +26,9 @@ interface UserContextType {
   addCategory: (category: Category) => void;
   disabledCategoriesDict: ExpenseDisabledDictionary;
   filterSelection: string;
+  userInfo: User;
+  setPlataformUser: (id: number, name: string, user: string, token: string, expirationTime: string) => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined)
@@ -37,13 +42,26 @@ export function useUser() {
 }
 
 export function UserProvider({ children }: { children: ReactNode }) {
+  const [userInfo, setUserInfo] = useState<User>(new User())
   const [financialList, setFinancialList] = useState<Expense[]>([])
   const [categoriesList, setCategoriesList] = useState<Category[]>([])
   const [total, setTotal] = useState<number>(0)
   const [disabledCategoriesDict, setDisabledCategoriesDict] = useState<ExpenseDisabledDictionary>({})
   const [filterSelection, setFilterSelection] = useState<string>('')
 
+  const hasSyncedCategoriesRef = useRef(false)
+  const hasSyncedExpensesRef = useRef(false)
+
   const { language } = useTranslate()
+
+  async function loadSavedUser() {
+    const savedUser: User | null = User.fromIUser(await getObjectCookie(USER_COOKIE_KEY))
+
+    if (savedUser != null && savedUser.isValidToken) {
+      setUserInfo(savedUser)
+      console.log('UserProvider.loadSavedUser > user=' + savedUser.id)
+    }
+  }
 
   const deleteFinancial = (index: number) => {
     setFinancialList(financialList.filter(expense => {
@@ -69,9 +87,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }
 
   const editFinancialResponse = (response: ExpenseResponse) => {
-    const categoryList: Category[] = []
-    response.categories.forEach((category: CategoryResponse) => categoryList.push(new Category(category.id, category.owner, category.name)))
-    editFinancial(response.id, new Expense(response.id, response.value, response.dates, categoryList, language))
+    let categoryList: Category[] = []
+    if (response.categoryIds)
+      categoryList = categoriesList.filter(c => response.categoryIds.includes(c.id))
+
+    editFinancial(response.id, new Expense(response.id, response.value, [response.date], categoryList, language))
   }
 
   const addFinancial = (item: Expense) => {
@@ -82,6 +102,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const addCategory = (category: Category) => {
     Category.addCategory(category)
     setCategoriesList(Category.Categories)
+
+    if (Expense.CategoryAdded(category))
+      setFinancialList([...financialList])
   }
 
   const replaceFinancial = (list: ExpenseResponse[]) => {
@@ -89,9 +112,21 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const expensesList: Expense[] = []
     list.forEach(expense => {
       const categoryList: Category[] = []
-      expense.categories.forEach((category: CategoryResponse) => categoryList.push(new Category(category.id, category.owner, category.name)))
-      expensesList.push(new Expense(expense.id, expense.value, expense.dates, categoryList, language))
+      const laterReplace: number[] = []
+      if (expense.categoryIds)
+        expense.categoryIds.forEach(id => {
+          const found = categoriesList.find(c => c.id === id)
+          if (found)
+            categoryList.push(found)
+          else
+            laterReplace.push(id)
+        })
+
+      expensesList.push(new Expense(expense.id, expense.value, [expense.date], categoryList, language))
       total += expense.value
+
+      if (laterReplace)
+        Expense.addToLater(expense.id, laterReplace)
     })
 
     setFinancialList(expensesList)
@@ -102,7 +137,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const replaceCategories = (list: CategoryResponse[]) => {
     Category.clearCategories()
-    list.forEach(category => Category.addCategory(new Category(category.id, category.owner, category.name, category.date)))
+
+    list.forEach(category => {
+      const newCategory: Category = new Category(category.id, category.owner, category.name, category.date)
+      Category.addCategory(newCategory)
+      Expense.CategoryAdded(newCategory)
+    })
+
     setCategoriesList(Category.Categories)
   }
 
@@ -114,11 +155,41 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setFilterSelection(filter)
   }
 
+  const setPlataformUser = async (id: number = -1, name: string = '', user: string = '', token: string = '', expirationTime: string = '') => {
+    const newUser: User = new User(id, name, user, token, expirationTime)
+
+    if (newUser != null && newUser.isValidToken) {
+      setUserInfo(newUser)
+      await saveObjectCookie(USER_COOKIE_KEY, newUser.object)
+    }
+  }
+
+  const logout = async () => {
+    console.log('UserProvider.logout > Logging out user id=' + userInfo.id)
+    setUserInfo(new User())
+    await saveObjectCookie(USER_COOKIE_KEY, null, true)
+  }
+
   useEffect(() => {
-    SyncExpenses(replaceFinancial)
-    SyncCategories(replaceCategories, replaceDisabledCategoriesDict, replaceFilterSelection)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    loadSavedUser()
   }, [])
+
+  useEffect(() => {
+    if (userInfo.isValidToken && !hasSyncedCategoriesRef.current) {
+      console.log('UserProvider.useEffect[userInfo] > SyncCategories')
+      SyncCategories(replaceCategories, replaceDisabledCategoriesDict, replaceFilterSelection, userInfo.id, userInfo.token)
+      hasSyncedCategoriesRef.current = true
+    }
+  }, [userInfo])
+
+  useEffect(() => {
+    if (userInfo.isValidToken && !hasSyncedExpensesRef.current) {
+      console.log('UserProvider.useEffect[categoriesList] > SyncExpenses')
+      SyncExpenses(replaceFinancial, userInfo.id, userInfo.token)
+      hasSyncedExpensesRef.current = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoriesList])
 
   useEffect(() => {
     const expensesList: Expense[] = []
@@ -141,7 +212,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
       total,
       replaceTotal,
       disabledCategoriesDict,
-      filterSelection
+      filterSelection,
+      userInfo,
+      setPlataformUser,
+      logout
     }}
   >
     {children}
