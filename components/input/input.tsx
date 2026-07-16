@@ -136,4 +136,5 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
 }
 
+StyledInput.displayName = 'StyledInput'
 export default StyledInput

@@ -21,7 +21,7 @@ function getHeaders(token?: string): Record<string, string> {
   return headers
 }
 
-function logSendMessage(sender: string, data: any) {
+function logSendMessage(sender: string, data: unknown) {
   let logMessage = `${sender} : [request send]`
   if (!data)
     logMessage += 'empty data'
@@ -39,7 +39,7 @@ const request = async<T>(
   endpoint: string,
   method: string,
   headers: Record<string, string> = {},
-  body: any | string | null | undefined,
+  body: unknown | string | null | undefined,
 ): Promise<T> => {
   let processedBody: string | undefined = undefined;
 
@@ -74,11 +74,11 @@ const request = async<T>(
   return responseData as T
 }
 
-export async function handleGET(endpoint: string, token?: string) {
+export async function handleGET<T = unknown>(endpoint: string, token?: string): Promise<T> {
   try {
     console.log("handleGET : [start] endpoint=" + SERVER_PATH + endpoint)
 
-    const data: any = await request(endpoint, 'GET', getHeaders(token), null)
+    const data: T = await request<T>(endpoint, 'GET', getHeaders(token), null)
 
     logSendMessage("handleGET", data)
 
@@ -89,11 +89,11 @@ export async function handleGET(endpoint: string, token?: string) {
   }
 }
 
-export async function handlePOST(endpoint: string, body: object, token?: string) {
+export async function handlePOST<T = unknown>(endpoint: string, body: object, token?: string): Promise<T> {
   try {
     console.log("handlePOST : [start] endpoint=" + SERVER_PATH + endpoint)
 
-    const data: any = await request(endpoint, 'POST', getHeaders(token), body)
+    const data: T = await request<T>(endpoint, 'POST', getHeaders(token), body)
 
     logSendMessage("handlePOST", data)
 
@@ -119,11 +119,11 @@ export async function handleDELETE(endpoint: string, token?: string): Promise<bo
   }
 }
 
-export async function handlePUT(endpoint: string, body: object, token?: string) {
+export async function handlePUT<T = unknown>(endpoint: string, body: object, token?: string): Promise<T> {
   try {
     console.log("handlePUT : [start] endpoint=" + SERVER_PATH + endpoint)
 
-    const data: any = await request(endpoint, 'PUT', getHeaders(token), body)
+    const data: T = await request<T>(endpoint, 'PUT', getHeaders(token), body)
 
     logSendMessage("handlePUT", data)
 

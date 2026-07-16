@@ -4,11 +4,10 @@ import { FaPlus as AddIcon } from 'react-icons/fa'
 
 import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
 import ThemeButton from '../themeComponents/themeButton'
-import { useTheme } from '../../utils/hook/themeHook'
 import { Tag } from '@/domain/Tag'
 import { useModal } from '../../utils/hook/modalHook'
 import CategoryConfiguration, { CategoryVerifyData } from '@/modalPages/CategoryConfiguration'
-import { CategoryRequest } from '@/comunication/category'
+import { CategoryRequest, CategoryResponse } from '@/comunication/category'
 import { CATEGORIES_ENDPOINT, handlePOST } from '@/comunication/ApiResthandler'
 import { Category } from '@/domain/Category'
 import { useUser } from '../../utils/hook/userHook'
@@ -30,7 +29,6 @@ export default function TagList({
   style,
   tagList,
   setTagList = undefined,
-  color = '',
   selectable = false,
   addNewTags = false,
   allowEmpty = false,
@@ -48,10 +46,10 @@ export default function TagList({
     request.name = item.name
     request.owner = userInfo.id
     request.date = new Date().toISOString()
-    const response = await handlePOST(CATEGORIES_ENDPOINT, request, userInfo.token)
+    const response: CategoryResponse = await handlePOST<CategoryResponse>(CATEGORIES_ENDPOINT, request, userInfo.token)
 
-    if (response != null)
-      addCategory(new Category(response.id, response.owner, response.name, response.date))
+    if (response != null && typeof response === 'object' && 'id' in response && 'owner' in response && 'name' in response && 'date' in response)
+      addCategory(new Category(Number(response.id), Number(response.owner), String(response.name), String(response.date)))
   }
 
   const categoryCreate = () => {
@@ -76,7 +74,7 @@ export default function TagList({
       name={name}
       isDisabled={isDisabled}
       onClick={selectable
-        ? (e: React.MouseEvent<HTMLDivElement>) => {
+        ? (_e: React.MouseEvent<HTMLDivElement>) => {
           if (tagList != null && 0 <= index && index < tagList.length && setTagList != null) {
             const newtag = tagList[index]
             newtag.disabled = !newtag.disabled

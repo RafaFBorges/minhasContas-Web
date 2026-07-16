@@ -41,7 +41,7 @@ export default function FilterList({
       name={name}
       style={isDisabled ? {} : styles.selected}
       isDisabled={isDisabled}
-      onClick={(e: React.MouseEvent<HTMLDivElement>) => {
+      onClick={(_e: React.MouseEvent<HTMLDivElement>) => {
         if (tagList != null && 0 <= index && index < tagList.length && setTagList != null) {
           const newList: Array<Tag> = [...tagList]
 
@@ -118,6 +118,7 @@ export default function FilterList({
   useEffect(() => {
     translate()
     translationName.current = getValue(ALL_FILTER_KEY)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -133,6 +134,7 @@ export default function FilterList({
     translationName.current = getValue(ALL_FILTER_KEY)
     if (setTagList != null && list != null)
       setTagList(list)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language])
 
   return <div style={{ ...styles.container, ...style }}>

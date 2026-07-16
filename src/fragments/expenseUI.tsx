@@ -60,11 +60,16 @@ export default function ExpenseUI({
     request.owner = userInfo.id
     const response = await handlePOST(EXPENSES_ENDPOINT, request, userInfo.token)
 
-    if (response != null && response.categories != null) {
-      const categoryList: Category[] = []
-      response.categories.forEach((category: CategoryResponse) => categoryList.push(new Category(category.id, category.owner, category.name)))
+    const canAddFinancial = response != null && typeof response === 'object' &&
+      'categories' in response && response.categories != null &&
+      'id' in response &&
+      'value' in response &&
+      'dates' in response
 
-      addFinancial(new Expense(response.id, response.value, response.dates, categoryList, language))
+    if (canAddFinancial) {
+      const categoryList: Category[] = (response.categories as CategoryResponse[]).map((category: CategoryResponse) => new Category(category.id, category.owner, category.name))
+
+      addFinancial(new Expense(Number(response.id), Number(response.value), (response.dates as Array<string>), categoryList, language))
     }
   }
 

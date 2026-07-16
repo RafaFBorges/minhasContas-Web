@@ -161,4 +161,5 @@ const styles: { [key: string]: React.CSSProperties } = {
   }
 }
 
+SpinInput.displayName = 'SpinInput'
 export default SpinInput

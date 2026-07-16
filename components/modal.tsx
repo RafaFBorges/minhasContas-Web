@@ -30,6 +30,7 @@ export default function Modal({ children, closeModal, title, enabledVerify = tru
   useEffect(() => {
     setSaveButton(getValue(SAVE_KEY))
     setCancelButton(getValue(CANCEL_KEY))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language])
 
   return <div style={styles.overlay}>

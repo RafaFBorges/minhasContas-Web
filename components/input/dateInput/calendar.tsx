@@ -196,7 +196,7 @@ export default function Calendar({
     return <div style={{ ...styles.body, ...styles.yearBody }}>
       {Object.entries(monthName).map(([key, name]) => {
         const index: number = Number(key)
-        let style: React.CSSProperties = Number(currentMonth.month) == index
+        const style: React.CSSProperties = Number(currentMonth.month) == index
           ? { ...styles.year, backgroundColor: selectedDate }
           : styles.year
 
@@ -282,7 +282,7 @@ export default function Calendar({
   }
 
   function getYearsList(selectedDate: DateValue): CalendarYear[] {
-    let selectedYear: number = getNextLeapYear(Number(selectedDate.year))
+    const selectedYear: number = getNextLeapYear(Number(selectedDate.year))
 
     return Array.from({ length: 12 }, (_, i) => {
       const currentYear = selectedYear - 7 + i
@@ -330,7 +330,8 @@ export default function Calendar({
 
     document.addEventListener('mousedown', handleMouseDown)
     return () => document.removeEventListener('mousedown', handleMouseDown)
-  }, [show])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [show, setShow])
 
   if (!show)
     return null

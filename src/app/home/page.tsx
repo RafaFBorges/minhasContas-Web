@@ -77,11 +77,13 @@ export default function Home() {
 
   useEffect(() => {
     setExpensesText(getValue(SUBTITLE_KEY))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language])
 
   useEffect(() => {
     setTagList(Category.getTagList(categoriesList, true))
     setFilterList(Category.getTagList(categoriesList, true, filterSelection))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoriesList])
 
   return <main style={styles.page}>

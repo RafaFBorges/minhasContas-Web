@@ -71,6 +71,7 @@ export default function Login({
       [CREATE_ACCOUNT_KEY]: getValue(CREATE_ACCOUNT_KEY),
       [FIRST_TIME_KEY]: getValue(FIRST_TIME_KEY),
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language])
 
   return <div style={styles.container}>

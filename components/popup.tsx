@@ -43,7 +43,7 @@ export default function Popup({ title, message, type, position, height, onClose,
     ? 'translateX(-110%)'
     : 'translateX(110%)'
 
-  let style: React.CSSProperties = {
+  const style: React.CSSProperties = {
     ...styles.popupContainer,
     height: height,
     background: styles[type] != null

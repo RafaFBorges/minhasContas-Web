@@ -171,7 +171,7 @@ export default function DateInput({
       onKeyDown(e)
   }
 
-  function blurStructHandle(field: string) {
+  function blurStructHandle(_field: string) {
     const isFocusedNow = isFocused()
     setFocused(isFocusedNow)
     setTouched(true)

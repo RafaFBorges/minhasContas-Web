@@ -26,7 +26,7 @@ export default function WindowButton({
   const buttonRef = useRef<HTMLButtonElement>(null)
   const modalRef = useRef<HTMLDivElement>(null)
 
-  const clickHandle = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const clickHandle = (_e: React.MouseEvent<HTMLButtonElement>) => {
     if (buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect()
 

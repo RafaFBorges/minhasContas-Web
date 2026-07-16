@@ -36,7 +36,7 @@ export const handleEditExpense = async (item: unknown, expense: Expense, populat
 
   if (shouldSend && populate != null) {
     request.date = new Date().toISOString()
-    const response = await handlePUT(EXPENSES_ENDPOINT + '/' + expense.id, request, token)
+    const response = await handlePUT<ExpenseResponse>(EXPENSES_ENDPOINT + '/' + expense.id, request, token)
 
     if (populate != null)
       populate(response)

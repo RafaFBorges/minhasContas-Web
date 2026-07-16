@@ -206,8 +206,8 @@ export default function Registration() {
     ]
   }
 
-  function wasSusessfull(response: any): boolean {
-    return response != null && response.isCreated
+  function wasSusessfull(response: unknown): boolean {
+    return response != null && typeof response === 'object' && 'isCreated' in response && Boolean(response.isCreated)
   }
 
   function onSucsess() {
@@ -232,6 +232,7 @@ export default function Registration() {
     addOrSetField({ ...form().birthdate, label: getValue(BIRTHDATE_KEY) })
     addOrSetField({ ...form().password, label: getValue(PASSWORD_KEY), placeholder: getValue(PH_PASSWORD_KEY) })
     addOrSetField({ ...form().confirmPassword, label: getValue(CONFIRM_PASSWORD_KEY), placeholder: getValue(PH_CONFIRM_PASSWORD_KEY) })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language])
 
   return <main style={styles.container}>

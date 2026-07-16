@@ -1,7 +1,7 @@
 import React, { useRef } from 'react'
 import StyledInput, { StyledInputProps } from './input'
 
-interface PhoneInputProps extends StyledInputProps { }
+type PhoneInputProps = StyledInputProps
 
 export default function PhoneInput({ changeHandle, ...ret }: PhoneInputProps) {
   const inputRef = useRef<HTMLInputElement>(null)

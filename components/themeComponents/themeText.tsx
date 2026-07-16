@@ -37,12 +37,3 @@ export default function ThemeText<T>({
     {children}
   </Text>
 }
-
-const styles: { [key: string]: React.CSSProperties } = {
-  notSelectable: {
-    WebkitUserSelect: 'none',
-    MozUserSelect: 'none',
-    msUserSelect: 'none',
-    userSelect: 'none',
-  }
-}

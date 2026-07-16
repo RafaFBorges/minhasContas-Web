@@ -76,6 +76,7 @@ export default function ThemeCalendar({ ...rest }: CalendarProps) {
       11: getValue(NOVEMBER_KEY),
       12: getValue(DECEMBER_KEY),
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language])
 
   return <Calendar

@@ -31,7 +31,7 @@ export const RequestLogin = async (user: string, password: string, onError: () =
 
   let token: LoginResponse
   try {
-    const response = await handlePOST(LOGIN_ENDPOINT, request)
+    const response: LoginResponse = await handlePOST<LoginResponse>(LOGIN_ENDPOINT, request)
 
     const expireTime = new Date()
     expireTime.setMinutes(expireTime.getMinutes() + 1)
