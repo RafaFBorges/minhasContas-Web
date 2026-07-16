@@ -158,6 +158,7 @@ export function usePagination({ list, firstIndex = 0, lastAction = undefined }: 
 
 const styles: { [key: string]: React.CSSProperties } = {
   paginationContainer: {
+    overflow: 'hidden',
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
