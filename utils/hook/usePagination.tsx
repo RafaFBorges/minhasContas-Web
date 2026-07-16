@@ -49,7 +49,7 @@ export function usePagination({ list, firstIndex = 0, lastAction = undefined }: 
   const { config } = useTheme()
   const { language, addKeys, getValue } = useTranslate()
 
-  const [paginationList, setPaginationList] = useState<PaginationItem[]>(list)
+  const [paginationList,] = useState<PaginationItem[]>(list)
   const [selected, setSelected] = useState<number>(Math.min(Math.max(0, firstIndex), list.length - 1))
   const [buttonsNames, setButtonsNames] = useState<ButtonsName>(translate())
 
@@ -150,6 +150,7 @@ export function usePagination({ list, firstIndex = 0, lastAction = undefined }: 
       next: getValue(NEXT_KEY),
       previous: getValue(PREVIOUS_KEY),
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language])
 
   return { renderController, selected, renderPreviousButton, renderNextButton, renderContent }

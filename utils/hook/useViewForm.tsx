@@ -49,7 +49,7 @@ export function useViewForm({
   const [sucess, setSucess] = useState<boolean>(false)
   const { addKeys, getValue, language } = useTranslate()
   const [submitLabel, setSubmitLabel] = useState<string>(translate())
-  const [paginationList, setPaginationlist] = useState<PaginationItem[]>(buildPagination())
+  const [paginationList,] = useState<PaginationItem[]>(buildPagination())
   const { renderController, renderNextButton, renderPreviousButton, renderContent } = usePagination({
     list: paginationList,
     firstIndex: 0,
@@ -175,7 +175,7 @@ export function useViewForm({
 
         {section.rows.map((row, rIndex) => (
           <div key={rIndex}>
-            {renderRow(row, rIndex)}
+            {renderRow(row)}
             {rIndex < section.rows.length - 1 && <div style={styles.rowDivider} />}
           </div>
         ))}
@@ -183,7 +183,7 @@ export function useViewForm({
     )
   }
 
-  function renderRow(row: FormInputField | FormInputField[], index: number) {
+  function renderRow(row: FormInputField | FormInputField[]) {
     if (Array.isArray(row)) {
       return <div key={row.map(f => f.name).join('-')} style={styles.group}>
         {row.map(renderField)}
@@ -241,6 +241,7 @@ export function useViewForm({
 
   useEffect(() => {
     setSubmitLabel(getValue(SUBMIT_KEY))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language])
 
   return { renderForm, setSucess }

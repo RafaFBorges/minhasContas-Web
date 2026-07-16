@@ -202,6 +202,7 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
 
   useEffect(() => {
     translate()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return <ThemeContext.Provider

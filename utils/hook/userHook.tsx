@@ -111,8 +111,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
     let total: number = 0
     const expensesList: Expense[] = []
     list.forEach(expense => {
-      let categoryList: Category[] = []
-      let laterReplace: number[] = []
+      const categoryList: Category[] = []
+      const laterReplace: number[] = []
       if (expense.categoryIds)
         expense.categoryIds.forEach(id => {
           const found = categoriesList.find(c => c.id === id)
@@ -172,7 +172,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     loadSavedUser()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -181,7 +180,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
       SyncCategories(replaceCategories, replaceDisabledCategoriesDict, replaceFilterSelection, userInfo.id, userInfo.token)
       hasSyncedCategoriesRef.current = true
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userInfo])
 
   useEffect(() => {

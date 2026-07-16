@@ -58,7 +58,7 @@ interface UseFormProps {
   initialFields: FormInputField[]
   name: string
   handleChange: (name: string, value: string) => void
-  processResponse: undefined | ((response: any) => boolean)
+  processResponse: undefined | ((response: unknown) => boolean)
   onSucsess?: () => ReactNode
   path: string
   title?: string
