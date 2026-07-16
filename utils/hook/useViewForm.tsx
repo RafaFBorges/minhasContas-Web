@@ -270,6 +270,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     margin: '1.25rem 0',
   },
   buttonsContainer: {
+    overflow: 'hidden',
     display: 'flex',
     width: '100%',
     justifyContent: 'space-between',
