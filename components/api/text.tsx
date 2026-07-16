@@ -47,7 +47,7 @@ export default function Text<T>({
 }: TextProps<T>) {
   const [isHovered, setIsHovered] = useState<boolean>(false)
 
-  let textStyle: React.CSSProperties = (style != null) ? style : {}
+  let textStyle: React.CSSProperties = (style != null) ? { ...styles.text, ...style } : styles.text
   textStyle = (isHovered)
     ? { ...textStyle, color: lightenCor('#000', 60) }
     : (color != '')
@@ -92,10 +92,15 @@ export default function Text<T>({
 }
 
 const styles: { [key: string]: React.CSSProperties } = {
+  text: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
   notSelectable: {
     WebkitUserSelect: 'none',
     MozUserSelect: 'none',
     msUserSelect: 'none',
     userSelect: 'none',
-  }
+  },
 }
