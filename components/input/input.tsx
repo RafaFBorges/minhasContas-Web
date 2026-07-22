@@ -21,6 +21,7 @@ export interface StyledInputProps {
   inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode']
   isTouched?: boolean
   setIsTouched?: (touched: boolean) => void
+  onPaste?: (e: React.SyntheticEvent<HTMLInputElement>) => void
 }
 
 const StyledInput = forwardRef<HTMLInputElement, StyledInputProps>(({
@@ -43,6 +44,7 @@ const StyledInput = forwardRef<HTMLInputElement, StyledInputProps>(({
   isTouched = false,
   setIsTouched = undefined,
   inputMode = undefined,
+  onPaste = undefined,
 }: StyledInputProps, ref) => {
   const [isValidState, setIsValid] = useState<boolean | null>(getValidState())
   const [touched, setTouched] = useState(isTouched)
@@ -117,6 +119,7 @@ const StyledInput = forwardRef<HTMLInputElement, StyledInputProps>(({
     value={value}
     onChange={handleChange}
     onBlur={handleBlur}
+    onPaste={onPaste}
     placeholder={placeholder}
     style={inputStyle}
     onKeyDown={onKeyDown}
