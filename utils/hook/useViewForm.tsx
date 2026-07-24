@@ -229,7 +229,7 @@ export function useViewForm({
     return <>
       <div style={styles.header}>
         <ThemeText noSelection noWrap style={styles.title} textTag={TextTag.H1} color={'#000'}>{title}</ThemeText>
-        {renderController()}
+        {!sucess && renderController()}
       </div>
       <ThemeText noSelection noWrap style={styles.subtitle} textTag={TextTag.P} color={'#000'}>{subtitle}</ThemeText>
       <form noValidate>
