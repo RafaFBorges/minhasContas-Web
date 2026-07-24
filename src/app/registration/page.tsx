@@ -39,7 +39,7 @@ export default function Registration() {
   const PH_CONFIRM_PASSWORD_KEY = 'Registration.PlaceholderConfirmPassword'
   const USER_KEY = 'Registration.User'
   const PH_USER_KEY = 'Registration.PlaceholderUser'
-  const SUCSESS_KEY = 'Registration.Sucsess'
+  const SUCCESS_KEY = 'Registration.Success'
 
   function translate(): RegistrationTranslations {
     const tr = {} as RegistrationTranslations
@@ -50,7 +50,7 @@ export default function Registration() {
     tr[ACCESS_KEY] = addKeys(ACCESS_KEY, [{ value: 'Acesso', lang: LanguageOption.PT_BR }, { value: 'Access', lang: LanguageOption.EN },])
     tr[ERROR_REQUIRED_KEY] = addKeys(ERROR_REQUIRED_KEY, [{ value: 'Por favor, preencha os campos obrigatórios.', lang: LanguageOption.PT_BR }, { value: 'Please fill in the required fields.', lang: LanguageOption.EN },])
     tr[ERROR_PASSWORD_MATCH_KEY] = addKeys(ERROR_PASSWORD_MATCH_KEY, [{ value: 'As senhas não coincidem.', lang: LanguageOption.PT_BR }, { value: 'Passwords do not match.', lang: LanguageOption.EN },])
-    tr[SUCSESS_KEY] = addKeys(SUCSESS_KEY, [{ value: 'Parabéns! Sua conta foi criada', lang: LanguageOption.PT_BR }, { value: 'Congratulations! Your account has been created', lang: LanguageOption.EN },])
+    tr[SUCCESS_KEY] = addKeys(SUCCESS_KEY, [{ value: 'Parabéns! Sua conta foi criada', lang: LanguageOption.PT_BR }, { value: 'Congratulations! Your account has been created', lang: LanguageOption.EN },])
 
     return tr
   }
@@ -88,7 +88,7 @@ export default function Registration() {
     name: 'Registration',
     handleChange: handleChange,
     processResponse: wasSusessfull,
-    onSucsess: onSucsess,
+    onSuccess: onSuccess,
     path: REGISTER_ENDPOINT,
     title: translation[TITLE_KEY],
     subtitle: translation[SUBTITLE_KEY],
@@ -210,8 +210,8 @@ export default function Registration() {
     return response != null && typeof response === 'object' && 'isCreated' in response && Boolean(response.isCreated)
   }
 
-  function onSucsess() {
-    return <ThemeText noSelection style={styles.title} textTag={TextTag.H1} color={'#000'}>{translation[SUCSESS_KEY]}</ThemeText>
+  function onSuccess() {
+    return <ThemeText noSelection style={styles.title} textTag={TextTag.H1} color={'#000'}>{translation[SUCCESS_KEY]}</ThemeText>
   }
 
   useEffect(() => {
@@ -222,7 +222,7 @@ export default function Registration() {
       [ACCESS_KEY]: getValue(ACCESS_KEY),
       [ERROR_REQUIRED_KEY]: getValue(ERROR_REQUIRED_KEY),
       [ERROR_PASSWORD_MATCH_KEY]: getValue(ERROR_PASSWORD_MATCH_KEY),
-      [SUCSESS_KEY]: getValue(SUCSESS_KEY),
+      [SUCCESS_KEY]: getValue(SUCCESS_KEY),
     })
 
     addOrSetField({ ...form().firstName, label: getValue(FIRST_NAME_KEY), placeholder: getValue(PH_FIRST_NAME_KEY) })

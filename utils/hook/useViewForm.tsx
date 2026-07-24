@@ -15,7 +15,7 @@ interface UseViewFormProps {
   orderedFields: () => FormInputField[]
   onFieldBlur: () => void
   handleChange: (name: string, value: string) => void
-  onSucsess?: () => ReactNode
+  onSuccess?: () => ReactNode
   title?: string
   subtitle?: string
   canSubmit: () => boolean
@@ -38,7 +38,7 @@ export function useViewForm({
   orderedFields,
   onFieldBlur,
   handleChange,
-  onSucsess,
+  onSuccess,
   title = undefined,
   subtitle = undefined,
   canSubmit,
@@ -220,7 +220,7 @@ export function useViewForm({
 
   function renderFormContent(): React.JSX.Element | undefined {
     if (sucess)
-      return onSucsess ? <>{onSucsess()}</> : undefined
+      return onSuccess ? <>{onSuccess()}</> : undefined
 
     return paginationList.length <= 0 ? renderFields() : renderContent()
   }

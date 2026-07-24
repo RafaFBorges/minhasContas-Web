@@ -59,13 +59,13 @@ interface UseFormProps {
   name: string
   handleChange: (name: string, value: string) => void
   processResponse: undefined | ((response: unknown) => boolean)
-  onSucsess?: () => ReactNode
+  onSuccess?: () => ReactNode
   path: string
   title?: string
   subtitle?: string
 }
 
-export function useForm({ initialFields = [], name, handleChange, processResponse = undefined, path = '', onSucsess, title = undefined, subtitle = undefined }: UseFormProps): UseFormReturn {
+export function useForm({ initialFields = [], name, handleChange, processResponse = undefined, path = '', onSuccess, title = undefined, subtitle = undefined }: UseFormProps): UseFormReturn {
   const buildInitialState = (): FormState => {
     return initialFields.reduce<FormState>((acc, field, index) => {
 
@@ -88,7 +88,7 @@ export function useForm({ initialFields = [], name, handleChange, processRespons
     orderedFields: orderedFields,
     onFieldBlur: onFieldBlur,
     handleChange: handleChange,
-    onSucsess: onSucsess,
+    onSUCCESS: onSuccess,
     title: title,
     subtitle: subtitle,
     canSubmit: canSubmit,
