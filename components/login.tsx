@@ -96,9 +96,8 @@ export default function Login({
     </div>
     <ThemeButton clickHandle={async () => {
       const token: LoginResponse = await onSend(user, password, onLoginError)
-
-      if (token != null && token.id && token.name && token.user && token.token && token.expireTime) {
-        await setPlataformUser(token.id, token.name, token.user, token.token, token.expireTime.toString())
+      if (token != null && token.id && token.name && token.user && token.token && token.expiresAt) {
+        await setPlataformUser(token.id, token.name, token.user, token.token, token.expiresAt.toString())
 
         console.log('Login > [sucesses] user=' + token.id)
         router.push('/home')
