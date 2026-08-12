@@ -7,7 +7,7 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   token: string;
-  expireTime: Date;
+  expiresAt: Date;
   user?: string;
   id?: number;
   name?: string;
@@ -20,7 +20,7 @@ export const RequestLogin = async (user: string, password: string, onError: () =
 
     return {
       token: '',
-      expireTime: expiredTime
+      expiresAt: expiredTime
     }
   }
 
@@ -33,25 +33,22 @@ export const RequestLogin = async (user: string, password: string, onError: () =
   try {
     const response: LoginResponse = await handlePOST<LoginResponse>(LOGIN_ENDPOINT, request)
 
-    const expireTime = new Date()
-    expireTime.setMinutes(expireTime.getMinutes() + 1)
-
     token = {
       token: response.token,
-      expireTime: response.expireTime,
+      expiresAt: response.expiresAt,
       user: response.user,
       id: response.id,
       name: response.name
     }
   } catch (error) {
-    console.log('RequestLogin > error=' + error)
+    console.log('RequestLogin > error=' + JSON.stringify(error, null, 2))
 
     if (onError != null)
       onError()
 
     token = {
       token: '',
-      expireTime: new Date(NaN),
+      expiresAt: new Date(NaN),
       user: '',
       id: -1,
       name: ''
