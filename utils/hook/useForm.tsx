@@ -88,7 +88,7 @@ export function useForm({ initialFields = [], name, handleChange, processRespons
     orderedFields: orderedFields,
     onFieldBlur: onFieldBlur,
     handleChange: handleChange,
-    onSUCCESS: onSuccess,
+    onSuccess: onSuccess,
     title: title,
     subtitle: subtitle,
     canSubmit: canSubmit,
