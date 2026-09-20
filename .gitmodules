@@ -1,0 +1,3 @@
+[submodule "packages/componentes"]
+	path = packages/componentes
+	url = git@github.com:RafaFBorges/Componentes.git
