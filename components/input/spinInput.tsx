@@ -3,9 +3,9 @@ import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react'
 
 import { FaChevronUp as UpIcon, FaChevronDown as DownIcon } from 'react-icons/fa'
 
-import StyledInput, { StyledInputProps } from './input'
 import ThemeButton from '../themeComponents/themeButton'
 import { MAX_VALUE, MIN_VALUE } from '../../utils/DataConstants'
+import { StyledInput, StyledInputProps } from '@rafafborges/componentes'
 
 
 interface SpinProps extends StyledInputProps {

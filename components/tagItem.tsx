@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 
 
-import { TextTag } from './api/text'
 import ThemeText from './themeComponents/themeText'
 import { isLight, lightenCor } from '../utils/colors'
 import { useTheme } from '../utils/hook/themeHook'
+import { TextTag } from '@rafafborges/componentes'
 
 export interface TagItemProps {
   style?: React.CSSProperties | null;

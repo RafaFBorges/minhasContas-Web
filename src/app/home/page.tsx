@@ -11,7 +11,6 @@ import { Expense } from '@/domain/Expense'
 import ThemeCard from '../../../components/themeComponents/themeCard'
 import { useModal } from '../../../utils/hook/modalHook'
 import ExpenseConfiguration, { ExpenseVerifyData } from '../../modalPages/ExpenseConfiguration'
-import { TextTag } from '../../../components/api/text'
 import ThemeText from '../../../components/themeComponents/themeText'
 import { LanguageOption, useTranslate } from '../../../utils/hook/translateHook'
 import { Category } from '@/domain/Category'
@@ -21,6 +20,7 @@ import ExpenseUI from '@/fragments/expenseUI'
 import { getRealString } from '../../../utils/financialUtils'
 import { useUser } from '../../../utils/hook/userHook'
 import { useTheme } from '../../../utils/hook/themeHook'
+import { TextTag } from '@rafafborges/componentes'
 
 
 export default function Home() {

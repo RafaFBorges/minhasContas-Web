@@ -5,9 +5,9 @@ import { FaTimes as CloseIcon } from 'react-icons/fa'
 import { ModalFormProps } from '@/modalPages/ModalPagePropsInterface'
 import ThemeButton from './themeComponents/themeButton'
 import { useTheme } from '../utils/hook/themeHook'
-import { TextTag } from './api/text'
 import { LanguageOption, useTranslate } from '../utils/hook/translateHook'
 import ThemeText from './themeComponents/themeText'
+import { TextTag } from '@rafafborges/componentes'
 
 
 interface ModalProps extends ModalFormProps {

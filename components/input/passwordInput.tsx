@@ -2,8 +2,8 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 import { encrypt, decrypt } from '../../utils/crypto'
 
-import StyledInput, { StyledInputProps } from './input'
 import { FaEye as ShowIcon, FaEyeSlash as HideIcon } from 'react-icons/fa'
+import { StyledInput, StyledInputProps } from '@rafafborges/componentes'
 
 
 interface PasswordInputProps extends StyledInputProps {

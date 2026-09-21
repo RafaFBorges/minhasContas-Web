@@ -1,11 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-import { StyledInputProps } from '../input'
 import { FaRegCalendar as CalendarIcon } from 'react-icons/fa'
-import { validateDate } from '../../../utils/validations'
-import Text from '../../api/text'
 import SpinInput from '../spinInput'
 import { CalendarProps } from './calendar'
+import { StyledInputProps, validateDate, Text } from '@rafafborges/componentes'
 
 
 export interface DateInputProps extends StyledInputProps {

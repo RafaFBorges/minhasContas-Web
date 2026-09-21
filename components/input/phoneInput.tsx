@@ -1,5 +1,5 @@
 import React, { useRef } from 'react'
-import StyledInput, { StyledInputProps } from './input'
+import { StyledInput, StyledInputProps } from '@rafafborges/componentes'
 
 type PhoneInputProps = StyledInputProps
 

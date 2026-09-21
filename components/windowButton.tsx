@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react'
-import StyledButton, { StyledButtonProps } from './api/button'
 import { useTheme } from '../utils/hook/themeHook'
+import { StyledButton, StyledButtonProps } from '@rafafborges/componentes'
 
 export interface WindowButtonProps extends StyledButtonProps {
   Menu?: React.ElementType | null;
