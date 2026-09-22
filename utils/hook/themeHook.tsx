@@ -11,12 +11,11 @@ import engImage from '../../src/assets/en.png'
 import { LanguageOption, useTranslate } from './translateHook'
 import { saveCookie } from '@/app/actions/cookiesManager'
 import { THEME_KEY } from '../DataConstants'
-import { getSideColor } from '../colors'
 import ThemeToggle from '../../components/themeComponents/themeToggle'
 import ThemeText from '../../components/themeComponents/themeText'
 import { useUser } from './userHook'
 import { useRouter, usePathname } from 'next/navigation'
-import { WindowButton } from '@rafafborges/componentes'
+import { WindowButton, getSideColor } from '@rafafborges/componentes'
 
 export enum ThemeOptions {
   LIGHT = 'light',

@@ -3,10 +3,9 @@
 import React, { useState } from 'react'
 import Image, { StaticImageData } from 'next/image'
 
-import { lightenCor } from '../../utils/colors'
 import ThemeText from '../themeComponents/themeText'
 import { IconType } from 'react-icons'
-import { TextTag } from '@rafafborges/componentes'
+import { TextTag, lightenCor } from '@rafafborges/componentes'
 
 
 export interface ToogleProps {
