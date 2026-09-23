@@ -4,8 +4,8 @@ import React, { useEffect, useState } from 'react'
 
 import ModalContentProps from './ModalPagePropsInterface'
 import { useModal } from '../../utils/hook/modalHook'
-import StyledInput from '../../components/input/input'
 import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
+import { StyledInput } from '@rafafborges/componentes'
 
 
 export interface CategoryVerifyData {

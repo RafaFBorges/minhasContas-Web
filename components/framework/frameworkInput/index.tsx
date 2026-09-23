@@ -1,10 +1,9 @@
 import React from 'react'
 
-import { StyledInputProps } from '../../input/input'
 import ThemeText from '../../themeComponents/themeText'
-import { TextTag } from '../../api/text'
 import { useTheme } from '../../../utils/hook/themeHook'
 import { resolveInput } from './inputRegiostry'
+import { StyledInputProps, TextTag } from '@rafafborges/componentes'
 
 
 interface FrameworkInputProps extends StyledInputProps {

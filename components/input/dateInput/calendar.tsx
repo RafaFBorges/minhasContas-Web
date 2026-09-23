@@ -3,8 +3,7 @@ import React, { JSX, useEffect, useRef, useState } from 'react'
 import { HiChevronLeft as LeftIcon, HiChevronRight as RightIcon } from 'react-icons/hi'
 
 import { DateValue } from './dateInput'
-import Text, { TextTag } from '../../api/text'
-import { isLeapYear } from '../../../utils/validations'
+import { Text, TextTag, isLeapYear } from '@rafafborges/componentes'
 
 
 export enum CalendarViewType {

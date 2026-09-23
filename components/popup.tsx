@@ -5,10 +5,8 @@ import { FaTimes as CloseIcon } from 'react-icons/fa'
 import { PopupType } from '@/types/popupTypes'
 import React, { useEffect, useRef, useState } from 'react'
 import ThemeText from './themeComponents/themeText'
-import { TextTag } from './api/text'
-import StyledButton from './api/button'
-import { lightenCor } from '../utils/colors'
 import { PopupPositionType } from '../utils/hook/usePopup'
+import { TextTag, StyledButton, lightenCor } from '@rafafborges/componentes'
 
 
 export const popupIcon: Record<PopupType, string> = {

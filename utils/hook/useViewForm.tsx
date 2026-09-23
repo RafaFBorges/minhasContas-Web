@@ -4,11 +4,11 @@ import { IconType } from 'react-icons'
 
 import FrameworkInput from '../../components/framework/frameworkInput'
 import ThemeText from '../../components/themeComponents/themeText'
-import { TextTag } from '../../components/api/text'
 import { FormInputField } from './useForm'
 import ThemeButton from '../../components/themeComponents/themeButton'
 import { LanguageOption, useTranslate } from './translateHook'
 import { PaginationItem, usePagination } from './usePagination'
+import { TextTag } from '@rafafborges/componentes'
 
 
 interface UseViewFormProps {
