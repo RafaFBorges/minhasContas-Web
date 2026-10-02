@@ -9,8 +9,7 @@ import ThemeText from './themeComponents/themeText'
 import { useUser } from '../utils/hook/userHook'
 import { usePopup } from '../utils/hook/usePopup'
 import { PopupType } from '@/types/popupTypes'
-import PasswordInput from './input/passwordInput'
-import { StyledInput, TextTag, Link } from '@rafafborges/componentes'
+import { PasswordInput, StyledInput, TextTag, Link } from '@rafafborges/componentes'
 
 interface LoginProps {
   registerHRef?: string;
