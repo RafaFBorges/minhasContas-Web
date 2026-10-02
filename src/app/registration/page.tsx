@@ -5,13 +5,17 @@ import React, { useEffect, useState } from 'react'
 import { FaRegIdCard as PersonalDataIcon, FaLock as AccessIcon } from 'react-icons/fa'
 
 import ThemeText from '../../../components/themeComponents/themeText'
-import { TextTag } from '../../../components/api/text'
 import { LanguageOption, useTranslate } from '../../../utils/hook/translateHook'
-import { validateDate, notEmpty, validateEmail, validateStrongPassword } from '../../../utils/validations'
 import { useForm, FormInputField } from '../../../utils/hook/useForm'
 import { DateValue } from '../../../components/input/dateInput/dateInput'
 import { REGISTER_ENDPOINT } from '@/comunication/ApiResthandler'
-
+import {
+  TextTag,
+  validateDate,
+  notEmpty,
+  validateEmail,
+  validateStrongPassword
+} from '@rafafborges/componentes'
 
 interface RegistrationTranslations {
   [KEY: string]: string;

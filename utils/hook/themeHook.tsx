@@ -11,12 +11,11 @@ import engImage from '../../src/assets/en.png'
 import { LanguageOption, useTranslate } from './translateHook'
 import { saveCookie } from '@/app/actions/cookiesManager'
 import { THEME_KEY } from '../DataConstants'
-import { getSideColor } from '../colors'
-import WindowButton from '../../components/windowButton'
 import ThemeToggle from '../../components/themeComponents/themeToggle'
 import ThemeText from '../../components/themeComponents/themeText'
 import { useUser } from './userHook'
 import { useRouter, usePathname } from 'next/navigation'
+import { WindowButton, getSideColor } from '@rafafborges/componentes'
 
 export enum ThemeOptions {
   LIGHT = 'light',
@@ -227,6 +226,8 @@ export function ThemeProvider({ children, theme }: { children: ReactNode, theme:
           borderRadius='8px'
           iconSize='16'
           Icon={UserIcon}
+          color={config.color}
+          menuBackgroundColor={config.cardBackground}
           Menu={() => {
             return <div style={styles.menuContainer}>
               {userInfo.user && <ThemeText>{userInfo.user}</ThemeText>}

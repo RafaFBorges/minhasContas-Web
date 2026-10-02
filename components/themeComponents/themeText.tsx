@@ -1,6 +1,6 @@
 import React from 'react'
 import { useTheme } from '../../utils/hook/themeHook'
-import Text, { TextProps, TextTag } from '../api/text'
+import { Text, TextProps, TextTag } from '@rafafborges/componentes'
 
 
 export default function ThemeText<T>({
