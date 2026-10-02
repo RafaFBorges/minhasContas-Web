@@ -1,9 +1,8 @@
-import PhoneInput from '../../input/phoneInput'
 import React from 'react'
 import SpinInput from '../../input/spinInput'
 import PasswordInput from '../../input/passwordInput'
 import ThemeDateInput from '../../themeComponents/themeDateInput'
-import { StyledInputProps, StyledInput } from '@rafafborges/componentes'
+import { PhoneInput, StyledInputProps, StyledInput } from '@rafafborges/componentes'
 
 const INPUT_REGISTRY: Partial<Record<React.HTMLInputTypeAttribute, React.ComponentType<StyledInputProps>>> = {
   tel: PhoneInput,
