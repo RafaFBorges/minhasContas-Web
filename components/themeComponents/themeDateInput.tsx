@@ -1,5 +1,5 @@
 import React from 'react'
-import DateInput, { DateInputProps } from '../input/dateInput/dateInput'
+import { DateInput, DateInputProps } from '@rafafborges/componentes'
 import ThemeCalendar from './themeCalendar'
 
 

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 
-import ModalContentProps from './ModalPagePropsInterface'
+import { ModalContentProps } from '@rafafborges/componentes'
 import { useModal } from '../../utils/hook/modalHook'
 import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
 import { StyledInput } from '@rafafborges/componentes'

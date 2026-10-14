@@ -12,7 +12,7 @@ import { CATEGORIES_ENDPOINT, handlePOST } from '@/comunication/ApiResthandler'
 import { Category } from '@/domain/Category'
 import { useUser } from '../../utils/hook/userHook'
 import { saveExpenseDisabledCookie } from '@/app/actions/cookiesManager'
-import TagItem from '../tagItem'
+import ThemeTagItem from '../themeComponents/themeTagItem'
 
 export interface TagListProps {
   style?: React.CSSProperties | null;
@@ -68,7 +68,7 @@ export default function TagList({
   }
 
   function printTag(name: string, index: number, isDisabled: boolean) {
-    return <TagItem
+    return <ThemeTagItem
       DisabledHover={DisabledHover}
       key={index}
       name={name}

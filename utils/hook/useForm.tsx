@@ -2,7 +2,7 @@ import React, { ReactNode, useRef, useState } from 'react'
 
 import { IconType } from 'react-icons'
 
-import { DateValue } from '../../components/input/dateInput/dateInput'
+import { DateValue } from '@rafafborges/componentes'
 import { handlePOST } from '@/comunication/ApiResthandler'
 import { useViewForm } from './useViewForm'
 

@@ -7,9 +7,7 @@ import { LanguageOption, useTranslate } from '../utils/hook/translateHook'
 import { LoginResponse } from '@/comunication/login'
 import ThemeText from './themeComponents/themeText'
 import { useUser } from '../utils/hook/userHook'
-import { usePopup } from '../utils/hook/usePopup'
-import { PopupType } from '@/types/popupTypes'
-import { PasswordInput, StyledInput, TextTag, Link } from '@rafafborges/componentes'
+import { PasswordInput, StyledInput, TextTag, Link, usePopup, PopupType } from '@rafafborges/componentes'
 
 interface LoginProps {
   registerHRef?: string;

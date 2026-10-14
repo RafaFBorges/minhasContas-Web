@@ -7,9 +7,9 @@ import { FaRegIdCard as PersonalDataIcon, FaLock as AccessIcon } from 'react-ico
 import ThemeText from '../../../components/themeComponents/themeText'
 import { LanguageOption, useTranslate } from '../../../utils/hook/translateHook'
 import { useForm, FormInputField } from '../../../utils/hook/useForm'
-import { DateValue } from '../../../components/input/dateInput/dateInput'
 import { REGISTER_ENDPOINT } from '@/comunication/ApiResthandler'
 import {
+  DateValue,
   TextTag,
   validateDate,
   notEmpty,
