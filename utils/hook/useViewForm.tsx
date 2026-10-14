@@ -2,7 +2,7 @@ import React, { ReactNode, useEffect, useState } from 'react'
 
 import { IconType } from 'react-icons'
 
-import FrameworkInput from '../../components/framework/frameworkInput'
+import ThemeFrameworkInput from '../../components/themeComponents/themeFrameworkInput'
 import ThemeText from '../../components/themeComponents/themeText'
 import { FormInputField } from './useForm'
 import ThemeButton from '../../components/themeComponents/themeButton'
@@ -150,7 +150,7 @@ export function useViewForm({
   }
 
   function renderField(item: FormInputField) {
-    return <FrameworkInput
+    return <ThemeFrameworkInput
       key={item.name}
       {...item}
       onBlur={onFieldBlur}

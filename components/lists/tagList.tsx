@@ -1,9 +1,7 @@
-import React, { useEffect } from 'react'
-
-import { FaPlus as AddIcon } from 'react-icons/fa'
+import React from 'react'
 
 import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
-import ThemeButton from '../themeComponents/themeButton'
+import { useTheme } from '../../utils/hook/themeHook'
 import { Tag } from '@/domain/Tag'
 import { useModal } from '../../utils/hook/modalHook'
 import CategoryConfiguration, { CategoryVerifyData } from '@/modalPages/CategoryConfiguration'
@@ -12,7 +10,7 @@ import { CATEGORIES_ENDPOINT, handlePOST } from '@/comunication/ApiResthandler'
 import { Category } from '@/domain/Category'
 import { useUser } from '../../utils/hook/userHook'
 import { saveExpenseDisabledCookie } from '@/app/actions/cookiesManager'
-import ThemeTagItem from '../themeComponents/themeTagItem'
+import { TagList as TagListBase } from '@rafafborges/componentes'
 
 export interface TagListProps {
   style?: React.CSSProperties | null;
@@ -40,6 +38,7 @@ export default function TagList({
   const { addCategory, userInfo } = useUser()
   const { getValue, addKeys } = useTranslate()
   const { openModal } = useModal()
+  const { config } = useTheme()
 
   const handleCreateCategory = async (item: CategoryVerifyData) => {
     const request: CategoryRequest = {} as CategoryRequest
@@ -63,83 +62,30 @@ export default function TagList({
     openModal(getValue(NEW_CATEGORY_TITLE_KEY), categoryCreate, (item: unknown) => handleCreateCategory(item as CategoryVerifyData), true)
   }
 
-  function translate() {
-    addKeys(NEW_CATEGORY_TITLE_KEY, [{ value: 'Nova categoria', lang: LanguageOption.PT_BR }, { value: 'New category', lang: LanguageOption.EN },])
-  }
+  addKeys(NEW_CATEGORY_TITLE_KEY, [{ value: 'Nova categoria', lang: LanguageOption.PT_BR }, { value: 'New category', lang: LanguageOption.EN },])
+  const emptyLabel = addKeys(UNKOWN_CATEGORY_KEY, [{ value: 'desconhecido', lang: LanguageOption.PT_BR }, { value: 'unknown', lang: LanguageOption.EN },])
 
-  function printTag(name: string, index: number, isDisabled: boolean) {
-    return <ThemeTagItem
-      DisabledHover={DisabledHover}
-      key={index}
-      name={name}
-      isDisabled={isDisabled}
-      onClick={selectable
-        ? (_e: React.MouseEvent<HTMLDivElement>) => {
-          if (tagList != null && 0 <= index && index < tagList.length && setTagList != null) {
-            const newtag = tagList[index]
-            newtag.disabled = !newtag.disabled
+  function handleTagClick(index: number) {
+    if (tagList != null && 0 <= index && index < tagList.length && tagList[index] != null && setTagList != null) {
+      const newtag = tagList[index]
+      newtag.disabled = !newtag.disabled
 
-            saveExpenseDisabledCookie(newtag.ToString(), newtag.disabled)
-            setTagList([...tagList.slice(0, index), newtag, ...tagList.slice(index + 1)])
-          }
-        }
-        : () => { }}
-    />
-  }
-
-  function printContainer() {
-    if (tagList == null || tagList.length == 0)
-      return allowEmpty ? null : printTag(getValue(UNKOWN_CATEGORY_KEY), 0, false)
-
-    return tagList.map((item, index) => printTag(item != null ? item.name : getValue(UNKOWN_CATEGORY_KEY), index, item != null ? item.disabled : false))
-  }
-
-  useEffect(() => {
-    translate()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  return <div style={{ ...styles.container, ...style }}>
-    {addNewTags &&
-      <ThemeButton
-        clickHandle={handleEditClick}
-        Icon={AddIcon}
-      />
+      saveExpenseDisabledCookie(newtag.ToString(), newtag.disabled)
+      setTagList([...tagList.slice(0, index), newtag, ...tagList.slice(index + 1)])
     }
-    <div style={{ ...styles.containerList }}>{printContainer()}</div>
-  </div>
-}
-
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: '0.4em',
-    width: '100%',
-    boxSizing: 'border-box',
-  },
-  containerList: {
-    flex: 1,
-    minWidth: 0,
-    display: 'flex',
-    flexDirection: 'row',
-    gap: '0.4em',
-    boxSizing: 'border-box',
-    flexWrap: 'nowrap',
-    alignItems: 'center',
-    overflowX: 'auto',
-    WebkitOverflowScrolling: 'touch',
-    scrollbarWidth: 'none',
-    msOverflowStyle: 'none',
-  },
-  tagContainer: {
-    whiteSpace: 'noWrap',
-    border: '1px solid red',
-    borderRadius: '8px',
-    padding: '2px 4px',
-  },
-  title: {
-    fontSize: '0.85rem',
   }
+
+  return <TagListBase
+    style={style}
+    tags={tagList}
+    emptyLabel={emptyLabel}
+    allowEmpty={allowEmpty}
+    DisabledHover={DisabledHover}
+    onTagClick={selectable ? handleTagClick : undefined}
+    onAdd={addNewTags ? handleEditClick : undefined}
+    color={config.color}
+    tagDefaultColor={config.tagDefaultColor}
+    disabledFontColor={config.disabledFontColor}
+    fontColor={config.fontColor}
+  />
 }
