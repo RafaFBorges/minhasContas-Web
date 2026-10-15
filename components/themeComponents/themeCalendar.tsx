@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 
 import { useTheme } from '../../utils/hook/themeHook'
-import Calendar, { CALENDAR_ITEM_COUNT, CalendarProps, WeekDaysType } from '../input/dateInput/calendar'
+import { Calendar, CALENDAR_ITEM_COUNT, CalendarProps, WeekDaysType } from '@rafafborges/componentes'
 import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
 
 

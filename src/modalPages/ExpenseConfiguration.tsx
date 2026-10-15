@@ -2,7 +2,7 @@
 
 import React from 'react'
 
-import ModalContentProps from './ModalPagePropsInterface'
+import { ModalContentProps } from '@rafafborges/componentes'
 import { Tag } from '@/domain/Tag'
 import ExpenseUI from '@/fragments/expenseUI'
 
