@@ -1,178 +1,42 @@
-import React, { ReactNode, useRef, useState } from 'react'
+"use client"
 
-import { IconType } from 'react-icons'
-
-import { DateValue } from '@rafafborges/componentes'
 import { handlePOST } from '@/comunication/ApiResthandler'
-import { useViewForm } from './useViewForm'
+import ThemeFrameworkInput from '../../components/themeComponents/themeFrameworkInput'
+import { useTheme } from './themeHook'
+import { LanguageOption, useTranslate } from './translateHook'
+import { usePaginationTheme } from './usePagination'
+import { useForm as useFormBase, UseFormProps as UseFormBaseProps, UseFormReturn, FormState } from '@rafafborges/componentes'
 
+export type { FormInputField, FormState, getFieldValueResult, UseFormReturn } from '@rafafborges/componentes'
 
-export interface FormInputField {
-  value: string
-  isValid: boolean | null
-  type: React.HTMLInputTypeAttribute
-  name: string
-  label: string
-  position: number
-  group?: string
-  section?: string
-  placeholder?: string
-  style?: React.CSSProperties
-  validate?: (value: string) => boolean
-  maxDate?: DateValue
-  minDate?: DateValue
-  sectionIcon?: IconType | undefined
-  isTouched?: boolean
-  setIsTouched?: (touched: boolean) => void
-}
-
-export interface getFieldValueResult {
-  success: boolean
-  field: FormInputField
-}
-
-export interface FormState {
-  [key: string]: FormInputField
-}
-
-const EMPTY_FIELD: FormInputField = {
-  value: '',
-  isValid: null,
-  type: 'text',
-  name: '',
-  label: '',
-  position: 0,
-}
-
-interface UseFormReturn {
-  form: () => FormState
-  renderForm: () => React.JSX.Element | undefined
-  addOrSetField: (field: FormInputField) => void
-  getFieldValue: (name: string, value: string) => getFieldValueResult
-  canSubmit: () => boolean
-  onFieldChange: () => void
-  handleSubmit: (e: React.MouseEvent<HTMLButtonElement>) => Promise<void>
-}
-
-interface UseFormProps {
-  initialFields: FormInputField[]
-  name: string
-  handleChange: (name: string, value: string) => void
-  processResponse: undefined | ((response: unknown) => boolean)
-  onSuccess?: () => ReactNode
+export type UseFormProps = Omit<UseFormBaseProps, 'onSubmit' | 'submitLabel' | 'color' | 'InputComponent' | 'pagination'> & {
   path: string
-  title?: string
-  subtitle?: string
 }
 
-export function useForm({ initialFields = [], name, handleChange, processResponse = undefined, path = '', onSuccess, title = undefined, subtitle = undefined }: UseFormProps): UseFormReturn {
-  const buildInitialState = (): FormState => {
-    return initialFields.reduce<FormState>((acc, field, index) => {
+export function useForm({ path = '', ...props }: UseFormProps): UseFormReturn {
+  const SUBMIT_KEY = 'Registration.Submit'
 
-      acc[field.name] = {
-        ...field,
-        position: field.position ?? index,
-        isTouched: field.isTouched ?? false,
-        setIsTouched: (touched: boolean) => addOrSetField({ ...form()[field.name], isTouched: touched }),
-      }
-      return acc
-    }, {})
-  }
+  const { config } = useTheme()
+  const { addKeys } = useTranslate()
+  const pagination = usePaginationTheme()
 
-  const formRef = useRef<FormState>(buildInitialState())
-  const orderRef = useRef<string[]>(initialFields.map(f => f.name))
-  const canSubmitRef = useRef<boolean>(false)
-  const [notSending, setNotSending] = useState<boolean>(false)
-  const [, forceUpdate] = useState(0)
-  const { renderForm, setSucess } = useViewForm({
-    orderedFields: orderedFields,
-    onFieldBlur: onFieldBlur,
-    handleChange: handleChange,
-    onSuccess: onSuccess,
-    title: title,
-    subtitle: subtitle,
-    canSubmit: canSubmit,
-    handleSubmit: handleSubmit,
-  })
-
-  const addOrSetField = (field: FormInputField) => {
-    const isNew = !formRef.current[field.name]
-
-    formRef.current = {
-      ...formRef.current,
-      [field.name]: field,
-    }
-
-    if (isNew) {
-      orderRef.current = [
-        ...orderRef.current.filter(n => n !== field.name),
-        field.name,
-      ].sort((a, b) => (formRef.current[a]?.position ?? 0) - (formRef.current[b]?.position ?? 0))
-    }
-
-    forceUpdate(n => n + 1)
-  }
-
-  function orderedFields(): FormInputField[] {
-    return orderRef.current
-      .map(name => formRef.current[name])
-      .filter(Boolean)
-      .sort((a, b) => a.position - b.position)
-  }
-
-  function onFieldBlur() {
-    canSubmitRef.current = Object.values(formRef.current).every(f => f.isValid === true)
-    forceUpdate(n => n + 1)
-  }
-
-  function onFieldChange() {
-    canSubmitRef.current = false
-    forceUpdate(n => n + 1)
-  }
-
-  function getFieldValue(name: string, value: string): getFieldValueResult {
-    const fieldData = formRef.current[name]
-    if (!fieldData)
-      return { success: false, field: EMPTY_FIELD }
-
-    const isValid = fieldData.validate ? fieldData.validate(value) : null
-
-    return {
-      success: true,
-      field: { ...fieldData, value, isValid },
-    }
-  }
-
-  async function handleSubmit(e: React.MouseEvent<HTMLButtonElement>) {
-    e.preventDefault()
-
-    if (!canSubmit)
-      return
-
-    setNotSending(true)
+  function onSubmit(form: FormState) {
     const userRegistration = {
-      "name": form().firstName.value.trim() + ' ' + form().lastName.value.trim(),
-      "email": form().email.value.trim(),
-      "user": form().user.value.trim(),
-      "password": form().password.value
+      "name": form.firstName.value.trim() + ' ' + form.lastName.value.trim(),
+      "email": form.email.value.trim(),
+      "user": form.user.value.trim(),
+      "password": form.password.value
     }
 
-    const response = await handlePOST(path, userRegistration)
-
-    if (response != null && processResponse != undefined)
-      setSucess(processResponse(response))
-
-    setNotSending(false)
-    console.log('handleSubmit > ' + name + ' response=' + (response != null))
+    return handlePOST(path, userRegistration)
   }
 
-  function canSubmit(): boolean {
-    return !notSending && canSubmitRef.current
-  }
-
-  function form(): FormState {
-    return formRef.current
-  }
-
-  return { form, canSubmit, onFieldChange, addOrSetField, getFieldValue, handleSubmit, renderForm }
+  return useFormBase({
+    ...props,
+    onSubmit,
+    submitLabel: addKeys(SUBMIT_KEY, [{ value: 'Cadastrar', lang: LanguageOption.PT_BR }, { value: 'Register', lang: LanguageOption.EN },]),
+    color: config.color,
+    InputComponent: ThemeFrameworkInput,
+    pagination,
+  })
 }
