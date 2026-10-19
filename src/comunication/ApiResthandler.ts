@@ -1,4 +1,4 @@
-import { encrypt, decrypt } from '../../utils/crypto'
+import { encrypt, decrypt } from '@rafafborges/componentes'
 
 const SERVER_PATH = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/'
 

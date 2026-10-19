@@ -8,7 +8,7 @@ import { Expense } from '@/domain/Expense'
 import { FILTER_SELECTION_KEY } from '../../utils/DataConstants'
 import { saveCookie } from '@/app/actions/cookiesManager'
 import { LanguageOption, useTranslate } from '../../utils/hook/translateHook'
-import TagItem from '../tagItem'
+import ThemeTagItem from '../themeComponents/themeTagItem'
 
 export interface FilterListProps {
   style?: React.CSSProperties | null;
@@ -35,7 +35,7 @@ export default function FilterList({
   const translationName = useRef<string>('')
 
   function printTag(name: string, index: number, isDisabled: boolean) {
-    return <TagItem
+    return <ThemeTagItem
       isOnlyText
       key={index}
       name={name}

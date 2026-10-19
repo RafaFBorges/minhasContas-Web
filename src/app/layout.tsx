@@ -8,7 +8,7 @@ import { ThemeProvider } from '../../utils/hook/themeHook'
 import { TranslateProvider } from '../../utils/hook/translateHook'
 import { LANG_KEY, THEME_KEY } from '../../utils/DataConstants'
 import { UserProvider } from '../../utils/hook/userHook'
-import { PopupProvider } from '../../utils/hook/usePopup'
+import { PopupProvider } from '@rafafborges/componentes'
 
 export const metadata: Metadata = {
   title: { default: 'Minhas Contas', template: '%s | Minhas Contas' },
