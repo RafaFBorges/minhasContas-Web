@@ -11,11 +11,22 @@ type TranslateType = {
 
 export enum LanguageOption {
   PT_BR = 'pt-BR',
-  EN = 'en',
+  EN = 'en-US',
+}
+
+export interface TranslateEntry {
+  value: string
+  lang: LanguageOption
+}
+
+const validValues = Object.values(LanguageOption)
+export function isValidLanguage(language: string): boolean {
+  return Object.values(LanguageOption).includes(language as LanguageOption)
 }
 
 interface TranslateContextType {
-  addKey: (key: string, value: string, lang?: string) => void;
+  addKey: (key: string, value: string, lang?: string) => string;
+  addKeys: (key: string, entries: TranslateEntry[]) => string;  // ← adicionado
   getValue: (key: string) => string;
   language: LanguageOption;
   setLang: (newLanguage: LanguageOption) => void;
@@ -34,9 +45,8 @@ export function useTranslate() {
 export function TranslateProvider({ children, lang }: { children: ReactNode, lang: string | undefined }) {
   const dictionary = useRef<TranslateType>({})
   const [language, setLanguage] = useState<LanguageOption>(loadLanguage(lang))
-  const validValues = Object.values(LanguageOption)
 
-  function addKey(key: string, value: string, lang: string = '') {
+  function addKey(key: string, value: string, lang: string = ''): string {
     if (key == '')
       throw new Error('Key is empty')
 
@@ -48,6 +58,23 @@ export function TranslateProvider({ children, lang }: { children: ReactNode, lan
     newDict[`${aLang}_${key}`] = value
 
     dictionary.current = newDict
+
+    if (aLang == language)
+      return value
+    else
+      return dictionary.current[`${language}_${key}`]
+  }
+
+  function addKeys(key: string, entries: TranslateEntry[]): string {
+    let currentLangValue = ''
+
+    for (const entry of entries) {
+      const result = addKey(key, entry.value, entry.lang)
+      if (entry.lang === language)
+        currentLangValue = result
+    }
+
+    return currentLangValue
   }
 
   function getValue(key: string): string {
@@ -69,10 +96,6 @@ export function TranslateProvider({ children, lang }: { children: ReactNode, lan
     await saveCookie(LANG_KEY, newLanguage)
   }
 
-  function isValidLanguage(theme: string): boolean {
-    return Object.values(LanguageOption).includes(theme as LanguageOption)
-  }
-
   function loadLanguage(lastValue: string | undefined): LanguageOption {
     if (lastValue != null && isValidLanguage(lastValue)) {
       console.log('TranslateProvider.loadLanguage > [LOADED] theme=' + lastValue)
@@ -88,12 +111,13 @@ export function TranslateProvider({ children, lang }: { children: ReactNode, lan
   return <TranslateContext.Provider
     value={{
       addKey,
+      addKeys,
       getValue,
       language,
       setLang,
     }}
   >
-    <html lang={language}>
+    <html lang={language} data-scroll-behavior={'smooth'}>
       {children}
     </html>
   </TranslateContext.Provider>

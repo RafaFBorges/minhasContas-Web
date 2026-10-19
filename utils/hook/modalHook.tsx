@@ -1,87 +1,33 @@
 "use client"
 
-import { createContext, useContext, useState, ReactNode, useRef } from 'react'
-import Modal from '../../components/modal'
+import { ReactNode } from 'react'
 
-interface ModalContextType {
-  isOpen: boolean;
-  openModal: (title: string, content?: (() => ReactNode) | null, onAccept?: (((item: unknown) => void) | null), hasEnabledVerify?: boolean) => void;
-  closeModal: () => void;
-  setEnabledSave: (newState: boolean) => void;
+import { useTheme } from './themeHook'
+import { LanguageOption, useTranslate } from './translateHook'
+import { ModalProvider as ModalProviderBase } from '@rafafborges/componentes'
 
-  title: string;
-  setTitle: (title: string) => void;
-  setData: (key: string, value: unknown) => void
-}
-
-interface ModalStateType {
-  content: (() => ReactNode) | null;
-  onAccept: (((item: unknown) => void) | null);
-  data: Record<string, unknown>;
-}
-
-const ModalContext = createContext<ModalContextType | undefined>(undefined)
-
-export function useModal() {
-  const context = useContext(ModalContext)
-  if (!context)
-    throw new Error('useModal must be used within a ModalProvider')
-
-  return context
-}
+export { useModal } from '@rafafborges/componentes'
 
 export function ModalProvider({ children }: { children: ReactNode }) {
-  const [isOpen, setIsOpen] = useState<boolean>(false)
-  const [title, setTitle] = useState<string>('Título Padrão')
-  const [enabledSave, setEnabledSave] = useState<boolean>(true)
-  const contentRef = useRef<ModalStateType | null>(null)
+  const SAVE_KEY = 'Modal.Save'
+  const CANCEL_KEY = 'Modal.Cancel'
 
-  function closeModal() {
-    setIsOpen(false)
-  }
+  const { config } = useTheme()
+  const { addKeys } = useTranslate()
 
-  function setData(key: string, value: unknown) {
-    if (contentRef != null && contentRef.current != null && contentRef.current.data != null)
-      contentRef.current.data[key] = value
-  }
+  const saveLabel = addKeys(SAVE_KEY, [{ value: 'Salvar', lang: LanguageOption.PT_BR }, { value: 'Save', lang: LanguageOption.EN },])
+  const cancelLabel = addKeys(CANCEL_KEY, [{ value: 'Cancelar', lang: LanguageOption.PT_BR }, { value: 'Cancel', lang: LanguageOption.EN },])
 
-  function openModal(title: string, content: ((() => ReactNode) | null) = null, onAccept: (((item: unknown) => void) | null) = null, hasEnabledVerify = false) {
-    setTitle(title)
-    setIsOpen(true)
-    contentRef.current = {
-      content: content,
-      onAccept: onAccept,
-      data: {}
-    }
-
-    if (hasEnabledVerify)
-      setEnabledSave(false)
-    else
-      setEnabledSave(true)
-  }
-
-  return <ModalContext.Provider
-    value={{
-      isOpen,
-      openModal,
-      closeModal,
-      title,
-      setTitle,
-      setEnabledSave,
-      setData
+  return <ModalProviderBase
+    theme={{
+      saveLabel,
+      cancelLabel,
+      backgroundColor: config.cardBackground,
+      color: config.color,
+      fontColor: config.fontColor,
+      disabledFontColor: config.disabledFontColor,
     }}
   >
-    {isOpen &&
-      <Modal
-        closeModal={closeModal}
-        title={title}
-        enabledVerify={enabledSave}
-        onAccept={contentRef != null && contentRef.current != null ? contentRef.current.onAccept : null}
-        data={contentRef != null && contentRef.current != null ? contentRef.current.data : {}}
-      >
-        {contentRef != null && contentRef.current != null && contentRef.current.content != null && contentRef.current.content()}
-      </Modal>
-    }
     {children}
-  </ModalContext.Provider>
+  </ModalProviderBase>
 }
