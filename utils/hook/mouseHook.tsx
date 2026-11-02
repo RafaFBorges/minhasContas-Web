@@ -1,6 +1,7 @@
 "use client"
 
 import { createContext, useContext, ReactNode, useState, useRef, useEffect, useLayoutEffect } from 'react'
+import { logger } from '../log/logger'
 
 export interface MousePosition {
   X: number;
@@ -31,7 +32,7 @@ export function MouseProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Método experimental, disponível apenas em alguns browsers
     if ('getCurrentPoint' in navigator) {
-      console.log('MouseProvider.useEffect > setting with navigator')
+      logger.debug('mouse.initialPosition', { source: 'navigator.getCurrentPoint' })
 
       // @ts-ignore
       navigator.getCurrentPoint('mouse').then((point: any) => setPosition({ X: point.x, Y: point.y }))
@@ -40,8 +41,6 @@ export function MouseProvider({ children }: { children: ReactNode }) {
     const updateMousePosition = (e: globalThis.MouseEvent) => setPosition({ X: e.clientX, Y: e.clientY })
     const handleDocumentClick = (e: globalThis.MouseEvent) => {
       let elementInfo = 'Elemento Desconhecido'
-
-      console.log('Clicado > elementInfo=' + e.target)
 
       if (e.target instanceof HTMLElement) {
         const tagName = e.target.tagName
@@ -62,7 +61,7 @@ export function MouseProvider({ children }: { children: ReactNode }) {
         elementInfo = 'SVG.' + e.target.tagName
       }
 
-      console.log(`MouseProvider.handleDocumentClick > X=${e.clientX} Y=${e.clientY} element=${elementInfo}`)
+      logger.info('click', { x: e.clientX, y: e.clientY, element: elementInfo })
       // dont call e.preventDefault() or e.stopPropagation()
     }
 
@@ -70,8 +69,8 @@ export function MouseProvider({ children }: { children: ReactNode }) {
     document.addEventListener('click', handleDocumentClick)
 
     return () => {
-      window.removeEventListener('mousemove', updateMousePosition)
-      window.removeEventListener('click', handleDocumentClick)
+      document.removeEventListener('mousemove', updateMousePosition)
+      document.removeEventListener('click', handleDocumentClick)
     }
   }, [])
 
