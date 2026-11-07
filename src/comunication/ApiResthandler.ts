@@ -1,5 +1,3 @@
-import { encrypt, decrypt } from '@rafafborges/componentes'
-
 const SERVER_PATH = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/'
 
 export const EXPENSES_ENDPOINT = 'expense'
@@ -43,13 +41,10 @@ const request = async<T>(
 ): Promise<T> => {
   let processedBody: string | undefined = undefined;
 
-  if (body !== undefined && body !== null) {
-    const plainText = typeof body === "string"
+  if (body !== undefined && body !== null)
+    processedBody = typeof body === "string"
       ? body
       : JSON.stringify(body)
-
-    processedBody = await encrypt(plainText)
-  }
 
   const response: Response = await fetch(SERVER_PATH + endpoint, {
     method,
@@ -62,14 +57,22 @@ const request = async<T>(
 
   const responseText = await response.text()
 
+  // Resposta que não é JSON (ex.: erro de proxy) não pode esconder o status HTTP.
+  // Já numa resposta de sucesso, um corpo que não é JSON é erro de verdade e sobe para quem chamou
   let responseData: T | null = null
-  if (responseText) {
-    const decrypted = await decrypt(responseText)
-    responseData = JSON.parse(decrypted) as T
-  }
+  let parseError: unknown = null
+  if (responseText)
+    try {
+      responseData = JSON.parse(responseText) as T
+    } catch (err) {
+      parseError = err
+    }
 
   if (!response.ok)
     throw { status: response.status, data: responseData } as ErrorResponse
+
+  if (parseError)
+    throw parseError
 
   return responseData as T
 }

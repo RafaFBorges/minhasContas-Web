@@ -1,3 +1,4 @@
+import { openPassword } from '@rafafborges/componentes'
 import { handlePOST, LOGIN_ENDPOINT } from './ApiResthandler'
 
 export interface LoginRequest {
@@ -24,13 +25,14 @@ export const RequestLogin = async (user: string, password: string, onError: () =
     }
   }
 
-  const request: LoginRequest = {
-    user: user,
-    password: password
-  }
-
   let token: LoginResponse
   try {
+    // A senha chega como token do cofre (veja passwordVault.ts) e só é aberta aqui, na hora de enviar
+    const request: LoginRequest = {
+      user: user,
+      password: await openPassword(password)
+    }
+
     const response: LoginResponse = await handlePOST<LoginResponse>(LOGIN_ENDPOINT, request)
 
     token = {

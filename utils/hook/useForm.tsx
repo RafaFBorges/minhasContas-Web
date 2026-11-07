@@ -5,7 +5,7 @@ import ThemeFrameworkInput from '../../components/themeComponents/themeFramework
 import { useTheme } from './themeHook'
 import { LanguageOption, useTranslate } from './translateHook'
 import { usePaginationTheme } from './usePagination'
-import { useForm as useFormBase, UseFormProps as UseFormBaseProps, UseFormReturn, FormState } from '@rafafborges/componentes'
+import { useForm as useFormBase, UseFormProps as UseFormBaseProps, UseFormReturn, FormState, openPassword } from '@rafafborges/componentes'
 
 export type { FormInputField, FormState, getFieldValueResult, UseFormReturn } from '@rafafborges/componentes'
 
@@ -20,12 +20,12 @@ export function useForm({ path = '', ...props }: UseFormProps): UseFormReturn {
   const { addKeys } = useTranslate()
   const pagination = usePaginationTheme()
 
-  function onSubmit(form: FormState) {
+  async function onSubmit(form: FormState) {
     const userRegistration = {
       "name": form.firstName.value.trim() + ' ' + form.lastName.value.trim(),
       "email": form.email.value.trim(),
       "user": form.user.value.trim(),
-      "password": form.password.value
+      "password": await openPassword(form.password.value)
     }
 
     return handlePOST(path, userRegistration)
