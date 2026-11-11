@@ -6,13 +6,24 @@ WORKDIR /app
 
 # Copiar os arquivos de definição de dependências
 COPY package.json package-lock.json* ./
-COPY tsconfig.json* next.config.js* ./
 
 # Instalar dependências
 RUN npm install
 
 # Copiar restante do código-fonte
 COPY . .
+
+# URL da API, gravada no bundle durante o build. Em produção precisa ser https://
+# Uso: docker build --build-arg NEXT_PUBLIC_API_URL=https://api.exemplo.com/ .
+ARG NEXT_PUBLIC_API_URL
+# Só para testar o build de produção local com a API em HTTP. Nunca no deploy
+ARG ALLOW_INSECURE_API_URL
+
+# Sem o build-arg a variável ficaria vazia (e um ENV vazio impede o Next de ler o .env.local)
+RUN test -n "$NEXT_PUBLIC_API_URL" || (echo "ERRO: informe --build-arg NEXT_PUBLIC_API_URL=https://..." >&2; exit 1)
+
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV ALLOW_INSECURE_API_URL=$ALLOW_INSECURE_API_URL
 
 # Gerar build da aplicação
 RUN npm run build

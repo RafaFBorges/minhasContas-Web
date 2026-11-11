@@ -147,12 +147,24 @@ http://localhost:3000
    cp .env.example .env.local
    ```
 
-2. Edite o arquivo `.env.local` com seus valores:
+2. Edite o arquivo `.env.local` com seus valores. Para desenvolvimento local, a API costuma ficar em:
    ```bash
-   NEXT_PUBLIC_API_URL=http://seu-backend:8080/
+   NEXT_PUBLIC_API_URL=http://localhost:8080/
    ```
 
 <h5> Variáveis disponíveis: </h5>
 
-- `NEXT_PUBLIC_API_URL`: URL da API REST do servidor back-end (padrão: `http://localhost:8080/`)
-  - Nota: O prefixo `NEXT_PUBLIC_` torna a variável acessível no cliente Next.js.
+- `NEXT_PUBLIC_API_URL`: URL da API REST do servidor back-end (sem a variável, `npm run dev` usa `http://localhost:8080/`)
+  - Nota: O prefixo `NEXT_PUBLIC_` torna a variável acessível no cliente Next.js, ou seja, o **navegador** é quem chama a API. Por isso a URL precisa ser alcançável de fora (um nome interno de rede Docker, como `http://backend:8080`, não funciona).
+  - **Em produção precisa ser `https://`.** A senha vai em texto no corpo da requisição e só o TLS a protege. O valor é gravado no bundle durante o `npm run build`, e o build de produção **falha** se a variável estiver ausente, com espaços em volta, inválida ou sem `https://`.
+- `ALLOW_INSECURE_API_URL`: com valor `1`, o build de produção aceita uma URL `http://` (só para testar um build local com a API em HTTP). **Nunca use no deploy.**
+
+<h5> Build e deploy: </h5>
+
+- **Local:** `npm run build` lê o `.env.local`. Se a API local estiver em HTTP, rode `ALLOW_INSECURE_API_URL=1 npm run build`.
+- **Docker:** a URL entra como argumento de build, porque é gravada no bundle (o `.env.local` não vai para a imagem):
+  ```bash
+  docker build --build-arg NEXT_PUBLIC_API_URL=https://api.exemplo.com/ .
+  ```
+- **Render:** cadastre `NEXT_PUBLIC_API_URL` (com `https://`) nas variáveis de ambiente do serviço do Web. Sem ela, o próximo deploy falha no build; é o comportamento esperado. Se o serviço usar Docker, a variável precisa chegar como build arg.
+- **GitHub Actions (CI):** o passo de build lê a variável `NEXT_PUBLIC_API_URL` de *Settings → Secrets and variables → Actions → Variables*. Use o mesmo valor do deploy; sem ela o CI falha.

@@ -81,3 +81,7 @@ jobs:
       
       - name: Testar build do projeto
         run: npm run build
+        env:
+          # O build de produção exige uma URL https:// (veja next.config.ts).
+          # Defina em Settings > Secrets and variables > Actions > Variables, com o mesmo valor do deploy
+          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}

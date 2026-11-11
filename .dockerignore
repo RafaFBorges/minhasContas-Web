@@ -1,0 +1,6 @@
+# Segredos e configuração local nunca entram na imagem
+.env*.local
+
+# Gerados dentro da imagem
+node_modules
+.next

@@ -1,4 +1,7 @@
-const SERVER_PATH = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/'
+// Os endpoints são concatenados direto na URL base, então ela precisa terminar em "/"
+// (sem isso, https://api.exemplo.com viraria https://api.exemplo.comexpense)
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/'
+const SERVER_PATH = API_URL.endsWith('/') ? API_URL : API_URL + '/'
 
 export const EXPENSES_ENDPOINT = 'expense'
 export const CATEGORIES_ENDPOINT = 'category'
