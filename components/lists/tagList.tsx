@@ -45,7 +45,7 @@ export default function TagList({
     request.name = item.name
     request.owner = userInfo.id
     request.date = new Date().toISOString()
-    const response: CategoryResponse = await handlePOST<CategoryResponse>(CATEGORIES_ENDPOINT, request, userInfo.token)
+    const response: CategoryResponse = await handlePOST<CategoryResponse>(CATEGORIES_ENDPOINT, request)
 
     if (response != null && typeof response === 'object' && 'id' in response && 'owner' in response && 'name' in response && 'date' in response)
       addCategory(new Category(Number(response.id), Number(response.owner), String(response.name), String(response.date)))

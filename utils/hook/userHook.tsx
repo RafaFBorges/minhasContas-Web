@@ -1,15 +1,17 @@
 "use client"
 
 import { createContext, useContext, ReactNode, useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 
 import { Expense } from '@/domain/Expense'
 import { useTranslate } from './translateHook'
 import { Category } from '@/domain/Category'
 import { CategoryResponse, SyncCategories } from '@/comunication/category'
 import { ExpenseResponse, SyncExpenses } from '@/comunication/expense'
-import { ExpenseDisabledDictionary, getObjectCookie, saveObjectCookie } from '@/app/actions/cookiesManager'
+import { clearUserPreferences, ExpenseDisabledDictionary } from '@/app/actions/cookiesManager'
 import { User } from '@/domain/User'
-import { USER_COOKIE_KEY } from '../DataConstants'
+import { RequestLogout, RequestSession } from '@/comunication/login'
+import { SESSION_EXPIRED_EVENT } from '@/comunication/ApiResthandler'
 
 
 interface UserContextType {
@@ -27,7 +29,7 @@ interface UserContextType {
   disabledCategoriesDict: ExpenseDisabledDictionary;
   filterSelection: string;
   userInfo: User;
-  setPlataformUser: (id: number, name: string, user: string, token: string, expirationTime: string) => Promise<void>;
+  setPlataformUser: (id: number, name: string, user: string, role: string, sessionExpiresAt: string) => void;
   logout: () => Promise<void>;
 }
 
@@ -53,11 +55,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const hasSyncedExpensesRef = useRef(false)
 
   const { language } = useTranslate()
+  const router = useRouter()
 
+  // O servidor é quem sabe se há sessão (cookies HttpOnly): aqui só se pergunta quem é
   async function loadSavedUser() {
-    const savedUser: User | null = User.fromIUser(await getObjectCookie(USER_COOKIE_KEY))
+    const savedUser: User | null = User.fromIUser(await RequestSession())
 
-    if (savedUser != null && savedUser.isValidToken) {
+    if (savedUser != null && savedUser.hasSession) {
       setUserInfo(savedUser)
       console.log('UserProvider.loadSavedUser > user=' + savedUser.id)
     }
@@ -155,37 +159,70 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setFilterSelection(filter)
   }
 
-  const setPlataformUser = async (id: number = -1, name: string = '', user: string = '', token: string = '', expirationTime: string = '') => {
-    const newUser: User = new User(id, name, user, token, expirationTime)
+  // Os cookies da sessão já foram gravados pelo servidor no login; aqui só se guarda o que a tela mostra
+  const setPlataformUser = (id: number = -1, name: string = '', user: string = '', role: string = '', sessionExpiresAt: string = '') => {
+    const newUser: User = new User(id, name, user, role, sessionExpiresAt)
 
-    if (newUser != null && newUser.isValidToken) {
+    if (newUser.hasSession) {
+      resetData()
       setUserInfo(newUser)
-      await saveObjectCookie(USER_COOKIE_KEY, newUser.object)
     }
+  }
+
+  // Nada do usuário anterior pode sobrar na tela (nem nas listas em memória) quando outra conta entrar na mesma aba
+  const resetData = () => {
+    hasSyncedCategoriesRef.current = false
+    hasSyncedExpensesRef.current = false
+    Category.clearCategories()
+    setCategoriesList([])
+    setFinancialList([])
+    setTotal(0)
+    setDisabledCategoriesDict({})
+    setFilterSelection('')
+  }
+
+  const endLocalSession = () => {
+    setUserInfo(new User())
+    resetData()
+    clearUserPreferences().catch(error => console.error('UserProvider > could not clear preferences', error))
   }
 
   const logout = async () => {
     console.log('UserProvider.logout > Logging out user id=' + userInfo.id)
-    setUserInfo(new User())
-    await saveObjectCookie(USER_COOKIE_KEY, null, true)
+    await RequestLogout()
+    endLocalSession()
   }
 
   useEffect(() => {
     loadSavedUser()
   }, [])
 
+  // O /api avisa quando a sessão acabou de vez (refresh token vencido ou encerrado em outro lugar)
   useEffect(() => {
-    if (userInfo.isValidToken && !hasSyncedCategoriesRef.current) {
+    const onSessionExpired = () => {
+      console.log('UserProvider > session expired')
+      endLocalSession()
+      router.push('/')
+    }
+
+    window.addEventListener(SESSION_EXPIRED_EVENT, onSessionExpired)
+
+    return () => window.removeEventListener(SESSION_EXPIRED_EVENT, onSessionExpired)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    if (userInfo.hasSession && !hasSyncedCategoriesRef.current) {
       console.log('UserProvider.useEffect[userInfo] > SyncCategories')
-      SyncCategories(replaceCategories, replaceDisabledCategoriesDict, replaceFilterSelection, userInfo.id, userInfo.token)
+      SyncCategories(replaceCategories, replaceDisabledCategoriesDict, replaceFilterSelection, userInfo.id)
       hasSyncedCategoriesRef.current = true
     }
   }, [userInfo])
 
   useEffect(() => {
-    if (userInfo.isValidToken && !hasSyncedExpensesRef.current) {
+    if (userInfo.hasSession && !hasSyncedExpensesRef.current) {
       console.log('UserProvider.useEffect[categoriesList] > SyncExpenses')
-      SyncExpenses(replaceFinancial, userInfo.id, userInfo.token)
+      SyncExpenses(replaceFinancial, userInfo.id)
       hasSyncedExpensesRef.current = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -120,7 +120,8 @@ http://localhost:3000
 <h3> Estrutura de Serviços </h3>
 
   - Front-end Next.js: UI da aplicação financeira.
-  - Back-end REST API: comunicação via `ApiResthandler` para login, despesas, categorias e tags.
+  - Back-end REST API: o navegador **não** chama a API. `ApiResthandler` chama o próprio site em `/api/...`, e os route handlers do Next (`src/app/api`) repassam à API pelo servidor, com a URL em `API_URL`.
+  - Sessão: os tokens (access de 15 min e refresh de 7 dias, rotativo) ficam só em cookies **HttpOnly**, que o JavaScript da página não consegue ler. O navegador recebe apenas dados de exibição (id, nome, usuário, papel).
 
 <div id="arquitetura-pastas"/>
 <h3> Arquitetura</h3>
@@ -128,7 +129,9 @@ http://localhost:3000
   - root
     - `components` : componentes visuais reutilizáveis.
     - `src/app` : páginas e layout do Next.js.
-    - `src/comunication` : camadas de requisição à API.
+    - `src/comunication` : requisições do navegador para `/api` (login, sessão, despesas, categorias).
+    - `src/app/api` : BFF (proxy para a API): `auth/login`, `auth/logout`, `auth/session` e `[...path]` (despesas, categorias e cadastro).
+    - `src/server` : código só do servidor: URL da API, cookies da sessão, renovação do token e checagem de origem.
     - `src/domain` : classes de domínio como `Expense`, `Category` e `Tag`.
     - `src/fragments` : fragmentos de UI específicos.
     - `src/modalPages` : configurações e validações de modais.
@@ -149,22 +152,32 @@ http://localhost:3000
 
 2. Edite o arquivo `.env.local` com seus valores. Para desenvolvimento local, a API costuma ficar em:
    ```bash
-   NEXT_PUBLIC_API_URL=http://localhost:8080/
+   API_URL=http://localhost:8080/
    ```
 
 <h5> Variáveis disponíveis: </h5>
 
-- `NEXT_PUBLIC_API_URL`: URL da API REST do servidor back-end (sem a variável, `npm run dev` usa `http://localhost:8080/`)
-  - Nota: O prefixo `NEXT_PUBLIC_` torna a variável acessível no cliente Next.js, ou seja, o **navegador** é quem chama a API. Por isso a URL precisa ser alcançável de fora (um nome interno de rede Docker, como `http://backend:8080`, não funciona).
-  - **Em produção precisa ser `https://`.** A senha vai em texto no corpo da requisição e só o TLS a protege. O valor é gravado no bundle durante o `npm run build`, e o build de produção **falha** se a variável estiver ausente, com espaços em volta, inválida ou sem `https://`.
-- `ALLOW_INSECURE_API_URL`: com valor `1`, o build de produção aceita uma URL `http://` (só para testar um build local com a API em HTTP). **Nunca use no deploy.**
+- `API_URL`: URL da API REST do back-end (sem a variável, `npm run dev` usa `http://localhost:8080/`).
+  - **Só o servidor do Next lê esta variável** (não tem o prefixo `NEXT_PUBLIC_`): ela não vai para o bundle e não aparece no navegador. Por isso pode ser um endereço interno (ex.: `http://backend:8080` na rede do Docker) e pode ser trocada sem refazer o build.
+  - **Em produção precisa ser `https://`.** A senha e os tokens passam por essa chamada. O build de produção **falha** se a variável estiver ausente, com espaços em volta, inválida ou sem `https://`, e o servidor repete a checagem ao subir.
+- `ALLOW_INSECURE_API_URL`: com valor `1`, aceita uma URL `http://` em produção (só para testar um build local com a API em HTTP). **Nunca use no deploy.**
+- A variável antiga `NEXT_PUBLIC_API_URL` **não é mais usada**; troque pelo nome `API_URL` no Render, no GitHub e no `.env.local`.
 
 <h5> Build e deploy: </h5>
 
 - **Local:** `npm run build` lê o `.env.local`. Se a API local estiver em HTTP, rode `ALLOW_INSECURE_API_URL=1 npm run build`.
-- **Docker:** a URL entra como argumento de build, porque é gravada no bundle (o `.env.local` não vai para a imagem):
+- **Docker:** o build confere a URL e o container a lê ao rodar:
   ```bash
-  docker build --build-arg NEXT_PUBLIC_API_URL=https://api.exemplo.com/ .
+  docker build --build-arg API_URL=https://api.exemplo.com/ -t minhascontas-web .
+  docker run -e API_URL=https://api.exemplo.com/ -p 3000:3000 minhascontas-web
   ```
-- **Render:** cadastre `NEXT_PUBLIC_API_URL` (com `https://`) nas variáveis de ambiente do serviço do Web. Sem ela, o próximo deploy falha no build; é o comportamento esperado. Se o serviço usar Docker, a variável precisa chegar como build arg.
-- **GitHub Actions (CI):** o passo de build lê a variável `NEXT_PUBLIC_API_URL` de *Settings → Secrets and variables → Actions → Variables*. Use o mesmo valor do deploy; sem ela o CI falha.
+- **Render:** cadastre `API_URL` (com `https://`) nas variáveis de ambiente do serviço do Web. Sem ela, o próximo deploy falha no build; é o comportamento esperado.
+- **GitHub Actions (CI):** o passo de build lê a variável `API_URL` de *Settings → Secrets and variables → Actions → Variables*. Use o mesmo valor do deploy; sem ela o CI falha.
+
+<h5> Sessão e segurança do /api: </h5>
+
+- **Cookies:** `mc_at` (access) e `mc_rt` (refresh) são `HttpOnly`, `SameSite=Lax` e `Secure` em produção, com `Path=/api`. O cookie `UserKey` (dados de exibição, também `HttpOnly`) fica em `/` só para o middleware saber se há sessão em `/home`.
+- **Renovação:** quando o access token vence, o `/api` renova com o refresh token sozinho e repete a chamada. Pedidos simultâneos fazem uma troca só. Se a API recusar o refresh, a sessão acaba (cookies apagados e volta para o login); se a API estiver fora do ar, a sessão é mantida e o `/api` responde 502.
+- **CSRF:** além de `SameSite=Lax`, qualquer requisição que altere algo (POST, PUT, DELETE) precisa ter `Origin` igual ao do site; sem isso o `/api` responde 403.
+- **Lista fechada:** o `/api` só repassa `expense`, `category` e `register`, com GET, POST, PUT e DELETE. Login, refresh e logout da API nunca são alcançáveis direto. Cabeçalhos de autorização enviados pelo navegador são ignorados.
+- **Limites assumidos:** o logout encerra a sessão na API (o refresh token deixa de valer), mas o access token que já foi emitido continua válido até vencer (no máximo 15 min), porque a API não revoga access tokens. O bloqueio de login por tentativas é por usuário, na API; ainda não há limite por IP no Web.

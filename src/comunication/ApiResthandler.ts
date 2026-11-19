@@ -1,25 +1,21 @@
-// Os endpoints são concatenados direto na URL base, então ela precisa terminar em "/"
-// (sem isso, https://api.exemplo.com viraria https://api.exemplo.comexpense)
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/'
-const SERVER_PATH = API_URL.endsWith('/') ? API_URL : API_URL + '/'
+// O navegador só fala com o próprio site: as chamadas vão para /api (route handlers do Next), que guardam os tokens em cookies
+// HttpOnly e repassam à API. A URL da API existe só no servidor (API_URL)
+const SERVER_PATH = '/api/'
 
 export const EXPENSES_ENDPOINT = 'expense'
 export const CATEGORIES_ENDPOINT = 'category'
 export const USER_ENDPOINT = 'user'
-export const LOGIN_ENDPOINT = 'login'
 export const REGISTER_ENDPOINT = 'register'
+export const LOGIN_ENDPOINT = 'auth/login'
+export const LOGOUT_ENDPOINT = 'auth/logout'
+export const SESSION_ENDPOINT = 'auth/session'
+
+// Disparado quando uma chamada de dados volta 401 mesmo depois da renovação automática: a sessão acabou
+export const SESSION_EXPIRED_EVENT = 'minhascontas:session-expired'
 
 interface ErrorResponse {
   status: number;
   data: unknown;
-}
-
-function getHeaders(token?: string): Record<string, string> {
-  const headers: Record<string, string> = {}
-  if (token)
-    headers["token"] = token
-
-  return headers
 }
 
 function logSendMessage(sender: string, data: unknown) {
@@ -39,7 +35,6 @@ function logSendMessage(sender: string, data: unknown) {
 const request = async<T>(
   endpoint: string,
   method: string,
-  headers: Record<string, string> = {},
   body: unknown | string | null | undefined,
 ): Promise<T> => {
   let processedBody: string | undefined = undefined;
@@ -51,12 +46,15 @@ const request = async<T>(
 
   const response: Response = await fetch(SERVER_PATH + endpoint, {
     method,
-    headers: {
-      "Content-Type": "application/json",
-      ...headers,
-    },
+    headers: { "Content-Type": "application/json" },
     body: processedBody,
+    credentials: 'same-origin',
+    cache: 'no-store',
   })
+
+  // Os endpoints de autenticação (login, sessão, logout) tratam o próprio 401
+  if (response.status === 401 && !endpoint.startsWith('auth/') && typeof window !== 'undefined')
+    window.dispatchEvent(new Event(SESSION_EXPIRED_EVENT))
 
   const responseText = await response.text()
 
@@ -80,11 +78,11 @@ const request = async<T>(
   return responseData as T
 }
 
-export async function handleGET<T = unknown>(endpoint: string, token?: string): Promise<T> {
+export async function handleGET<T = unknown>(endpoint: string): Promise<T> {
   try {
     console.log("handleGET : [start] endpoint=" + SERVER_PATH + endpoint)
 
-    const data: T = await request<T>(endpoint, 'GET', getHeaders(token), null)
+    const data: T = await request<T>(endpoint, 'GET', null)
 
     logSendMessage("handleGET", data)
 
@@ -95,11 +93,11 @@ export async function handleGET<T = unknown>(endpoint: string, token?: string): 
   }
 }
 
-export async function handlePOST<T = unknown>(endpoint: string, body: object, token?: string): Promise<T> {
+export async function handlePOST<T = unknown>(endpoint: string, body: object): Promise<T> {
   try {
     console.log("handlePOST : [start] endpoint=" + SERVER_PATH + endpoint)
 
-    const data: T = await request<T>(endpoint, 'POST', getHeaders(token), body)
+    const data: T = await request<T>(endpoint, 'POST', body)
 
     logSendMessage("handlePOST", data)
 
@@ -110,9 +108,9 @@ export async function handlePOST<T = unknown>(endpoint: string, body: object, to
   }
 }
 
-export async function handleDELETE(endpoint: string, token?: string): Promise<boolean> {
+export async function handleDELETE(endpoint: string): Promise<boolean> {
   try {
-    await request<void>(endpoint, 'DELETE', getHeaders(token), null)
+    await request<void>(endpoint, 'DELETE', null)
 
     return true
   } catch (err) {
@@ -125,11 +123,11 @@ export async function handleDELETE(endpoint: string, token?: string): Promise<bo
   }
 }
 
-export async function handlePUT<T = unknown>(endpoint: string, body: object, token?: string): Promise<T> {
+export async function handlePUT<T = unknown>(endpoint: string, body: object): Promise<T> {
   try {
     console.log("handlePUT : [start] endpoint=" + SERVER_PATH + endpoint)
 
-    const data: T = await request<T>(endpoint, 'PUT', getHeaders(token), body)
+    const data: T = await request<T>(endpoint, 'PUT', body)
 
     logSendMessage("handlePUT", data)
 
