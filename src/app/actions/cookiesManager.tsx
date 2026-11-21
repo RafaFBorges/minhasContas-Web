@@ -1,17 +1,29 @@
 "use server"
 
 import { cookies } from "next/headers"
-import { TAG_DISABLED_KEY } from "../../../utils/DataConstants"
+import { FILTER_SELECTION_KEY, LANG_KEY, TAG_DISABLED_KEY, THEME_KEY } from "../../../utils/DataConstants"
 
 export interface ExpenseDisabledDictionary {
   [key: string]: '0' | '1';
+}
+
+// Estas funções são Server Actions: qualquer código da página (inclusive um script injetado) consegue chamá-las. Por isso só
+// os cookies de preferência abaixo podem ser lidos ou gravados. Os cookies da sessão (tokens) são HttpOnly e só os route
+// handlers de /api tocam neles
+const ALLOWED_COOKIES = new Set([THEME_KEY, LANG_KEY, TAG_DISABLED_KEY, FILTER_SELECTION_KEY]
+  .map(key => key.normalize("NFD").replace(/[\u0300-\u036f]/g, "")))
+
+function requireAllowed(cleanKey: string) {
+  if (!ALLOWED_COOKIES.has(cleanKey))
+    throw new Error('Cookie not allowed: ' + cleanKey)
 }
 
 export async function saveCookie(key: string, value: string) {
   const cookieStore = await cookies()
 
   const cleanKey = key.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-  console.log('cookiesManager.saveCookie > key=' + cleanKey + '(' + key + ') value=' + value + ' normalized=' + (key != cleanKey))
+  requireAllowed(cleanKey)
+  console.log('cookiesManager.saveCookie > key=' + cleanKey + ' normalized=' + (key != cleanKey))
   cookieStore.set({
     name: cleanKey,
     value,
@@ -23,10 +35,20 @@ export async function saveCookie(key: string, value: string) {
 export default async function getCookie(key: string): Promise<string | undefined> {
   const cookieStore = await cookies()
   const cleanKey = key.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+  requireAllowed(cleanKey)
   const stored = cookieStore.get(cleanKey)?.value
 
-  console.log('cookiesManager.getCookie > key=' + cleanKey + '(' + key + ') value=' + stored + ' normalized=' + (key != cleanKey))
+  console.log('cookiesManager.getCookie > key=' + cleanKey + ' found=' + (stored != null) + ' normalized=' + (key != cleanKey))
   return stored
+}
+
+// As preferências de filtro pertencem a quem estava logado: no logout elas somem, para a próxima conta no mesmo navegador
+// não herdar. Tema e idioma são do aparelho e ficam
+export async function clearUserPreferences() {
+  const cookieStore = await cookies()
+
+  for (const key of [TAG_DISABLED_KEY, FILTER_SELECTION_KEY])
+    cookieStore.delete(key.normalize("NFD").replace(/[\u0300-\u036f]/g, ""))
 }
 
 export async function saveExpenseDisabledCookie(key: string, value: boolean) {
@@ -55,34 +77,4 @@ export async function getExpenseDisabledCookie(): Promise<ExpenseDisabledDiction
   }
 
   return {} as ExpenseDisabledDictionary
-}
-
-export async function saveObjectCookie<T>(key: string, value: T, saveEmpty: boolean = false) {
-  try {
-    if (value == null && !saveEmpty) {
-      console.log('cookiesManager.saveObjectCookie >  [Empty value] key=' + key)
-      return
-    }
-
-    const data = JSON.stringify(value)
-    await saveCookie(key, encodeURIComponent(data))
-
-    console.log('cookiesManager.saveObjectCookie > key=' + key + ' hasData=' + (value != undefined))
-  } catch (error) {
-    console.error("cookiesManager.saveObjectCookie > [Couldnt convert Object to string] error=", error)
-  }
-}
-
-export async function getObjectCookie<T>(key: string): Promise<T | null> {
-  try {
-    const cookie = await getCookie(key)
-
-    console.log('cookiesManager.getObjectCookie > key=' + key + ' hasCookie=' + (cookie != null && cookie != undefined))
-    if (cookie != null && cookie != undefined && cookie != '' && cookie != 'null' && cookie != 'undefined')
-      return JSON.parse(decodeURIComponent(cookie)) as T
-  } catch (error) {
-    console.error("cookiesManager.getObjectCookie > [Couldnt convert string to Object] error=", error)
-  }
-
-  return null
 }

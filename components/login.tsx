@@ -3,14 +3,14 @@ import { useRouter } from 'next/navigation'
 
 import { useTheme } from '../utils/hook/themeHook'
 import { LanguageOption, useTranslate } from '../utils/hook/translateHook'
-import { LoginResponse } from '@/comunication/login'
+import { LoginSession } from '@/comunication/login'
 import { useUser } from '../utils/hook/userHook'
 import { LoginForm, usePopup, PopupType } from '@rafafborges/componentes'
 
 interface LoginProps {
   registerHRef?: string;
   passwordForgetedFRef?: string;
-  onSend: (user: string, password: string, onError?: () => void) => Promise<LoginResponse>
+  onSend: (user: string, password: string, onError?: () => void) => Promise<LoginSession | null>
 }
 
 export default function Login({
@@ -36,11 +36,11 @@ export default function Login({
   }
 
   async function handleSubmit(user: string, password: string) {
-    const token: LoginResponse = await onSend(user, password, onLoginError)
-    if (token != null && token.id && token.name && token.user && token.token && token.expiresAt) {
-      await setPlataformUser(token.id, token.name, token.user, token.token, token.expiresAt.toString())
+    const session: LoginSession | null = await onSend(user, password, onLoginError)
+    if (session != null && session.id && session.name && session.user && session.role && session.sessionExpiresAt) {
+      setPlataformUser(session.id, session.name, session.user, session.role, session.sessionExpiresAt)
 
-      console.log('Login > [sucesses] user=' + token.id)
+      console.log('Login > [sucesses] user=' + session.id)
       router.push('/home')
     }
   }
