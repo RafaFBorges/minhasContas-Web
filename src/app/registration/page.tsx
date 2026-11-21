@@ -69,6 +69,8 @@ export default function Registration() {
       const passwordValue = fieldName === 'password' ? value : form().password.value
       const confirmValue = fieldName === 'confirmPassword' ? value : form().confirmPassword.value
 
+      // Compara os tokens do cofre (nunca a senha em texto). Só funciona porque o cofre usa o mesmo IV
+      // na sessão toda; veja o comentário em passwordVault.ts antes de mudar isso
       const confirmIsValid = confirmValue !== ''
         ? passwordValue !== '' && passwordValue === confirmValue
         : null

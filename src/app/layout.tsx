@@ -6,6 +6,7 @@ import getCookie from './actions/cookiesManager'
 import { ModalProvider } from '../../utils/hook/modalHook'
 import { ThemeProvider } from '../../utils/hook/themeHook'
 import { TranslateProvider } from '../../utils/hook/translateHook'
+import { MouseProvider } from '../../utils/hook/mouseHook'
 import { LANG_KEY, THEME_KEY } from '../../utils/DataConstants'
 import { UserProvider } from '../../utils/hook/userHook'
 import { PopupProvider } from '@rafafborges/componentes'
@@ -23,15 +24,17 @@ export default async function RootLayout({
   const initialTheme = await getCookie(THEME_KEY)
   const initialLanguage = await getCookie(LANG_KEY)
 
-  return <TranslateProvider lang={initialLanguage}>
-    <UserProvider>
+  return <MouseProvider>
+    <TranslateProvider lang={initialLanguage}>
+      <UserProvider>
       <ThemeProvider theme={initialTheme}>
-        <PopupProvider>
+          <PopupProvider>
           <ModalProvider>
-            {children}
-          </ModalProvider>
-        </PopupProvider>
+              {children}
+            </ModalProvider>
+          </PopupProvider>
       </ThemeProvider>
-    </UserProvider>
+      </UserProvider>
   </TranslateProvider>
+  </MouseProvider>
 }

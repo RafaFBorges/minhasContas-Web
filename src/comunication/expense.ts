@@ -16,7 +16,7 @@ export interface ExpenseRequest {
   categoryIds?: number[];
 }
 
-export const handleEditExpense = async (item: unknown, expense: Expense, populate: (response: ExpenseResponse) => void, token: string) => {
+export const handleEditExpense = async (item: unknown, expense: Expense, populate: (response: ExpenseResponse) => void) => {
 
   if (item == null || typeof item !== 'object')
     return
@@ -36,18 +36,18 @@ export const handleEditExpense = async (item: unknown, expense: Expense, populat
 
   if (shouldSend && populate != null) {
     request.date = new Date().toISOString()
-    const response = await handlePUT<ExpenseResponse>(EXPENSES_ENDPOINT + '/' + expense.id, request, token)
+    const response = await handlePUT<ExpenseResponse>(EXPENSES_ENDPOINT + '/' + expense.id, request)
 
     if (populate != null)
       populate(response)
   }
 }
 
-export async function SyncExpenses(populate: (list: ExpenseResponse[]) => void, userId: number, token: string) {
+export async function SyncExpenses(populate: (list: ExpenseResponse[]) => void, userId: number) {
   try {
     console.log("HOME.useEffect : [initial load] fetching expenses")
 
-    const serverExpensesList: ExpenseResponse[] = await handleGET(EXPENSES_ENDPOINT + '/' + USER_ENDPOINT + '/' + userId, token)
+    const serverExpensesList: ExpenseResponse[] = await handleGET(EXPENSES_ENDPOINT + '/' + USER_ENDPOINT + '/' + userId)
 
     if (!(serverExpensesList != null) || !Array.isArray(serverExpensesList))
       throw Error('Invalid Expense response')

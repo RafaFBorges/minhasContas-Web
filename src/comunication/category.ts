@@ -15,11 +15,11 @@ export interface CategoryRequest {
   date?: string;
 }
 
-export async function SyncCategories(setCategories: (list: CategoryResponse[]) => void, setDisasbledCategories: (dict: ExpenseDisabledDictionary) => void, setFilterSelection: (filter: string) => void, userId: number, token: string) {
+export async function SyncCategories(setCategories: (list: CategoryResponse[]) => void, setDisasbledCategories: (dict: ExpenseDisabledDictionary) => void, setFilterSelection: (filter: string) => void, userId: number) {
   try {
     console.log("SyncCategories : [initial load] fetching categories")
 
-    const serverCategoriesList: CategoryResponse[] = await handleGET<CategoryResponse[]>(CATEGORIES_ENDPOINT + '/' + USER_ENDPOINT + '/' + userId, token)
+    const serverCategoriesList: CategoryResponse[] = await handleGET<CategoryResponse[]>(CATEGORIES_ENDPOINT + '/' + USER_ENDPOINT + '/' + userId)
 
     if ((serverCategoriesList == null) || !Array.isArray(serverCategoriesList))
       throw Error('Invalid Category response')
