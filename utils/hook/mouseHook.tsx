@@ -1,7 +1,12 @@
 "use client"
 
-import { createContext, useContext, ReactNode, useState, useRef, useEffect, useLayoutEffect } from 'react'
+import { createContext, useContext, ReactNode, useState, useEffect } from 'react'
 import { logger } from '../log/logger'
+
+// API experimental, só existe em alguns navegadores (por isso não está no tipo Navigator)
+type NavigatorWithPointer = Navigator & {
+  getCurrentPoint?: (device: 'mouse') => Promise<{ x: number, y: number }>
+}
 
 export interface MousePosition {
   X: number;
@@ -31,11 +36,11 @@ export function MouseProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Método experimental, disponível apenas em alguns browsers
-    if ('getCurrentPoint' in navigator) {
+    const experimental = navigator as NavigatorWithPointer
+    if (typeof experimental.getCurrentPoint === 'function') {
       logger.debug('mouse.initialPosition', { source: 'navigator.getCurrentPoint' })
 
-      // @ts-ignore
-      navigator.getCurrentPoint('mouse').then((point: any) => setPosition({ X: point.x, Y: point.y }))
+      experimental.getCurrentPoint('mouse').then(point => setPosition({ X: point.x, Y: point.y }))
     }
 
     const updateMousePosition = (e: globalThis.MouseEvent) => setPosition({ X: e.clientX, Y: e.clientY })
