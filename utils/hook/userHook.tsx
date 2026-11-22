@@ -23,6 +23,7 @@ interface UserContextType {
   editFinancialResponse: (response: ExpenseResponse) => void;
   replaceFinancial: (list: ExpenseResponse[]) => void;
   addFinancial: (item: Expense) => void;
+  addFinancialResponse: (response: ExpenseResponse) => void;
   replaceCategories: (list: CategoryResponse[]) => void;
   replaceTotal: (value: number) => void
   addCategory: (category: Category) => void;
@@ -101,6 +102,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const addFinancial = (item: Expense) => {
     setFinancialList([...financialList, item])
     setTotal(total + item.value)
+  }
+
+  const addFinancialResponse = (response: ExpenseResponse) => {
+    const categoryList: Category[] = response.categoryIds
+      ? categoriesList.filter(c => response.categoryIds.includes(c.id))
+      : []
+
+    addFinancial(new Expense(response.id, response.value, [response.date], categoryList, language))
   }
 
   const addCategory = (category: Category) => {
@@ -244,6 +253,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       editFinancialResponse,
       replaceFinancial,
       addFinancial,
+      addFinancialResponse,
       addCategory,
       replaceCategories,
       total,

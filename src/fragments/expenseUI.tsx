@@ -3,13 +3,9 @@ import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { FaPlus as AddIcon } from 'react-icons/fa'
 
 import { EXPENSES_ENDPOINT, handlePOST } from '@/comunication/ApiResthandler'
-import { CategoryResponse } from '@/comunication/category'
 
-import { ExpenseRequest } from '@/comunication/expense'
-import { Expense } from '@/domain/Expense'
+import { ExpenseRequest, ExpenseResponse } from '@/comunication/expense'
 import { Tag } from '@/domain/Tag'
-import { Category } from '@/domain/Category'
-import { useTranslate } from '../../utils/hook/translateHook'
 import ThemeButton from '../../components/themeComponents/themeButton'
 import TagList from '../../components/lists/tagList'
 import { SpinInput } from '@rafafborges/componentes'
@@ -40,8 +36,7 @@ export default function ExpenseUI({
   const [isLoaded, setIsLoaded] = useState<boolean>(false)
   const [categories, setCategories] = useState<Array<Tag>>(tagList != null ? tagList.map((tag: Tag) => tag.clone()) : [])
 
-  const { addFinancial, disabledCategoriesDict, userInfo } = useUser()
-  const { language } = useTranslate()
+  const { addFinancialResponse, disabledCategoriesDict, userInfo } = useUser()
   const { setEnabledSave, setData } = useModal()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,19 +53,15 @@ export default function ExpenseUI({
     request.categoryIds = list.filter(item => !item.disabled).map(item => item.id)
     request.date = new Date().toISOString()
     request.owner = userInfo.id
-    const response = await handlePOST(EXPENSES_ENDPOINT, request)
+    const response = await handlePOST<ExpenseResponse>(EXPENSES_ENDPOINT, request)
 
     const canAddFinancial = response != null && typeof response === 'object' &&
-      'categories' in response && response.categories != null &&
       'id' in response &&
       'value' in response &&
-      'dates' in response
+      'date' in response
 
-    if (canAddFinancial) {
-      const categoryList: Category[] = (response.categories as CategoryResponse[]).map((category: CategoryResponse) => new Category(category.id, category.owner, category.name))
-
-      addFinancial(new Expense(Number(response.id), Number(response.value), (response.dates as Array<string>), categoryList, language))
-    }
+    if (canAddFinancial)
+      addFinancialResponse(response)
   }
 
   function loadConfig(disabledDict: ExpenseDisabledDictionary, tagsToUpdate: Array<Tag>): Array<Tag> {
