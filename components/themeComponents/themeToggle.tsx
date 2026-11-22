@@ -22,6 +22,7 @@ export default function ThemeToggle({
   DisableIcon = null,
   enableIconColor = '',
   disableIconColor = '',
+  labelColor = '',
 }: ToggleProps) {
   const { config } = useTheme()
 
@@ -42,5 +43,6 @@ export default function ThemeToggle({
     DisableIcon={DisableIcon}
     enableIconColor={enableIconColor != '' ? enableIconColor : config.iconColor}
     disableIconColor={disableIconColor != '' ? disableIconColor : config.iconColor}
+    labelColor={labelColor != '' ? labelColor : config.fontColor}
   />
 }
